@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v33</title>
+<title>Trip Pocket Cloud v34</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -783,6 +783,46 @@ textarea{min-height:86px;resize:vertical}
 
 /* ===== v33 Supabase-delivered Google Maps key ===== */
 .cloud-sync-log{line-height:1.6}
+
+
+/* ===== v34 flight/hotel/trip detail refinement ===== */
+.triphead2-top{align-items:flex-start}
+.trip-head-actions{display:flex;gap:7px;align-items:center;flex:0 0 auto}
+.trip-edit-btn{
+  border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:12px;
+  padding:8px 11px;font-size:11px;font-weight:900;cursor:pointer
+}
+.transport-tab-card{padding:15px 16px}
+.transport-tab-card .section-head{margin-bottom:9px}
+.transport-tab-card .section-head h3{font-size:16px}
+.transport-list{display:grid;gap:8px}
+.transport-row{
+  border:1px solid #e5edf6;border-radius:15px;background:#fff;padding:11px 12px
+}
+.transport-title{font-size:14px;font-weight:900;color:var(--ink);line-height:1.35}
+.transport-meta{font-size:11px;color:var(--muted);line-height:1.55;margin-top:4px}
+.transport-actions{display:flex;gap:7px;align-items:center;margin-top:8px}
+.transport-link{
+  display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;
+  background:#edf5ff;color:var(--navy);padding:7px 9px;font-size:10px;font-weight:900;text-decoration:none
+}
+.home-hotel-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.home-hotel-row .home-mini-main{min-width:0;flex:1}
+.home-map-btn{
+  flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid #dce8f5;border-radius:10px;background:#f6faff;color:var(--navy);
+  padding:7px 9px;font-size:10px;font-weight:900;text-decoration:none;white-space:nowrap
+}
+.flight-time-fields{display:grid;grid-template-columns:88px 1fr 18px 1fr;gap:7px;align-items:center}
+.flight-time-fields select{height:43px;border-radius:12px}
+.flight-time-fields .colon{text-align:center;font-weight:900;color:var(--muted)}
+.trip-edit-note{font-size:10px;color:var(--muted);line-height:1.55;margin-top:8px}
+@media(max-width:520px){
+  .triphead2-top{gap:10px}
+  .trip-head-actions{gap:5px}
+  .trip-edit-btn,.backbtn2{padding:8px 9px}
+  .flight-time-fields{grid-template-columns:82px 1fr 15px 1fr;gap:5px}
+}
 
 </style>
 </head>
@@ -3593,6 +3633,142 @@ function tripCard(t){
     <div class="trip-cover"><div class="small" style="opacity:.82">${esc(t.start)} — ${esc(t.end)}</div><div class="trip-dest">${esc(t.destination)}</div></div>
     <div class="trip-body"><div class="row between"><div><b>${esc(t.name)}</b><div class="small muted" style="margin-top:5px">${fmt(t.start)} → ${fmt(t.end)}</div></div><div>›</div></div><div class="meta"><span class="pill">${nights(t.start,t.end)}박 ${tripDays(t.start,t.end)}일</span><span class="pill">가고 싶은 곳 ${(t.pool||[]).length}</span><span class="pill">일정 ${(t.plans||[]).length}</span></div></div>
   </article>`;
+}
+</script>
+
+
+<script>
+/* ===== v34 flight/hotel/trip detail refinement ===== */
+function tp34FormatFlightTime(value){
+  if(!value)return '시간 미정';
+  if(/^\d{1,2}:\d{2}$/.test(String(value)))return displayTime(String(value).padStart(5,'0'));
+  return String(value);
+}
+function tp34ParseFlightTime(value,fallback='09:00'){
+  let v=String(value||fallback).trim(), h=9, m=0;
+  const ko=v.match(/(오전|오후)\s*(\d{1,2}):(\d{2})/);
+  if(ko){
+    h=Number(ko[2]);m=Number(ko[3]);
+    if(ko[1]==='오후'&&h<12)h+=12;
+    if(ko[1]==='오전'&&h===12)h=0;
+  }else{
+    const x=v.match(/^(\d{1,2}):(\d{2})$/);
+    if(x){h=Number(x[1]);m=Number(x[2])}
+  }
+  h=Math.max(0,Math.min(23,h));m=Math.max(0,Math.min(59,m));
+  return {ap:h<12?'AM':'PM',hour:(h%12)||12,minute:m};
+}
+function tp34MinuteOptions(selected){
+  const vals=[...new Set([...Array.from({length:12},(_,i)=>i*5),Number(selected)])].sort((a,b)=>a-b);
+  return vals.map(v=>`<option value="${v}" ${v===Number(selected)?'selected':''}>${String(v).padStart(2,'0')}</option>`).join('');
+}
+function tp34FlightTimeField(prefix,label,value,fallback){
+  const t=tp34ParseFlightTime(value,fallback);
+  return `<div class="field"><label>${label}</label><div class="flight-time-fields">
+    <select id="${prefix}Ap"><option value="AM" ${t.ap==='AM'?'selected':''}>오전</option><option value="PM" ${t.ap==='PM'?'selected':''}>오후</option></select>
+    <select id="${prefix}Hour">${Array.from({length:12},(_,i)=>i+1).map(h=>`<option value="${h}" ${h===t.hour?'selected':''}>${h}시</option>`).join('')}</select>
+    <span class="colon">:</span>
+    <select id="${prefix}Minute">${tp34MinuteOptions(t.minute)}</select>
+  </div></div>`;
+}
+function tp34ReadFlightTime(prefix){
+  const ap=document.getElementById(prefix+'Ap')?.value||'AM';
+  let h=Number(document.getElementById(prefix+'Hour')?.value||0);
+  const m=Number(document.getElementById(prefix+'Minute')?.value||0);
+  if(ap==='PM'&&h<12)h+=12;
+  if(ap==='AM'&&h===12)h=0;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+function openFlightForm(){
+  const t=trip();
+  openSheet(`<h2>항공편 추가</h2><form id="flightForm">
+    <div class="field"><label>탑승일</label><input type="date" name="date" value="${esc(t.start)}" required></div>
+    <div class="grid2"><div class="field"><label>출발지</label><input name="from" required></div><div class="field"><label>도착지</label><input name="to" required></div></div>
+    <div class="grid2">${tp34FlightTimeField('depart','출발 시간','09:00','09:00')}${tp34FlightTimeField('arrive','도착 시간','11:00','11:00')}</div>
+    <div class="grid2"><div class="field"><label>항공사</label><input name="airline"></div><div class="field"><label>편명</label><input name="flightNo"></div></div>
+    <div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">저장</button></div>
+  </form>`);
+  document.getElementById('flightForm').onsubmit=e=>{
+    e.preventDefault();
+    const d=Object.fromEntries(new FormData(e.currentTarget));
+    d.departTime=tp34ReadFlightTime('depart');
+    d.arriveTime=tp34ReadFlightTime('arrive');
+    trip().flights.push({id:uid(),...d});
+    save();closeSheet();renderTab();toast('항공편을 저장했어요');
+  };
+}
+function tp20RenderFlightSnippet(t,d){
+  const flights=[...t.flights].sort((a,b)=>String((a.date||'')+(a.departTime||'')).localeCompare(String((b.date||'')+(b.departTime||''))));
+  const rel=flights.filter(f=>f.date===d),shown=rel.length?rel:flights.slice(0,1);
+  return shown.length?shown.map(f=>`<div class="home-mini-item"><div class="home-mini-main"><b>${esc(f.airline||f.flightNo||'항공편')}</b><div class="sub">${fmt(f.date)} · ${esc(tp34FormatFlightTime(f.departTime))} → ${esc(tp34FormatFlightTime(f.arriveTime))}${f.from&&f.to?`<br>${esc(f.from)} → ${esc(f.to)}`:''}</div></div></div>`).join(''):`<div class="empty-note2">등록한 항공편이 없습니다.</div>`;
+}
+function tp20RenderHotelSnippet(t,d){
+  const hotel=t.hotels.find(h=>d>=h.checkin&&d<h.checkout)||[...t.hotels].sort((a,b)=>String(a.checkin).localeCompare(String(b.checkin)))[0];
+  if(!hotel)return `<div class="empty-note2">등록한 숙소가 없습니다.</div>`;
+  const url=hotel.mapsUrl||mapsSearch(`${hotel.name||'숙소'} ${hotel.address||t.destination||''}`);
+  return `<div class="home-mini-item home-hotel-row"><div class="home-mini-main"><b>${esc(hotel.name||'숙소')}</b><div class="sub">${fmt(hotel.checkin)} → ${fmt(hotel.checkout)} · ${tp20NightCount(hotel.checkin,hotel.checkout)}박${hotel.address?`<br>${esc(hotel.address)}`:''}</div></div><a class="home-map-btn" href="${esc(url)}" target="_blank" rel="noopener">위치 보기</a></div>`;
+}
+function tp20RenderFlights(){
+  const t=trip(),flights=[...t.flights].sort((a,b)=>String((a.date||'')+(a.departTime||'')).localeCompare(String((b.date||'')+(b.departTime||''))));
+  return `<div class="section-card transport-tab-card"><div class="section-head"><h3>항공편</h3><div class="actions"><button class="mini-btn" onclick="openFlightForm()">+ 항공편 추가</button></div></div>
+    ${flights.length?`<div class="transport-list">${flights.map(f=>`<div class="transport-row"><div class="transport-title">${esc(f.airline||'항공편')}${f.flightNo?` · ${esc(f.flightNo)}`:''}</div><div class="transport-meta">${fmt(f.date)} · ${esc(tp34FormatFlightTime(f.departTime))} 출발 → ${esc(tp34FormatFlightTime(f.arriveTime))} 도착${f.from&&f.to?`<br>${esc(f.from)} → ${esc(f.to)}`:''}</div></div>`).join('')}</div>`:`<div class="empty-note2">등록한 항공편이 없습니다.</div>`}
+  </div>`;
+}
+function tp20RenderHotels(){
+  const t=trip(),items=[...t.hotels].sort((a,b)=>String(a.checkin).localeCompare(String(b.checkin)));
+  return `<div class="section-card transport-tab-card"><div class="section-head"><h3>숙소</h3><div class="actions"><button class="mini-btn" onclick="openHotelForm()">+ 숙소 추가</button></div></div>
+    ${items.length?`<div class="transport-list">${items.map(h=>{const url=h.mapsUrl||mapsSearch(`${h.name||'숙소'} ${h.address||t.destination||''}`);return `<div class="transport-row"><div class="transport-title">${esc(h.name||'숙소')}</div><div class="transport-meta">${fmt(h.checkin)} → ${fmt(h.checkout)} · ${tp20NightCount(h.checkin,h.checkout)}박${h.address?`<br>${esc(h.address)}`:''}</div><div class="transport-actions"><a class="transport-link" href="${esc(url)}" target="_blank" rel="noopener">위치 보기</a></div></div>`}).join('')}</div>`:`<div class="empty-note2">등록한 숙소가 없습니다.</div>`}
+  </div>`;
+}
+function openTripEditForm(){
+  const t=trip();if(!t)return;
+  const countries=[...new Set(state.trips.map(x=>x.country).filter(Boolean))];
+  const cities=[...new Set(state.trips.map(x=>x.city).filter(Boolean))];
+  const countryOpts=[...new Set([...countries,'일본','대한민국','대만','태국','베트남','미국','프랑스','이탈리아','스페인','영국'])].map(x=>`<option value="${esc(x)}">`).join('');
+  const cityOpts=[...new Set([...cities,'도쿄','오사카','교토','후쿠오카','삿포로','서울','부산','타이베이','방콕','파리','로마','런던'])].map(x=>`<option value="${esc(x)}">`).join('');
+  openSheet(`<h2>여행 정보 수정</h2><form id="tripEditForm">
+    <div class="field"><label>여행명</label><input name="name" required value="${esc(t.name||'')}"></div>
+    <div class="grid2"><div class="field"><label>나라</label><input list="tripEditCountryList" name="country" required value="${esc(t.country||'')}"><datalist id="tripEditCountryList">${countryOpts}</datalist></div><div class="field"><label>도시</label><input list="tripEditCityList" name="city" required value="${esc(t.city||'')}"><datalist id="tripEditCityList">${cityOpts}</datalist></div></div>
+    <div class="grid2"><div class="field"><label>시작일</label><input type="date" name="start" required value="${esc(t.start||'')}"></div><div class="field"><label>종료일</label><input type="date" name="end" required value="${esc(t.end||'')}"></div></div>
+    <div class="field"><label>인원수</label><input type="number" min="1" name="people" required value="${esc(String(t.people||1))}"></div>
+    <div id="tripEditDuration" class="inline-note">${tp20NightCount(t.start,t.end)}박 ${tp20NightCount(t.start,t.end)+1}일 여행</div>
+    <div class="trip-edit-note">기간을 수정해도 이미 등록한 일정·항공·숙소는 자동 삭제하지 않습니다. 새 여행 기간 밖으로 벗어나는 항목이 있으면 저장 전에 알려드릴게요.</div>
+    <div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">수정 저장</button></div>
+  </form>`);
+  const f=document.getElementById('tripEditForm');
+  const updateDuration=()=>{
+    if(f.start.value&&f.end.value){
+      const n=tp20NightCount(f.start.value,f.end.value);
+      document.getElementById('tripEditDuration').textContent=f.end.value>=f.start.value?`${n}박 ${n+1}일 여행`:'종료일을 다시 확인해주세요.';
+    }
+  };
+  f.start.onchange=updateDuration;f.end.onchange=updateDuration;
+  f.onsubmit=e=>{
+    e.preventDefault();
+    const d=Object.fromEntries(new FormData(f));
+    if(d.end<d.start)return toast('종료일을 확인해주세요');
+    const outsidePlans=(t.plans||[]).filter(p=>p.date&&(p.date<d.start||p.date>d.end)).length;
+    const outsideFlights=(t.flights||[]).filter(x=>x.date&&(x.date<d.start||x.date>d.end)).length;
+    const outsideHotels=(t.hotels||[]).filter(h=>(h.checkin&&h.checkin<d.start)||(h.checkout&&h.checkout>d.end)).length;
+    const affected=outsidePlans+outsideFlights+outsideHotels;
+    if(affected){
+      const details=[outsidePlans?`일정 ${outsidePlans}개`:'',outsideFlights?`항공 ${outsideFlights}개`:'',outsideHotels?`숙소 ${outsideHotels}개`:''].filter(Boolean).join(', ');
+      if(!confirm(`새 여행 기간 밖에 있는 기존 항목이 있습니다. (${details})\n\n기존 항목은 삭제하지 않고 여행 정보만 수정할까요?`))return;
+    }
+    t.name=d.name.trim();
+    t.country=d.country.trim();
+    t.city=d.city.trim();
+    t.destination=[t.country,t.city].filter(Boolean).join(' ');
+    t.start=d.start;t.end=d.end;t.people=Math.max(1,Number(d.people)||1);
+    (t.expenses||[]).forEach(x=>x.dayLabel=tp20DayLabel(x.date,t));
+    save();closeSheet();renderTrip();toast('여행 정보를 수정했어요');
+  };
+}
+function renderTrip(){
+  const t=tp25EnsureRateSettings(normalizeTrip(trip()));if(!t){currentTripId=null;return render()}
+  tp23EnsureSettlementState(t);
+  $('#view').innerHTML=`<section class="trip-shell"><div class="triphead2"><div class="triphead2-top"><div class="trip-meta2"><h2>${esc(t.name)}</h2><div class="meta">${esc(t.country||'')} ${esc(t.city||'')} · ${fmt(t.start)} → ${fmt(t.end)} · ${tp20NightCount(t.start,t.end)}박 ${tp20NightCount(t.start,t.end)+1}일 · ${esc(String(t.people||1))}명</div></div><div class="trip-head-actions"><button class="trip-edit-btn" onclick="openTripEditForm()">수정</button><button class="backbtn2" onclick="currentTripId=null;archiveMode=false;render()">목록</button></div></div></div><nav class="tab-grid"><button class="tab ${currentTab==='home'?'active':''}" onclick="setTab('home')">홈</button><button class="tab ${currentTab==='plan'?'active':''}" onclick="setTab('plan')">일정</button><button class="tab ${currentTab==='pool'?'active':''}" onclick="setTab('pool')">가고 싶은 곳</button><button class="tab ${currentTab==='flight'?'active':''}" onclick="setTab('flight')">항공</button><button class="tab ${currentTab==='hotel'?'active':''}" onclick="setTab('hotel')">숙소</button><button class="tab ${currentTab==='packing'?'active':''}" onclick="setTab('packing')">준비물</button><button class="tab ${currentTab==='expense'?'active':''}" onclick="setTab('expense')">정산</button></nav>${currentTab==='expense'?tp23ExpenseSettingsStrip(t):''}<section id="tabContent"></section></section>`;
+  $('#fab').innerHTML='';renderTab();
 }
 </script>
 
