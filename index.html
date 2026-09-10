@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v31</title>
+<title>Trip Pocket Cloud v32</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -776,6 +776,10 @@ textarea{min-height:86px;resize:vertical}
   padding:4px 0 0;font-size:11px;color:var(--muted);line-height:1.55
 }
 
+
+/* ===== v32 shared Google Maps key ===== */
+.api-note b{color:var(--navy)}
+
 </style>
 </head>
 <body>
@@ -1322,7 +1326,7 @@ function showPlaceCandidates(places,mode,editId){
 function showPlaceSearchError(err,mode,editId){
   window._candidateMode=mode;window._candidateEditId=editId;window._candidateDraft={...pendingPlaceDraft};
   const msg=errorText(err)||'Google Places 검색에 실패했습니다.';
-  $('#sheetContent').innerHTML=`<h2>장소 검색 오류</h2><div class="api-note"><b>Google 장소 검색을 불러오지 못했습니다.</b><br>${esc(msg)}</div><div class="inline-note">⚙ 설정에서 API 키가 저장되어 있는지, Google Cloud에서 Maps JavaScript API와 Places API (New)가 활성화되어 있는지 확인해주세요.</div><div class="form-actions"><button type="button" class="ghost" onclick="returnToPlaceForm()">← 다시 입력</button><button type="button" class="primary" onclick="openSettings()">API 설정 확인</button></div>`;
+  $('#sheetContent').innerHTML=`<h2>장소 검색 오류</h2><div class="api-note"><b>Google 장소 검색을 불러오지 못했습니다.</b><br>${esc(msg)}</div><div class="inline-note">공용 Google Maps API가 연결되어 있습니다. 오류가 계속되면 Google Cloud의 웹사이트 제한과 Maps JavaScript API · Places API (New) · Routes API 활성화 상태를 확인해주세요.</div><div class="form-actions"><button type="button" class="ghost" onclick="returnToPlaceForm()">← 다시 입력</button><button type="button" class="primary" onclick="openSettings()">API 연결 확인</button></div>`;
 }
 function returnToPlaceForm(){
   const mode=window._candidateMode,id=window._candidateEditId||'',draft=window._candidateDraft||pendingPlaceDraft;
@@ -1495,11 +1499,14 @@ async function openGroupMap(mode='smart',clusterId=null){
   }
 }
 
-function getApiKey(){return localStorage.getItem('tripPocket_googleMapsKey')||''}
+const TRIP_POCKET_GOOGLE_MAPS_KEY='AIzaSyApFzwoc6hKt2E1YbsY1nk_j3piQL2xvgg';
+function getApiKey(){return TRIP_POCKET_GOOGLE_MAPS_KEY}
 function openSettings(){
-  openSheet(`<h2>Google Maps 설정</h2><div class="api-note">장소 자동조회에는 Maps JavaScript API + Places API (New)가 필요합니다.</div><div class="field"><label>Google Maps API Key</label><input id="apiKeyInput" value="${esc(getApiKey())}" placeholder="AIza..."></div><div class="inline-note">키는 이 브라우저 localStorage에만 저장됩니다.</div><div class="form-actions"><button class="danger" id="clearKey">키 삭제</button><button class="primary" id="saveKey">저장</button></div>`);
-  $('#saveKey').onclick=()=>{const k=$('#apiKeyInput').value.trim();if(k)localStorage.setItem('tripPocket_googleMapsKey',k);else localStorage.removeItem('tripPocket_googleMapsKey');mapsLoading=false;closeSheet();render();toast('설정을 저장했어요')};
-  $('#clearKey').onclick=()=>{localStorage.removeItem('tripPocket_googleMapsKey');mapsLoading=false;closeSheet();render();toast('API 키를 삭제했어요')};
+  openSheet(`<h2>Google Maps 연결</h2>
+    <div class="api-note"><b>공용 Google Maps API가 연결되어 있습니다.</b><br>이 Trip Pocket 주소에서 장소 검색 · 지도 · 스마트 이동시간 기능을 바로 사용할 수 있어요.</div>
+    <div class="inline-note">사용 API: Maps JavaScript API · Places API (New) · Routes API</div>
+    <div class="inline-note">API 키는 GitHub Pages 도메인 제한이 적용된 공용 웹 키를 사용합니다. 별도 키 입력은 필요하지 않습니다.</div>
+    <div class="form-actions"><button type="button" class="primary" onclick="closeSheet()">확인</button></div>`);
 }
 async function loadMaps(){
   if(window.google?.maps?.importLibrary)return;
