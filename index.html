@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v34</title>
+<title>Trip Pocket Cloud v35</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -822,6 +822,88 @@ textarea{min-height:86px;resize:vertical}
   .trip-head-actions{gap:5px}
   .trip-edit-btn,.backbtn2{padding:8px 9px}
   .flight-time-fields{grid-template-columns:82px 1fr 15px 1fr;gap:5px}
+}
+
+
+/* ===== v35 navigation / tabs / hotel location polish ===== */
+.triphead2{padding:15px 15px 14px}
+.triphead2-top{
+  display:grid !important;
+  grid-template-columns:38px minmax(0,1fr) 38px;
+  align-items:start !important;
+  gap:10px !important
+}
+.trip-meta2{min-width:0}
+.trip-meta2 h2{font-size:21px;line-height:1.25}
+.trip-meta2 .meta{font-size:12.5px;line-height:1.5}
+.trip-back-icon,.trip-edit-icon{
+  width:38px;height:38px;border-radius:12px;border:1px solid #dce7f4;
+  background:#fff;color:var(--navy);display:grid;place-items:center;
+  padding:0;cursor:pointer;box-shadow:0 3px 10px rgba(31,75,126,.05)
+}
+.trip-back-icon{font-size:28px;font-weight:500;line-height:1;padding-bottom:3px}
+.trip-edit-icon svg{width:17px;height:17px}
+.trip-back-icon:hover,.trip-edit-icon:hover{background:#f5f9fe}
+.trip-head-actions{display:contents}
+
+.tab-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:5px !important;
+  margin:0 0 15px !important;
+  padding:6px !important;
+  background:#eaf2fb;
+  border:1px solid #dce8f5;
+  border-radius:18px
+}
+.tab-grid .tab{
+  min-height:44px;
+  padding:9px 6px !important;
+  border:0 !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.72) !important;
+  color:var(--navy) !important;
+  font-size:14px !important;
+  font-weight:850 !important;
+  line-height:1.15;
+  box-shadow:none !important
+}
+.tab-grid .tab.active{
+  background:linear-gradient(135deg,var(--blue),var(--blue2)) !important;
+  color:#fff !important;
+  box-shadow:0 5px 12px rgba(45,122,214,.18) !important
+}
+.section-head h3{font-size:17px}
+.home-mini-main b{font-size:15px;line-height:1.35}
+.home-mini-main .sub{font-size:12.5px;line-height:1.5}
+.transport-title{font-size:15px}
+.transport-meta{font-size:12.5px}
+
+.home-hotel-link{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;color:inherit;text-decoration:none;border-radius:13px;
+  padding:3px 4px;margin:-3px -4px;transition:background .15s ease
+}
+.home-hotel-link:hover{background:#f6faff}
+.hotel-location-row{
+  position:relative;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;color:inherit;text-decoration:none;transition:background .15s ease
+}
+.hotel-location-row:hover{background:#f7fbff}
+.hotel-location-main{min-width:0;flex:1}
+.location-pin-icon{
+  flex:0 0 auto;width:34px;height:34px;border-radius:11px;
+  display:grid;place-items:center;background:#edf5ff;color:var(--blue);
+  border:1px solid #dce9f8
+}
+.location-pin-icon svg{width:17px;height:17px}
+.hotel-location-row .location-pin-icon{margin-left:auto}
+
+@media(max-width:520px){
+  .triphead2-top{grid-template-columns:36px minmax(0,1fr) 36px !important;gap:8px !important}
+  .trip-back-icon,.trip-edit-icon{width:36px;height:36px;border-radius:11px}
+  .trip-meta2 h2{font-size:20px}
+  .trip-meta2 .meta{font-size:12px}
+  .tab-grid .tab{font-size:13.5px !important;min-height:43px}
 }
 
 </style>
@@ -3768,6 +3850,50 @@ function renderTrip(){
   const t=tp25EnsureRateSettings(normalizeTrip(trip()));if(!t){currentTripId=null;return render()}
   tp23EnsureSettlementState(t);
   $('#view').innerHTML=`<section class="trip-shell"><div class="triphead2"><div class="triphead2-top"><div class="trip-meta2"><h2>${esc(t.name)}</h2><div class="meta">${esc(t.country||'')} ${esc(t.city||'')} · ${fmt(t.start)} → ${fmt(t.end)} · ${tp20NightCount(t.start,t.end)}박 ${tp20NightCount(t.start,t.end)+1}일 · ${esc(String(t.people||1))}명</div></div><div class="trip-head-actions"><button class="trip-edit-btn" onclick="openTripEditForm()">수정</button><button class="backbtn2" onclick="currentTripId=null;archiveMode=false;render()">목록</button></div></div></div><nav class="tab-grid"><button class="tab ${currentTab==='home'?'active':''}" onclick="setTab('home')">홈</button><button class="tab ${currentTab==='plan'?'active':''}" onclick="setTab('plan')">일정</button><button class="tab ${currentTab==='pool'?'active':''}" onclick="setTab('pool')">가고 싶은 곳</button><button class="tab ${currentTab==='flight'?'active':''}" onclick="setTab('flight')">항공</button><button class="tab ${currentTab==='hotel'?'active':''}" onclick="setTab('hotel')">숙소</button><button class="tab ${currentTab==='packing'?'active':''}" onclick="setTab('packing')">준비물</button><button class="tab ${currentTab==='expense'?'active':''}" onclick="setTab('expense')">정산</button></nav>${currentTab==='expense'?tp23ExpenseSettingsStrip(t):''}<section id="tabContent"></section></section>`;
+  $('#fab').innerHTML='';renderTab();
+}
+</script>
+
+
+<script>
+/* ===== v35 navigation / tabs / hotel location polish ===== */
+function tp35PinIcon(){
+  return `<span class="location-pin-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s6-5.3 6-11a6 6 0 1 0-12 0c0 5.7 6 11 6 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.8"/></svg></span>`;
+}
+function tp20RenderHotelSnippet(t,d){
+  const hotel=t.hotels.find(h=>d>=h.checkin&&d<h.checkout)||[...t.hotels].sort((a,b)=>String(a.checkin).localeCompare(String(b.checkin)))[0];
+  if(!hotel)return `<div class="empty-note2">등록한 숙소가 없습니다.</div>`;
+  const url=hotel.mapsUrl||mapsSearch(`${hotel.name||'숙소'} ${hotel.address||t.destination||''}`);
+  return `<div class="home-mini-item"><a class="home-hotel-link" href="${esc(url)}" target="_blank" rel="noopener" aria-label="${esc(hotel.name||'숙소')} 위치를 지도에서 보기" title="지도에서 위치 보기"><div class="home-mini-main"><b>${esc(hotel.name||'숙소')}</b><div class="sub">${fmt(hotel.checkin)} → ${fmt(hotel.checkout)} · ${tp20NightCount(hotel.checkin,hotel.checkout)}박${hotel.address?`<br>${esc(hotel.address)}`:''}</div></div>${tp35PinIcon()}</a></div>`;
+}
+function tp20RenderHotels(){
+  const t=trip(),items=[...t.hotels].sort((a,b)=>String(a.checkin).localeCompare(String(b.checkin)));
+  return `<div class="section-card transport-tab-card"><div class="section-head"><h3>숙소</h3><div class="actions"><button class="mini-btn" onclick="openHotelForm()">+ 숙소 추가</button></div></div>
+    ${items.length?`<div class="transport-list">${items.map(h=>{const url=h.mapsUrl||mapsSearch(`${h.name||'숙소'} ${h.address||t.destination||''}`);return `<a class="transport-row hotel-location-row" href="${esc(url)}" target="_blank" rel="noopener" aria-label="${esc(h.name||'숙소')} 위치를 지도에서 보기" title="지도에서 위치 보기"><div class="hotel-location-main"><div class="transport-title">${esc(h.name||'숙소')}</div><div class="transport-meta">${fmt(h.checkin)} → ${fmt(h.checkout)} · ${tp20NightCount(h.checkin,h.checkout)}박${h.address?`<br>${esc(h.address)}`:''}</div></div>${tp35PinIcon()}</a>`}).join('')}</div>`:`<div class="empty-note2">등록한 숙소가 없습니다.</div>`}
+  </div>`;
+}
+function renderTrip(){
+  const t=tp25EnsureRateSettings(normalizeTrip(trip()));if(!t){currentTripId=null;return render()}
+  tp23EnsureSettlementState(t);
+  $('#view').innerHTML=`<section class="trip-shell">
+    <div class="triphead2">
+      <div class="triphead2-top">
+        <button class="trip-back-icon" onclick="currentTripId=null;archiveMode=false;render()" aria-label="여행 목록으로 돌아가기" title="여행 목록으로 돌아가기">‹</button>
+        <div class="trip-meta2"><h2>${esc(t.name)}</h2><div class="meta">${esc(t.country||'')} ${esc(t.city||'')} · ${fmt(t.start)} → ${fmt(t.end)} · ${tp20NightCount(t.start,t.end)}박 ${tp20NightCount(t.start,t.end)+1}일 · ${esc(String(t.people||1))}명</div></div>
+        <button class="trip-edit-icon" onclick="openTripEditForm()" aria-label="여행 정보 수정" title="여행 정보 수정"><svg viewBox="0 0 24 24" fill="none"><path d="m4.5 19.5 3.8-.8L18.8 8.2a1.8 1.8 0 0 0 0-2.6l-.4-.4a1.8 1.8 0 0 0-2.6 0L5.3 15.7l-.8 3.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m14.7 6.3 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <nav class="tab-grid" aria-label="여행 메뉴">
+      <button class="tab ${currentTab==='home'?'active':''}" onclick="setTab('home')">홈</button>
+      <button class="tab ${currentTab==='plan'?'active':''}" onclick="setTab('plan')">일정</button>
+      <button class="tab ${currentTab==='pool'?'active':''}" onclick="setTab('pool')">가고 싶은 곳</button>
+      <button class="tab ${currentTab==='flight'?'active':''}" onclick="setTab('flight')">항공</button>
+      <button class="tab ${currentTab==='hotel'?'active':''}" onclick="setTab('hotel')">숙소</button>
+      <button class="tab ${currentTab==='packing'?'active':''}" onclick="setTab('packing')">준비물</button>
+      <button class="tab ${currentTab==='expense'?'active':''}" onclick="setTab('expense')">정산</button>
+    </nav>
+    ${currentTab==='expense'?tp23ExpenseSettingsStrip(t):''}<section id="tabContent"></section>
+  </section>`;
   $('#fab').innerHTML='';renderTab();
 }
 </script>
