@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket v28</title>
+<title>Trip Pocket Cloud v31</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -675,11 +675,116 @@ textarea{min-height:86px;resize:vertical}
   .exp-currency-totals{justify-content:flex-start !important;}
 }
 
+
+/* ===== Supabase cloud sync v30 ===== */
+.cloud-top-btn{
+  position:relative;width:40px;height:40px;min-width:40px;padding:0;border:1px solid #d7e5f6;
+  background:#fff;color:var(--navy);border-radius:13px;display:inline-flex;align-items:center;
+  justify-content:center;box-shadow:0 3px 10px rgba(31,75,126,.06);cursor:pointer
+}
+.cloud-top-btn svg{width:21px;height:21px;display:block}
+.cloud-status-dot{position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-radius:50%;background:#b8c4d2;border:2px solid #fff}
+.cloud-status-dot.online{background:#32b875}.cloud-status-dot.syncing{background:#f1b84b}.cloud-status-dot.error{background:#df5b63}
+.cloud-back{position:fixed;inset:0;background:rgba(12,28,49,.50);z-index:190;display:none;align-items:center;justify-content:center;padding:18px}
+.cloud-back.show{display:flex}
+.cloud-modal{width:min(100%,500px);max-height:88vh;overflow:auto;background:#fff;border-radius:24px;padding:18px;box-shadow:0 20px 60px rgba(20,40,70,.24)}
+.cloud-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.cloud-modal-title{font-size:20px;font-weight:900;color:var(--navy)}
+.cloud-modal-sub{font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px}
+.cloud-card{border:1px solid var(--line);border-radius:18px;background:#fbfdff;padding:14px;margin-bottom:10px}
+.cloud-card:last-child{margin-bottom:0}
+.cloud-card-title{font-size:14px;font-weight:900;color:var(--navy);margin-bottom:9px}
+.cloud-status-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cloud-user{min-width:0}.cloud-user b{display:block;font-size:14px;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.cloud-user .small{margin-top:3px}
+.cloud-badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#e7f6ee;color:#2d8a5e;font-size:10px;font-weight:900;white-space:nowrap}
+.cloud-badge.off{background:#f0f3f7;color:#7c8b9d}.cloud-badge.warn{background:#fff2d6;color:#9d721d}
+.cloud-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cloud-btn{border:0;border-radius:13px;padding:11px 12px;font-size:12px;font-weight:900;background:#e8f2ff;color:var(--navy);cursor:pointer}
+.cloud-btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
+.cloud-btn.gray{background:#f0f3f7;color:var(--ink)}
+.cloud-btn.danger{background:#fdecec;color:#b34f55}
+.cloud-btn:disabled{opacity:.5;cursor:not-allowed}
+.cloud-field{margin-bottom:10px}.cloud-field:last-child{margin-bottom:0}
+.cloud-field label{font-size:11px;color:var(--muted);margin-bottom:5px}
+.cloud-field input,.cloud-field select{height:42px;border-radius:12px;font-size:13px}
+.cloud-note{font-size:10px;color:var(--muted);line-height:1.55;margin-top:8px}
+.cloud-alert{border-radius:13px;padding:10px 11px;background:#fff3d9;color:#89651f;font-size:11px;line-height:1.5;margin-bottom:10px}
+.cloud-alert.good{background:#e7f6ee;color:#2d7d58}.cloud-alert.error{background:#fdeaea;color:#a94e54}
+.cloud-members{display:grid;gap:6px;margin-top:10px}
+.cloud-member{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;background:#fff;border:1px solid #e7eef7;border-radius:12px}
+.cloud-member-email{font-size:12px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cloud-member button{border:0;border-radius:9px;background:#fdecec;color:#ad5157;padding:6px 8px;font-size:10px;font-weight:900}
+.cloud-sync-log{font-size:10px;color:var(--muted);line-height:1.5;margin-top:7px}
+@media(max-width:520px){.cloud-grid{grid-template-columns:1fr}.backup-top-btn{padding:0 10px}.header-actions{gap:6px}}
+
+
+/* ===== v31 app-like auth + trip delete ===== */
+.cloud-auth-hero{
+  padding:20px 16px 18px;border-radius:22px;
+  background:linear-gradient(145deg,#eaf4ff 0%,#f8fbff 55%,#eef7ff 100%);
+  border:1px solid #dceafb;margin-bottom:14px;text-align:center
+}
+.cloud-auth-icon{
+  width:54px;height:54px;margin:0 auto 12px;border-radius:18px;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;
+  display:grid;place-items:center;box-shadow:0 10px 24px rgba(43,120,205,.20)
+}
+.cloud-auth-icon svg{width:29px;height:29px}
+.cloud-auth-title{font-size:21px;font-weight:900;color:var(--navy);letter-spacing:-.03em}
+.cloud-auth-copy{font-size:11px;color:var(--muted);line-height:1.55;margin-top:7px}
+.cloud-auth-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;
+  background:#eef2f6;border-radius:15px;margin-bottom:14px
+}
+.cloud-auth-tab{
+  border:0;border-radius:12px;background:transparent;padding:10px 8px;
+  font-size:12px;font-weight:900;color:#8b96a5;cursor:pointer
+}
+.cloud-auth-tab.active{background:#fff;color:var(--navy);box-shadow:0 3px 10px rgba(30,65,110,.08)}
+.cloud-auth-form{padding:2px 2px 0}
+.cloud-auth-form .cloud-field{margin-bottom:11px}
+.cloud-auth-form .cloud-field label{font-size:11px;font-weight:900;color:var(--navy)}
+.cloud-auth-form .cloud-field input{
+  height:46px;border-radius:14px;background:#fff;border:1px solid #dce6f2;
+  padding:0 14px;font-size:14px
+}
+.cloud-auth-main{
+  width:100%;height:48px;border:0;border-radius:15px;margin-top:3px;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;
+  font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 18px rgba(43,120,205,.18)
+}
+.cloud-auth-main:disabled{opacity:.55}
+.cloud-auth-switch{text-align:center;font-size:11px;color:var(--muted);margin-top:12px}
+.cloud-auth-switch button{border:0;background:transparent;color:var(--blue);font-weight:900;padding:0 3px;cursor:pointer}
+.cloud-auth-foot{
+  display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:11px 12px;
+  border-radius:14px;background:#f6f8fb;color:var(--muted);font-size:10px;line-height:1.5
+}
+.cloud-auth-foot svg{width:15px;height:15px;flex:0 0 auto;margin-top:1px;color:var(--blue)}
+
+.trip-card{position:relative}
+.trip-delete-btn{
+  position:absolute;right:10px;top:10px;z-index:5;width:34px;height:34px;
+  border:1px solid rgba(255,255,255,.62);border-radius:12px;
+  background:rgba(255,255,255,.90);color:#ad5157;display:grid;place-items:center;
+  cursor:pointer;box-shadow:0 4px 12px rgba(22,46,78,.10);backdrop-filter:blur(5px)
+}
+.trip-delete-btn:hover{background:#fff0f0}
+.trip-delete-btn svg{width:17px;height:17px}
+.trip-delete-confirm{
+  padding:4px 0 0;font-size:11px;color:var(--muted);line-height:1.55
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header class="topbar"><div class="brand" id="brandBtn">Trip Pocket</div><div class="header-actions"><button class="backup-top-btn" id="backupBtn" type="button">데이터 백업</button><button class="iconbtn settings-large" id="settingsBtn" type="button" aria-label="설정"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13.5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.4-2.5 1a8.4 8.4 0 0 0-2.6-1.5L14 2.5h-4L9.7 5A8.4 8.4 0 0 0 7 6.6l-2.5-1-2 3.4 2 1.5A7.7 7.7 0 0 0 4.4 12c0 .5 0 1 .1 1.5l-2 1.5 2 3.4 2.5-1a8.4 8.4 0 0 0 2.6 1.5l.4 2.6h4l.4-2.6a8.4 8.4 0 0 0 2.6-1.5l2.5 1 2-3.4-2.1-1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button></div></header>
+<header class="topbar"><div class="brand" id="brandBtn">Trip Pocket</div><div class="header-actions">
+<button class="cloud-top-btn" id="cloudBtn" type="button" aria-label="공유 저장소" title="공유 저장소">
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.4 18.2h9.1a4.1 4.1 0 0 0 .6-8.16A5.7 5.7 0 0 0 6.38 8.5 4.86 4.86 0 0 0 7.4 18.2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span class="cloud-status-dot" id="cloudStatusDot"></span></button>
+<button class="backup-top-btn" id="backupBtn" type="button">데이터 백업</button><button class="iconbtn settings-large" id="settingsBtn" type="button" aria-label="설정"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13.5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.4-2.5 1a8.4 8.4 0 0 0-2.6-1.5L14 2.5h-4L9.7 5A8.4 8.4 0 0 0 7 6.6l-2.5-1-2 3.4 2 1.5A7.7 7.7 0 0 0 4.4 12c0 .5 0 1 .1 1.5l-2 1.5 2 3.4 2.5-1a8.4 8.4 0 0 0 2.6 1.5l.4 2.6h4l.4-2.6a8.4 8.4 0 0 0 2.6-1.5l2.5 1 2-3.4-2.1-1.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button></div></header>
 <main id="view"></main>
 </div>
 <div class="fab" id="fab"></div>
@@ -702,6 +807,20 @@ textarea{min-height:86px;resize:vertical}
 </div>
 
 <input type="file" id="tripImportInput" accept="application/json,.json" style="display:none" onchange="handleTripImport(event)">
+
+<div class="cloud-back" id="cloudBack">
+  <div class="cloud-modal">
+    <div class="cloud-modal-head">
+      <div>
+        <div class="cloud-modal-title">공유 저장소</div>
+        <div class="cloud-modal-sub" id="cloudModalSub">Supabase에 로그인하면 여행을 함께 사용할 수 있어요.</div>
+      </div>
+      <button class="backup-close" id="cloudCloseBtn" type="button">×</button>
+    </div>
+    <div id="cloudModalBody"></div>
+  </div>
+</div>
+
 <div class="mapback" id="mapBack">
   <div class="mapmodal">
     <div class="maphead"><div><div class="maphead-title" id="mapTitle">그룹 지도</div><div class="maphead-sub" id="mapSub"></div></div><button class="mapclose" onclick="closeGroupMap()">×</button></div>
@@ -710,14 +829,18 @@ textarea{min-height:86px;resize:vertical}
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const KEY='tripPocket_blue_v28';
-const old=localStorage.getItem('tripPocket_blue_v27')||localStorage.getItem('tripPocket_blue_v26')||localStorage.getItem('tripPocket_blue_v25')||localStorage.getItem('tripPocket_blue_v24')||localStorage.getItem('tripPocket_blue_v23')||localStorage.getItem('tripPocket_blue_v21')||localStorage.getItem('tripPocket_blue_v20')||localStorage.getItem('tripPocket_blue_v19')||localStorage.getItem('tripPocket_blue_v18')||localStorage.getItem('tripPocket_blue_v17')||localStorage.getItem('tripPocket_blue_v16')||localStorage.getItem('tripPocket_blue_v15')||localStorage.getItem('tripPocket_blue_v14')||localStorage.getItem('tripPocket_blue_v13')||localStorage.getItem('tripPocket_blue_v12')||localStorage.getItem('tripPocket_blue_v11')||localStorage.getItem('tripPocket_blue_v10')||localStorage.getItem('tripPocket_blue_v9')||localStorage.getItem('tripPocket_blue_v8')||localStorage.getItem('tripPocket_blue_v7')||localStorage.getItem('tripPocket_blue_v6')||localStorage.getItem('tripPocket_blue_v5')||localStorage.getItem('tripPocket_blue_v4')||localStorage.getItem('tripPocket_blue_v3')||localStorage.getItem('tripPocket_v1');
+const KEY='tripPocket_blue_cloud_v30';
+const old=localStorage.getItem('tripPocket_blue_v28')||localStorage.getItem('tripPocket_blue_v27')||localStorage.getItem('tripPocket_blue_v26')||localStorage.getItem('tripPocket_blue_v25')||localStorage.getItem('tripPocket_blue_v24')||localStorage.getItem('tripPocket_blue_v23')||localStorage.getItem('tripPocket_blue_v21')||localStorage.getItem('tripPocket_blue_v20')||localStorage.getItem('tripPocket_blue_v19')||localStorage.getItem('tripPocket_blue_v18')||localStorage.getItem('tripPocket_blue_v17')||localStorage.getItem('tripPocket_blue_v16')||localStorage.getItem('tripPocket_blue_v15')||localStorage.getItem('tripPocket_blue_v14')||localStorage.getItem('tripPocket_blue_v13')||localStorage.getItem('tripPocket_blue_v12')||localStorage.getItem('tripPocket_blue_v11')||localStorage.getItem('tripPocket_blue_v10')||localStorage.getItem('tripPocket_blue_v9')||localStorage.getItem('tripPocket_blue_v8')||localStorage.getItem('tripPocket_blue_v7')||localStorage.getItem('tripPocket_blue_v6')||localStorage.getItem('tripPocket_blue_v5')||localStorage.getItem('tripPocket_blue_v4')||localStorage.getItem('tripPocket_blue_v3')||localStorage.getItem('tripPocket_v1');
 let state=JSON.parse(localStorage.getItem(KEY)||old||'{"trips":[]}');
 let currentTripId=null,currentTab='home',mapsLoading=false,pendingPlaceDraft=null,editingPlanId=null,editingPoolId=null,dragPlanId=null,dragPoolId=null,archiveMode=false,poolView='all',poolCategory='전체',groupViewMode='distance',archiveCountry='전체',archiveCity='전체',archiveCategory='전체';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(state));
+  if(window.tpCloudQueueSync) window.tpCloudQueueSync();
+}
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ko-KR',{month:'short',day:'numeric',weekday:'short'}):'';
 const nights=(a,b)=>Math.max(0,Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000));
@@ -2934,6 +3057,472 @@ function tp28FetchRateWithTodayFallback(date,currency,mode,manualInput){
 tp20FetchRateFor = tp28FetchRateWithTodayFallback;
 
 if(typeof tp27ClearRateCache==='function') tp27ClearRateCache();
+</script>
+
+
+<script>
+/* ===== Trip Pocket Supabase shared storage v30 ===== */
+const TP_SUPABASE_URL='https://ylpgfhgjbwylqpximjvo.supabase.co';
+const TP_SUPABASE_PUBLISHABLE_KEY='sb_publishable_K8dmOuN7YAv2tt3BvAUwLA_EntXrrrv';
+const TP_CLOUD_MIGRATED_KEY='tripPocket_supabase_migrated_v1';
+
+let tpSb=null;
+let tpCloudSession=null;
+let tpCloudRealtime=null;
+let tpCloudSyncTimer=null;
+let tpCloudReadyForAutoSync=false;
+let tpCloudApplyingRemote=false;
+let tpCloudSyncing=false;
+let tpCloudLastMessage='아직 연결하지 않았어요.';
+let tpCloudLastError='';
+const tpCloudBaseline=new Map();
+const tpCloudMeta=new Map();
+
+function tpCloudJson(v){try{return JSON.stringify(v)}catch(_){return ''}}
+function tpCloudSetDot(mode='off'){
+  const dot=document.getElementById('cloudStatusDot');
+  if(!dot)return;
+  dot.className='cloud-status-dot'+(mode==='online'?' online':mode==='syncing'?' syncing':mode==='error'?' error':'');
+}
+function tpCloudUpdateButton(){
+  if(tpCloudSyncing)tpCloudSetDot('syncing');
+  else if(tpCloudLastError)tpCloudSetDot('error');
+  else if(tpCloudSession)tpCloudSetDot('online');
+  else tpCloudSetDot('off');
+}
+function tpCloudSetStatus(message,{error=false}={}){
+  tpCloudLastMessage=message||'';
+  tpCloudLastError=error?String(message||'오류'):'';
+  tpCloudUpdateButton();
+  if(document.getElementById('cloudBack')?.classList.contains('show'))tpCloudRenderModal();
+}
+function tpCloudSafeTrip(t){
+  const copy=JSON.parse(JSON.stringify(t));
+  normalizeTrip(copy);
+  return copy;
+}
+function tpCloudStoreLocalOnly(){
+  localStorage.setItem(KEY,JSON.stringify(state));
+}
+function tpCloudCurrentUser(){return tpCloudSession?.user||null}
+function tpCloudIsMigrated(){return localStorage.getItem(TP_CLOUD_MIGRATED_KEY)==='1'}
+function tpCloudMarkMigrated(){localStorage.setItem(TP_CLOUD_MIGRATED_KEY,'1')}
+
+window.tpCloudQueueSync=function(){
+  if(tpCloudApplyingRemote || !tpCloudSession || !tpCloudReadyForAutoSync)return;
+  clearTimeout(tpCloudSyncTimer);
+  tpCloudSyncTimer=setTimeout(()=>tpCloudSyncDirtyTrips(),700);
+};
+
+async function tpCloudSyncOne(t){
+  if(!tpCloudSession)return;
+  const data=tpCloudSafeTrip(t);
+  const snap=tpCloudJson(data);
+  if(tpCloudBaseline.get(t.id)===snap)return;
+
+  const {data:existing,error:readErr}=await tpSb.from('trips').select('id,owner_id').eq('id',t.id).maybeSingle();
+  if(readErr)throw readErr;
+
+  if(existing){
+    const {error}=await tpSb.from('trips').update({name:data.name||'',data}).eq('id',t.id);
+    if(error)throw error;
+    tpCloudMeta.set(t.id,{...(tpCloudMeta.get(t.id)||{}),owner_id:existing.owner_id});
+  }else{
+    const {data:created,error}=await tpSb.from('trips').insert({id:t.id,name:data.name||'',data}).select('id,owner_id,updated_at').single();
+    if(error)throw error;
+    if(created)tpCloudMeta.set(t.id,created);
+  }
+  tpCloudBaseline.set(t.id,snap);
+}
+async function tpCloudSyncDirtyTrips(){
+  if(!tpCloudSession || !tpCloudReadyForAutoSync || tpCloudSyncing)return;
+  tpCloudSyncing=true;tpCloudLastError='';tpCloudUpdateButton();
+  try{
+    let changed=0;
+    for(const t of state.trips||[]){
+      const snap=tpCloudJson(tpCloudSafeTrip(t));
+      if(tpCloudBaseline.get(t.id)!==snap){await tpCloudSyncOne(t);changed++}
+    }
+    tpCloudLastMessage=changed?`${changed}개 여행을 Supabase에 저장했어요.`:'모든 여행이 최신 상태예요.';
+  }catch(err){
+    console.error('Supabase sync failed',err);
+    tpCloudLastError=err?.message||String(err);
+    tpCloudLastMessage='동기화에 실패했어요.';
+  }finally{
+    tpCloudSyncing=false;tpCloudUpdateButton();
+    if(document.getElementById('cloudBack')?.classList.contains('show'))tpCloudRenderModal();
+  }
+}
+async function tpCloudUploadAllLocal(){
+  if(!tpCloudSession)return tpCloudSetStatus('먼저 로그인해주세요.',{error:true});
+  if(!(state.trips||[]).length)return tpCloudSetStatus('올릴 로컬 여행 데이터가 없습니다.');
+  const ok=confirm(`현재 브라우저의 여행 ${(state.trips||[]).length}개를 Supabase에 올릴까요?\n같은 여행 ID가 이미 있으면 현재 로컬 내용으로 업데이트됩니다.`);
+  if(!ok)return;
+  tpCloudSyncing=true;tpCloudLastError='';tpCloudUpdateButton();tpCloudRenderModal();
+  try{
+    for(const t of state.trips||[]){
+      tpCloudBaseline.delete(t.id);
+      await tpCloudSyncOne(t);
+    }
+    tpCloudMarkMigrated();
+    tpCloudReadyForAutoSync=true;
+    tpCloudLastMessage=`로컬 여행 ${(state.trips||[]).length}개를 Supabase에 올렸어요.`;
+    toast('Supabase 업로드 완료');
+  }catch(err){
+    console.error(err);
+    tpCloudLastError=err?.message||String(err);
+    tpCloudLastMessage='로컬 데이터 업로드에 실패했어요.';
+    alert('Supabase 업로드에 실패했습니다.\n\n'+(err?.message||err));
+  }finally{
+    tpCloudSyncing=false;tpCloudUpdateButton();tpCloudRenderModal();
+  }
+}
+async function tpCloudFetchRows(){
+  const {data,error}=await tpSb.from('trips').select('id,owner_id,name,data,updated_at').order('updated_at',{ascending:true});
+  if(error)throw error;
+  return data||[];
+}
+async function tpCloudLoadRemote({manual=false}={}){
+  if(!tpCloudSession)return;
+  tpCloudSyncing=true;tpCloudLastError='';tpCloudUpdateButton();
+  try{
+    const hadLocal=(state.trips||[]).length>0;
+    const rows=await tpCloudFetchRows();
+
+    rows.forEach(r=>{
+      if(r?.data){
+        normalizeTrip(r.data);
+        tpCloudBaseline.set(r.id,tpCloudJson(tpCloudSafeTrip(r.data)));
+        tpCloudMeta.set(r.id,{owner_id:r.owner_id,updated_at:r.updated_at,name:r.name});
+      }
+    });
+
+    if(!rows.length && hadLocal && !tpCloudIsMigrated()){
+      tpCloudReadyForAutoSync=false;
+      tpCloudLastMessage='기존 로컬 여행이 있어요. 「로컬 데이터 올리기」를 눌러 처음 한 번 업로드해주세요.';
+      return;
+    }
+
+    const map=new Map((state.trips||[]).map(t=>[t.id,t]));
+    rows.forEach(r=>map.set(r.id,r.data));
+    state.trips=[...map.values()].map(normalizeTrip);
+    tpCloudApplyingRemote=true;
+    tpCloudStoreLocalOnly();
+    tpCloudApplyingRemote=false;
+
+    if(!hadLocal || tpCloudIsMigrated() || rows.length){
+      tpCloudReadyForAutoSync=true;
+    }
+    if(!tpCloudIsMigrated() && hadLocal && rows.length){
+      const remoteIds=new Set(rows.map(r=>r.id));
+      const localOnly=(state.trips||[]).filter(t=>!remoteIds.has(t.id)).length;
+      if(localOnly){
+        tpCloudReadyForAutoSync=false;
+        tpCloudLastMessage=`Supabase 데이터를 불러왔어요. 로컬에만 있는 여행 ${localOnly}개가 있어 「로컬 데이터 올리기」가 필요합니다.`;
+      }else{
+        tpCloudMarkMigrated();
+        tpCloudReadyForAutoSync=true;
+        tpCloudLastMessage='Supabase 데이터를 불러왔어요.';
+      }
+    }else{
+      tpCloudLastMessage=manual?'Supabase에서 최신 데이터를 불러왔어요.':'Supabase 연결 완료';
+    }
+    render();
+  }catch(err){
+    console.error('Supabase load failed',err);
+    tpCloudLastError=err?.message||String(err);
+    tpCloudLastMessage='Supabase 데이터를 불러오지 못했어요.';
+  }finally{
+    tpCloudSyncing=false;tpCloudUpdateButton();
+    if(document.getElementById('cloudBack')?.classList.contains('show'))tpCloudRenderModal();
+  }
+}
+function tpCloudApplyRemoteRow(row){
+  if(!row?.id||!row?.data)return;
+  const incoming=row.data;normalizeTrip(incoming);
+  const snap=tpCloudJson(tpCloudSafeTrip(incoming));
+  if(tpCloudBaseline.get(row.id)===snap)return;
+  tpCloudBaseline.set(row.id,snap);
+  tpCloudMeta.set(row.id,{owner_id:row.owner_id,updated_at:row.updated_at,name:row.name});
+  const idx=(state.trips||[]).findIndex(t=>t.id===row.id);
+  if(idx>=0)state.trips[idx]=incoming;else state.trips.push(incoming);
+  tpCloudApplyingRemote=true;tpCloudStoreLocalOnly();tpCloudApplyingRemote=false;
+  render();
+  toast('공유 여행이 업데이트됐어요');
+}
+function tpCloudSetupRealtime(){
+  if(!tpSb||!tpCloudSession)return;
+  if(tpCloudRealtime){tpSb.removeChannel(tpCloudRealtime);tpCloudRealtime=null}
+  tpCloudRealtime=tpSb.channel('trip-pocket-shared-trips')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'trips'},payload=>tpCloudApplyRemoteRow(payload.new))
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'trips'},payload=>tpCloudApplyRemoteRow(payload.new))
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'trips'},payload=>{
+      const id=payload.old?.id;if(!id)return;
+      state.trips=(state.trips||[]).filter(t=>t.id!==id);
+      tpCloudBaseline.delete(id);tpCloudMeta.delete(id);
+      if(currentTripId===id)currentTripId=null;
+      tpCloudApplyingRemote=true;tpCloudStoreLocalOnly();tpCloudApplyingRemote=false;render();
+    }).subscribe();
+}
+async function tpCloudHandleSession(session){
+  tpCloudSession=session||null;
+  tpCloudLastError='';
+  if(tpCloudSession){
+    tpCloudUpdateButton();
+    tpCloudSetupRealtime();
+    await tpCloudLoadRemote();
+  }else{
+    tpCloudReadyForAutoSync=false;
+    tpCloudBaseline.clear();tpCloudMeta.clear();
+    if(tpCloudRealtime&&tpSb){tpSb.removeChannel(tpCloudRealtime);tpCloudRealtime=null}
+    tpCloudLastMessage='로그인하면 여행을 Supabase에 저장하고 공유할 수 있어요.';
+    tpCloudUpdateButton();
+  }
+  if(document.getElementById('cloudBack')?.classList.contains('show'))tpCloudRenderModal();
+}
+async function tpCloudSignIn(){
+  const email=document.getElementById('cloudEmail')?.value.trim();
+  const password=document.getElementById('cloudPassword')?.value||'';
+  if(!email||!password)return alert('이메일과 비밀번호를 입력해주세요.');
+  const btn=document.getElementById('cloudSignInBtn');if(btn)btn.disabled=true;
+  const {error}=await tpSb.auth.signInWithPassword({email,password});
+  if(btn)btn.disabled=false;
+  if(error)alert('로그인 실패\n\n'+error.message);
+}
+async function tpCloudSignUp(){
+  const email=document.getElementById('cloudEmail')?.value.trim();
+  const password=document.getElementById('cloudPassword')?.value||'';
+  if(!email||!password)return alert('이메일과 비밀번호를 입력해주세요.');
+  if(password.length<6)return alert('비밀번호는 6자 이상으로 입력해주세요.');
+  const {data,error}=await tpSb.auth.signUp({
+    email,password,
+    options:{emailRedirectTo:'https://saeurian.github.io/trippocket/'}
+  });
+  if(error)return alert('회원가입 실패\n\n'+error.message);
+  if(data?.session)toast('회원가입 및 로그인 완료');
+  else alert('회원가입 요청을 보냈습니다.\n이메일 인증 후 로그인해주세요.');
+}
+async function tpCloudSignOut(){
+  if(!confirm('Supabase에서 로그아웃할까요?\n브라우저의 로컬 데이터는 그대로 남습니다.'))return;
+  const {error}=await tpSb.auth.signOut();
+  if(error)alert(error.message);
+}
+async function tpCloudRefreshMembers(){
+  const tripId=document.getElementById('cloudShareTrip')?.value;
+  const box=document.getElementById('cloudMemberList');
+  if(!box||!tripId)return;
+  box.innerHTML='<div class="cloud-note">멤버 목록을 불러오는 중…</div>';
+  const [{data:members,error},{data:row,error:tripErr}]=await Promise.all([
+    tpSb.from('trip_members').select('user_id,email,added_at').eq('trip_id',tripId).order('added_at',{ascending:true}),
+    tpSb.from('trips').select('owner_id').eq('id',tripId).single()
+  ]);
+  if(error||tripErr){
+    box.innerHTML=`<div class="cloud-alert error">${esc((error||tripErr)?.message||'멤버 조회 실패')}</div>`;return;
+  }
+  tpCloudMeta.set(tripId,{...(tpCloudMeta.get(tripId)||{}),owner_id:row.owner_id});
+  const isOwner=row.owner_id===tpCloudSession?.user?.id;
+  const arr=members||[];
+  box.innerHTML=arr.length?arr.map(m=>`<div class="cloud-member"><div class="cloud-member-email">${esc(m.email)}</div>${isOwner?`<button onclick="tpCloudRemoveMember('${esc(tripId)}','${esc(m.user_id)}')">삭제</button>`:''}</div>`).join(''):'<div class="cloud-note">아직 추가된 공유 멤버가 없습니다.</div>';
+  const addArea=document.getElementById('cloudAddMemberArea');
+  if(addArea)addArea.style.display=isOwner?'block':'none';
+}
+async function tpCloudAddMember(){
+  const tripId=document.getElementById('cloudShareTrip')?.value;
+  const email=document.getElementById('cloudMemberEmail')?.value.trim();
+  if(!tripId||!email)return alert('여행과 이메일을 확인해주세요.');
+  const {error}=await tpSb.rpc('add_trip_member_by_email',{p_trip_id:tripId,p_email:email});
+  if(error){
+    const msg=error.message||String(error);
+    if(msg.includes('User not found'))return alert('해당 이메일 사용자가 아직 Supabase에 없습니다.\n동행자가 먼저 Trip Pocket에서 회원가입하고 이메일 인증을 완료해야 합니다.');
+    return alert('공유 추가 실패\n\n'+msg);
+  }
+  document.getElementById('cloudMemberEmail').value='';
+  await tpCloudRefreshMembers();
+  toast('공유 멤버를 추가했어요');
+}
+async function tpCloudRemoveMember(tripId,userId){
+  if(!confirm('이 멤버의 여행 공유 권한을 삭제할까요?'))return;
+  const {error}=await tpSb.rpc('remove_trip_member',{p_trip_id:tripId,p_user_id:userId});
+  if(error)return alert('공유 삭제 실패\n\n'+error.message);
+  await tpCloudRefreshMembers();toast('공유 멤버를 삭제했어요');
+}
+function tpCloudRenderShareSection(){
+  const trips=state.trips||[];
+  if(!trips.length)return `<div class="cloud-card"><div class="cloud-card-title">여행 공유</div><div class="cloud-note">공유할 여행이 아직 없습니다.</div></div>`;
+  const selected=(currentTripId&&trips.some(t=>t.id===currentTripId))?currentTripId:trips[0].id;
+  setTimeout(()=>tpCloudRefreshMembers(),0);
+  return `<div class="cloud-card"><div class="cloud-card-title">여행 공유</div>
+    <div class="cloud-field"><label>공유할 여행</label><select id="cloudShareTrip" onchange="tpCloudRefreshMembers()">${trips.map(t=>`<option value="${esc(t.id)}" ${t.id===selected?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>
+    <div id="cloudAddMemberArea"><div class="cloud-grid"><div class="cloud-field" style="margin:0"><label>동행자 이메일</label><input id="cloudMemberEmail" type="email" placeholder="example@email.com"></div><button class="cloud-btn primary" style="align-self:end" onclick="tpCloudAddMember()">공유 추가</button></div><div class="cloud-note">동행자가 먼저 Trip Pocket에서 회원가입·이메일 인증을 완료해야 추가할 수 있어요.</div></div>
+    <div class="cloud-members" id="cloudMemberList"><div class="cloud-note">멤버 목록을 불러오는 중…</div></div>
+  </div>`;
+}
+function tpCloudRenderModal(){
+  const body=document.getElementById('cloudModalBody');if(!body)return;
+  const user=tpCloudCurrentUser();
+  if(!user){
+    body.innerHTML=`<div class="cloud-card"><div class="cloud-card-title">로그인 / 회원가입</div>
+      <div class="cloud-field"><label>이메일</label><input type="email" id="cloudEmail" autocomplete="email" placeholder="이메일"></div>
+      <div class="cloud-field"><label>비밀번호</label><input type="password" id="cloudPassword" autocomplete="current-password" placeholder="6자 이상"></div>
+      <div class="cloud-grid"><button class="cloud-btn primary" id="cloudSignInBtn" onclick="tpCloudSignIn()">로그인</button><button class="cloud-btn" onclick="tpCloudSignUp()">회원가입</button></div>
+      <div class="cloud-note">회원가입 후 이메일 인증이 필요한 경우 인증 메일의 링크를 누른 뒤 다시 로그인해주세요.</div></div>
+      <div class="cloud-card"><div class="cloud-note">로그인하기 전에도 현재 브라우저의 로컬 데이터는 그대로 사용할 수 있습니다.</div></div>`;
+    return;
+  }
+  const needsMigration=(state.trips||[]).length>0&&!tpCloudIsMigrated()&&!tpCloudReadyForAutoSync;
+  body.innerHTML=`<div class="cloud-card">
+    <div class="cloud-status-row"><div class="cloud-user"><b>${esc(user.email||'로그인됨')}</b><div class="small muted">${esc(tpCloudLastMessage)}</div></div><span class="cloud-badge ${tpCloudLastError?'warn':''}">${tpCloudSyncing?'동기화 중':tpCloudLastError?'확인 필요':'연결됨'}</span></div>
+    ${tpCloudLastError?`<div class="cloud-alert error" style="margin-top:10px">${esc(tpCloudLastError)}</div>`:''}
+    ${needsMigration?`<div class="cloud-alert" style="margin-top:10px">기존 로컬 여행 데이터가 있습니다. 처음 한 번 「로컬 데이터 올리기」를 실행해주세요.</div>`:''}
+    <div class="cloud-grid" style="margin-top:10px"><button class="cloud-btn primary" onclick="tpCloudLoadRemote({manual:true})">최신 데이터 불러오기</button><button class="cloud-btn" onclick="tpCloudUploadAllLocal()">로컬 데이터 올리기</button></div>
+    <div class="cloud-grid" style="margin-top:8px"><button class="cloud-btn gray" onclick="tpCloudSyncDirtyTrips()">지금 저장</button><button class="cloud-btn danger" onclick="tpCloudSignOut()">로그아웃</button></div>
+    <div class="cloud-sync-log">Supabase 연결 후 변경사항은 자동 저장됩니다. JSON 백업 기능도 그대로 사용할 수 있어요.</div>
+  </div>${tpCloudRenderShareSection()}`;
+}
+function tpOpenCloudModal(){
+  document.getElementById('cloudBack')?.classList.add('show');
+  tpCloudRenderModal();
+}
+function tpCloseCloudModal(){document.getElementById('cloudBack')?.classList.remove('show')}
+
+async function tpCloudInit(){
+  try{
+    if(!window.supabase?.createClient)throw new Error('Supabase 라이브러리를 불러오지 못했습니다.');
+    tpSb=window.supabase.createClient(TP_SUPABASE_URL,TP_SUPABASE_PUBLISHABLE_KEY,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+    });
+    tpSb.auth.onAuthStateChange((event,session)=>{
+      setTimeout(()=>tpCloudHandleSession(session),0);
+    });
+    const {data,error}=await tpSb.auth.getSession();
+    if(error)throw error;
+    await tpCloudHandleSession(data?.session||null);
+  }catch(err){
+    console.error('Supabase init failed',err);
+    tpCloudLastError=err?.message||String(err);
+    tpCloudLastMessage='Supabase 초기화 실패';
+    tpCloudUpdateButton();
+  }
+}
+
+document.getElementById('cloudBtn')?.addEventListener('click',tpOpenCloudModal);
+document.getElementById('cloudCloseBtn')?.addEventListener('click',tpCloseCloudModal);
+document.getElementById('cloudBack')?.addEventListener('click',e=>{if(e.target===e.currentTarget)tpCloseCloudModal()});
+tpCloudInit();
+</script>
+
+
+<script>
+/* ===== v31 auth screen + trip delete ===== */
+let cloudAuthMode='signin';
+
+function tpCloudSetAuthMode(mode){
+  cloudAuthMode=mode==='signup'?'signup':'signin';
+  tpCloudRenderModal();
+}
+function tpCloudTogglePassword(){
+  const el=document.getElementById('cloudPassword');
+  if(!el)return;
+  el.type=el.type==='password'?'text':'password';
+}
+function tpCloudRenderAuthScreen(){
+  const signup=cloudAuthMode==='signup';
+  return `<div class="cloud-auth-hero">
+    <div class="cloud-auth-icon">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.4 18.2h9.1a4.1 4.1 0 0 0 .6-8.16A5.7 5.7 0 0 0 6.38 8.5 4.86 4.86 0 0 0 7.4 18.2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cloud-auth-title">같이 만드는 여행, 한 곳에</div>
+    <div class="cloud-auth-copy">로그인하면 여행·일정·준비물·정산이 Supabase에 저장되고<br>공유한 사람과 같은 여행을 함께 사용할 수 있어요.</div>
+  </div>
+  <div class="cloud-auth-tabs">
+    <button class="cloud-auth-tab ${!signup?'active':''}" onclick="tpCloudSetAuthMode('signin')">로그인</button>
+    <button class="cloud-auth-tab ${signup?'active':''}" onclick="tpCloudSetAuthMode('signup')">처음이에요</button>
+  </div>
+  <div class="cloud-auth-form">
+    <div class="cloud-field"><label>이메일</label><input type="email" id="cloudEmail" autocomplete="email" placeholder="name@example.com"></div>
+    <div class="cloud-field"><label>비밀번호</label><input type="password" id="cloudPassword" autocomplete="${signup?'new-password':'current-password'}" placeholder="${signup?'6자 이상으로 만들어주세요':'비밀번호를 입력해주세요'}"></div>
+    <button class="cloud-auth-main" id="cloudSignInBtn" onclick="${signup?'tpCloudSignUp()':'tpCloudSignIn()'}">${signup?'Trip Pocket 시작하기':'로그인'}</button>
+    <div class="cloud-auth-switch">${signup?'이미 계정이 있으신가요?':'처음 사용하시나요?'} <button onclick="tpCloudSetAuthMode('${signup?'signin':'signup'}')">${signup?'로그인':'계정 만들기'}</button></div>
+    <div class="cloud-auth-foot">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5.5 5.5v5.4c0 4.2 2.8 8.1 6.5 9.1 3.7-1 6.5-4.9 6.5-9.1V5.5L12 3Z" stroke="currentColor" stroke-width="1.7"/></svg>
+      <div>로그인 전에도 이 브라우저의 기존 여행 데이터는 그대로 남아 있습니다. 로그인 후 처음 한 번만 ‘로컬 데이터 올리기’를 실행하면 됩니다.</div>
+    </div>
+  </div>`;
+}
+
+const tpCloudRenderModalV30=tpCloudRenderModal;
+tpCloudRenderModal=function(){
+  const body=document.getElementById('cloudModalBody');if(!body)return;
+  const user=tpCloudCurrentUser();
+  if(!user){
+    const sub=document.getElementById('cloudModalSub');
+    if(sub)sub.textContent='내 여행을 안전하게 저장하고 함께 써보세요.';
+    body.innerHTML=tpCloudRenderAuthScreen();
+    return;
+  }
+  const sub=document.getElementById('cloudModalSub');
+  if(sub)sub.textContent='공유 저장소 연결 상태와 여행 공유를 관리할 수 있어요.';
+  tpCloudRenderModalV30();
+};
+
+async function tpDeleteTrip(id,event){
+  if(event){event.preventDefault();event.stopPropagation()}
+  const t=(state.trips||[]).find(x=>x.id===id);
+  if(!t)return;
+
+  let remoteRow=null;
+  if(tpCloudSession && tpSb){
+    try{
+      const {data,error}=await tpSb.from('trips').select('id,owner_id').eq('id',id).maybeSingle();
+      if(error)throw error;
+      remoteRow=data||null;
+    }catch(err){
+      const proceed=confirm(`Supabase 연결 상태를 확인하지 못했습니다.\n\n${err?.message||err}\n\n로컬에서만 여행을 삭제할까요?`);
+      if(!proceed)return;
+    }
+  }
+
+  if(remoteRow && remoteRow.owner_id!==tpCloudSession?.user?.id){
+    alert('공유받은 여행은 소유자만 삭제할 수 있어요.\n여행 소유자에게 삭제를 요청해주세요.');
+    return;
+  }
+
+  const cloudText=remoteRow?'Supabase 공유 저장소에서도 함께 삭제됩니다.':'현재 브라우저에서 삭제됩니다.';
+  const ok=confirm(`「${t.name}」 여행을 삭제할까요?\n\n일정, 가고 싶은 곳, 준비물, 정산 등 여행 안의 모든 내용이 삭제됩니다.\n${cloudText}\n\n이 작업은 되돌릴 수 없습니다.`);
+  if(!ok)return;
+
+  if(remoteRow && tpSb){
+    const {data,error}=await tpSb.from('trips').delete().eq('id',id).select('id');
+    if(error){
+      alert('Supabase에서 여행을 삭제하지 못했습니다.\n\n'+error.message);
+      return;
+    }
+    if(!data?.length){
+      alert('여행 삭제 권한이 없거나 이미 삭제된 여행입니다.');
+      return;
+    }
+  }
+
+  tpCloudApplyingRemote=true;
+  state.trips=(state.trips||[]).filter(x=>x.id!==id);
+  if(currentTripId===id)currentTripId=null;
+  tpCloudBaseline.delete(id);
+  tpCloudMeta.delete(id);
+  localStorage.setItem(KEY,JSON.stringify(state));
+  tpCloudApplyingRemote=false;
+  render();
+  toast('여행을 삭제했어요');
+}
+
+function tripCard(t){
+  return `<article class="card trip-card" onclick="openTrip('${t.id}')">
+    <button class="trip-delete-btn" type="button" onclick="tpDeleteTrip('${t.id}',event)" aria-label="여행 삭제" title="여행 삭제">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7h15M9.5 4.5h5M8 10.5v6M12 10.5v6M16 10.5v6M6.5 7l.8 12h9.4l.8-12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="trip-cover"><div class="small" style="opacity:.82">${esc(t.start)} — ${esc(t.end)}</div><div class="trip-dest">${esc(t.destination)}</div></div>
+    <div class="trip-body"><div class="row between"><div><b>${esc(t.name)}</b><div class="small muted" style="margin-top:5px">${fmt(t.start)} → ${fmt(t.end)}</div></div><div>›</div></div><div class="meta"><span class="pill">${nights(t.start,t.end)}박 ${tripDays(t.start,t.end)}일</span><span class="pill">가고 싶은 곳 ${(t.pool||[]).length}</span><span class="pill">일정 ${(t.plans||[]).length}</span></div></div>
+  </article>`;
+}
 </script>
 
 </body>
