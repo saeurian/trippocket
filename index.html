@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v32</title>
+<title>Trip Pocket Cloud v33</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -780,6 +780,10 @@ textarea{min-height:86px;resize:vertical}
 /* ===== v32 shared Google Maps key ===== */
 .api-note b{color:var(--navy)}
 
+
+/* ===== v33 Supabase-delivered Google Maps key ===== */
+.cloud-sync-log{line-height:1.6}
+
 </style>
 </head>
 <body>
@@ -957,7 +961,7 @@ function renderPool(){
   }else{
     body=renderPoolCards(t.pool.slice().sort((a,b)=>(a.createdAt??0)-(b.createdAt??0)));
   }
-  return `${!getApiKey()?`<div class="api-note"><b>Google Places 자동 검색이 꺼져 있습니다.</b><br>⚙︎에서 API 키를 넣으면 장소 선택과 스마트 이동시간 그룹이 정확해집니다.</div>`:''}<div class="section-title"><h3>가고 싶은 곳</h3><button class="addmini" onclick="openPoolForm()">＋ 장소 추가</button></div><div class="pool-summary"><span><b>${t.pool.length}곳</b> 등록</span><span>·</span><span>좌표 ${hasCoords}곳 확보</span></div>${viewTabs}${t.pool.length===0?`<div class="card empty">날짜와 시간은 정하지 말고<br>가고 싶은 장소부터 쌓아보세요.</div>`:body}`;
+  return `${!getApiKey()?`<div class="api-note"><b>Google Places 자동 검색이 아직 연결되지 않았습니다.</b><br>상단 구름 아이콘에서 로그인하면 공용 Google Maps가 자동 연결됩니다.</div>`:''}<div class="section-title"><h3>가고 싶은 곳</h3><button class="addmini" onclick="openPoolForm()">＋ 장소 추가</button></div><div class="pool-summary"><span><b>${t.pool.length}곳</b> 등록</span><span>·</span><span>좌표 ${hasCoords}곳 확보</span></div>${viewTabs}${t.pool.length===0?`<div class="card empty">날짜와 시간은 정하지 말고<br>가고 싶은 장소부터 쌓아보세요.</div>`:body}`;
 }
 function setPoolView(v){poolView=v;renderTab();if(v==='group'&&groupViewMode==='smart')ensureSmartGroups(trip(),false,true)}
 function setPoolCategory(c){poolCategory=c;renderTab()}
@@ -1299,7 +1303,7 @@ function deleteItem(type,id){if(!confirm('삭제할까요?'))return;trip()[type]
 function openPoolForm(id,draft=null,selectedPlace=null){
   const p=id?trip().pool.find(x=>x.id===id):null,base=draft||p;editingPoolId=id||null;
   if(selectedPlace)window._poolSelectedPlace=selectedPlace;else if(!draft)window._poolSelectedPlace=p?.googlePlaceId?{placeName:p.placeName,googlePlaceId:p.googlePlaceId,address:p.address,lat:p.lat,lng:p.lng,areaName:p.areaName,areaType:p.areaType,mapsUrl:p.mapsUrl,weekdayHours:p.weekdayHours,openingPeriods:p.openingPeriods,businessStatus:p.businessStatus}:null;
-  openSheet(`<h2>${p?'가고 싶은 곳 수정':'가고 싶은 곳 추가'}</h2><form id="poolForm"><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}" placeholder="예: Daikanyama T-SITE"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 없음</option><option value="true" ${base?.reserved?'selected':''}>예약함</option></select></div><div class="field"><label>메모</label><textarea name="memo" placeholder="먹고 싶은 메뉴, 쇼핑할 것 등">${esc(base?.memo||'')}</textarea></div><div class="inline-note">${window._poolSelectedPlace?.googlePlaceId?'Google 장소가 선택되어 있습니다. 내용을 확인한 뒤 저장을 눌러주세요.':getApiKey()?'장소검색으로 Google의 정확한 장소를 선택한 뒤 저장해주세요.':'API 키가 없으면 장소 검색 없이 입력한 정보만 저장됩니다.'}</div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button type="button" class="ghost" id="poolSearchBtn" ${getApiKey()?'':'disabled'}>장소검색</button><button type="submit" class="primary">저장</button></div></form>`);
+  openSheet(`<h2>${p?'가고 싶은 곳 수정':'가고 싶은 곳 추가'}</h2><form id="poolForm"><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}" placeholder="예: Daikanyama T-SITE"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 없음</option><option value="true" ${base?.reserved?'selected':''}>예약함</option></select></div><div class="field"><label>메모</label><textarea name="memo" placeholder="먹고 싶은 메뉴, 쇼핑할 것 등">${esc(base?.memo||'')}</textarea></div><div class="inline-note">${window._poolSelectedPlace?.googlePlaceId?'Google 장소가 선택되어 있습니다. 내용을 확인한 뒤 저장을 눌러주세요.':getApiKey()?'장소검색으로 Google의 정확한 장소를 선택한 뒤 저장해주세요.':'Google Maps가 아직 연결되지 않아 장소 검색 없이 입력한 정보만 저장됩니다.'}</div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button type="button" class="ghost" id="poolSearchBtn" ${getApiKey()?'':'disabled'}>장소검색</button><button type="submit" class="primary">저장</button></div></form>`);
   $('#poolSearchBtn').onclick=async()=>{const f=$('#poolForm'),d=Object.fromEntries(new FormData(f));d.reserved=d.reserved==='true';pendingPlaceDraft=d;const btn=$('#poolSearchBtn'),oldText=btn.textContent;btn.disabled=true;btn.textContent='검색 중…';try{const res=await searchPlaceCandidates(d.placeName);showPlaceCandidates(res,'poolSelect',p?.id||'')}catch(err){console.error('Places search error',err);showPlaceSearchError(err,'poolSelect',p?.id||'')}finally{btn.disabled=false;btn.textContent=oldText}};
   $('#poolForm').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));d.reserved=d.reserved==='true';if(window._poolSelectedPlace)Object.assign(d,window._poolSelectedPlace);savePoolBasic(d,p);window._poolSelectedPlace=null};
 }
@@ -1326,7 +1330,7 @@ function showPlaceCandidates(places,mode,editId){
 function showPlaceSearchError(err,mode,editId){
   window._candidateMode=mode;window._candidateEditId=editId;window._candidateDraft={...pendingPlaceDraft};
   const msg=errorText(err)||'Google Places 검색에 실패했습니다.';
-  $('#sheetContent').innerHTML=`<h2>장소 검색 오류</h2><div class="api-note"><b>Google 장소 검색을 불러오지 못했습니다.</b><br>${esc(msg)}</div><div class="inline-note">공용 Google Maps API가 연결되어 있습니다. 오류가 계속되면 Google Cloud의 웹사이트 제한과 Maps JavaScript API · Places API (New) · Routes API 활성화 상태를 확인해주세요.</div><div class="form-actions"><button type="button" class="ghost" onclick="returnToPlaceForm()">← 다시 입력</button><button type="button" class="primary" onclick="openSettings()">API 연결 확인</button></div>`;
+  $('#sheetContent').innerHTML=`<h2>장소 검색 오류</h2><div class="api-note"><b>Google 장소 검색을 불러오지 못했습니다.</b><br>${esc(msg)}</div><div class="inline-note">로그인 후 Supabase에서 공용 Google Maps 연결 정보를 불러옵니다. 오류가 계속되면 공유 저장소 로그인 상태와 Google Cloud 제한 설정을 확인해주세요.</div><div class="form-actions"><button type="button" class="ghost" onclick="returnToPlaceForm()">← 다시 입력</button><button type="button" class="primary" onclick="openSettings()">API 연결 확인</button></div>`;
 }
 function returnToPlaceForm(){
   const mode=window._candidateMode,id=window._candidateEditId||'',draft=window._candidateDraft||pendingPlaceDraft;
@@ -1499,19 +1503,36 @@ async function openGroupMap(mode='smart',clusterId=null){
   }
 }
 
-const TRIP_POCKET_GOOGLE_MAPS_KEY='AIzaSyApFzwoc6hKt2E1YbsY1nk_j3piQL2xvgg';
-function getApiKey(){return TRIP_POCKET_GOOGLE_MAPS_KEY}
+let tripPocketGoogleMapsKey='';
+let tripPocketGoogleMapsKeyState='signed_out';
+let tripPocketGoogleMapsKeyError='';
+function getApiKey(){return tripPocketGoogleMapsKey}
+function googleMapsConnectionLabel(){
+  if(getApiKey())return '공용 Google Maps API가 연결되어 있습니다.';
+  if(!tpCloudSession)return '공유 저장소 로그인 후 Google Maps가 자동 연결됩니다.';
+  if(tripPocketGoogleMapsKeyState==='loading')return 'Google Maps 연결 정보를 불러오는 중입니다.';
+  if(tripPocketGoogleMapsKeyState==='denied')return '이 계정에는 Google Maps 사용 권한이 없습니다.';
+  if(tripPocketGoogleMapsKeyState==='error')return 'Google Maps 연결 정보를 불러오지 못했습니다.';
+  return 'Google Maps 연결을 준비하고 있습니다.';
+}
 function openSettings(){
+  const connected=!!getApiKey();
   openSheet(`<h2>Google Maps 연결</h2>
-    <div class="api-note"><b>공용 Google Maps API가 연결되어 있습니다.</b><br>이 Trip Pocket 주소에서 장소 검색 · 지도 · 스마트 이동시간 기능을 바로 사용할 수 있어요.</div>
+    <div class="api-note"><b>${esc(googleMapsConnectionLabel())}</b><br>${connected?'장소 검색 · 지도 · 스마트 이동시간 기능을 바로 사용할 수 있어요.':'상단 구름 아이콘에서 공유 저장소 로그인 상태를 확인해주세요.'}</div>
     <div class="inline-note">사용 API: Maps JavaScript API · Places API (New) · Routes API</div>
-    <div class="inline-note">API 키는 GitHub Pages 도메인 제한이 적용된 공용 웹 키를 사용합니다. 별도 키 입력은 필요하지 않습니다.</div>
+    ${tripPocketGoogleMapsKeyError?`<div class="inline-note">연결 메시지: ${esc(tripPocketGoogleMapsKeyError)}</div>`:''}
+    <div class="inline-note">Google API 키는 이 HTML이나 브라우저 localStorage에 저장하지 않고, 로그인 후 Supabase에서 메모리로만 불러옵니다.</div>
     <div class="form-actions"><button type="button" class="primary" onclick="closeSheet()">확인</button></div>`);
 }
 async function loadMaps(){
   if(window.google?.maps?.importLibrary)return;
   if(mapsLoading)return new Promise((res,rej)=>{let n=0;const iv=setInterval(()=>{if(window.google?.maps?.importLibrary){clearInterval(iv);res()}else if(++n>80){clearInterval(iv);rej(new Error('timeout'))}},100)});
-  const key=getApiKey();if(!key)throw new Error('No API key');mapsLoading=true;
+  const key=getApiKey();
+  if(!key){
+    if(!tpCloudSession)throw new Error('공유 저장소에 로그인하면 Google Maps가 자동 연결됩니다.');
+    throw new Error('Google Maps 연결 권한을 확인해주세요.');
+  }
+  mapsLoading=true;
   return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&v=weekly&libraries=places';s.async=true;s.defer=true;s.onload=()=>{mapsLoading=false;resolve()};s.onerror=()=>{mapsLoading=false;reject(new Error('Maps load error'))};document.head.appendChild(s)});
 }
 $('#mapBack').addEventListener('click',e=>{if(e.target.id==='mapBack')closeGroupMap()});
@@ -3191,6 +3212,7 @@ async function tpCloudFetchRows(){
 }
 async function tpCloudLoadRemote({manual=false}={}){
   if(!tpCloudSession)return;
+  if(manual && !getApiKey())await tpCloudLoadGoogleMapsKey();
   tpCloudSyncing=true;tpCloudLastError='';tpCloudUpdateButton();
   try{
     const hadLocal=(state.trips||[]).length>0;
@@ -3271,20 +3293,61 @@ function tpCloudSetupRealtime(){
       tpCloudApplyingRemote=true;tpCloudStoreLocalOnly();tpCloudApplyingRemote=false;render();
     }).subscribe();
 }
+async function tpCloudLoadGoogleMapsKey(){
+  tripPocketGoogleMapsKey='';
+  tripPocketGoogleMapsKeyError='';
+  mapsLoading=false;
+  if(!tpSb||!tpCloudSession){
+    tripPocketGoogleMapsKeyState='signed_out';
+    return false;
+  }
+  tripPocketGoogleMapsKeyState='loading';
+  try{
+    const {data,error}=await tpSb.rpc('get_google_maps_key');
+    if(error)throw error;
+    if(!data)throw new Error('Google Maps 사용 권한이 없습니다.');
+    tripPocketGoogleMapsKey=String(data);
+    tripPocketGoogleMapsKeyState='ready';
+    tripPocketGoogleMapsKeyError='';
+    return true;
+  }catch(err){
+    const msg=err?.message||String(err);
+    tripPocketGoogleMapsKey='';
+    tripPocketGoogleMapsKeyError=msg;
+    tripPocketGoogleMapsKeyState=/not authorized|권한/i.test(msg)?'denied':'error';
+    console.warn('Google Maps key load failed',err);
+    return false;
+  }
+}
 async function tpCloudHandleSession(session){
   tpCloudSession=session||null;
   tpCloudLastError='';
   if(tpCloudSession){
     tpCloudUpdateButton();
+    await tpCloudLoadGoogleMapsKey();
     tpCloudSetupRealtime();
     await tpCloudLoadRemote();
+    if(getApiKey()){
+      setTimeout(async()=>{
+        try{
+          for(const t of state.trips||[]){
+            if((t.pool||[]).filter(p=>p.lat!=null&&p.lng!=null).length>=2)await ensureSmartGroups(t,false,false);
+          }
+        }catch(e){console.warn('background smart precompute failed',e)}
+      },250);
+    }
   }else{
+    tripPocketGoogleMapsKey='';
+    tripPocketGoogleMapsKeyState='signed_out';
+    tripPocketGoogleMapsKeyError='';
+    mapsLoading=false;
     tpCloudReadyForAutoSync=false;
     tpCloudBaseline.clear();tpCloudMeta.clear();
     if(tpCloudRealtime&&tpSb){tpSb.removeChannel(tpCloudRealtime);tpCloudRealtime=null}
     tpCloudLastMessage='로그인하면 여행을 Supabase에 저장하고 공유할 수 있어요.';
     tpCloudUpdateButton();
   }
+  render();
   if(document.getElementById('cloudBack')?.classList.contains('show'))tpCloudRenderModal();
 }
 async function tpCloudSignIn(){
@@ -3312,7 +3375,8 @@ async function tpCloudSignUp(){
 async function tpCloudSignOut(){
   if(!confirm('Supabase에서 로그아웃할까요?\n브라우저의 로컬 데이터는 그대로 남습니다.'))return;
   const {error}=await tpSb.auth.signOut();
-  if(error)alert(error.message);
+  if(error)return alert(error.message);
+  location.reload();
 }
 async function tpCloudRefreshMembers(){
   const tripId=document.getElementById('cloudShareTrip')?.value;
@@ -3383,7 +3447,7 @@ function tpCloudRenderModal(){
     ${needsMigration?`<div class="cloud-alert" style="margin-top:10px">기존 로컬 여행 데이터가 있습니다. 처음 한 번 「로컬 데이터 올리기」를 실행해주세요.</div>`:''}
     <div class="cloud-grid" style="margin-top:10px"><button class="cloud-btn primary" onclick="tpCloudLoadRemote({manual:true})">최신 데이터 불러오기</button><button class="cloud-btn" onclick="tpCloudUploadAllLocal()">로컬 데이터 올리기</button></div>
     <div class="cloud-grid" style="margin-top:8px"><button class="cloud-btn gray" onclick="tpCloudSyncDirtyTrips()">지금 저장</button><button class="cloud-btn danger" onclick="tpCloudSignOut()">로그아웃</button></div>
-    <div class="cloud-sync-log">Supabase 연결 후 변경사항은 자동 저장됩니다. JSON 백업 기능도 그대로 사용할 수 있어요.</div>
+    <div class="cloud-sync-log">Supabase 연결 후 변경사항은 자동 저장됩니다. JSON 백업 기능도 그대로 사용할 수 있어요.<br>Google Maps: ${getApiKey()?'자동 연결됨':esc(googleMapsConnectionLabel())}</div>
   </div>${tpCloudRenderShareSection()}`;
 }
 function tpOpenCloudModal(){

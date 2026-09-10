@@ -1,20 +1,15 @@
-# Trip Pocket — GitHub Pages 배포용
+# Trip Pocket Cloud v33
 
-이 폴더의 파일을 GitHub 저장소 최상단(root)에 업로드하세요.
+GitHub에는 `index.html`만 교체하면 됩니다.
 
-필수 파일
-- `index.html`
-- `.nojekyll`
-
-배포 순서
-1. GitHub에서 새 Repository 생성 (예: `trip-pocket`)
-2. 이 폴더의 파일을 Repository 최상단에 업로드하고 Commit
-3. Repository → Settings → Pages
-4. Build and deployment → Source: `Deploy from a branch`
-5. Branch: `main`, Folder: `/(root)` → Save
-6. 잠시 후 `https://사용자명.github.io/trip-pocket/` 형태로 접속
+v33 변경사항
+- Google Maps API key를 HTML에서 완전히 제거
+- Google Maps key를 localStorage에도 저장하지 않음
+- Supabase 로그인 후 `get_google_maps_key()` RPC로 메모리에만 로드
+- 앱 소유자와 소유자가 공유한 여행의 멤버만 공용 Google Maps key 사용 가능
+- 로그아웃 시 페이지를 새로고침하여 메모리의 Maps 연결도 정리
+- 기존 Supabase 여행 공유/자동동기화/여행 삭제/UI 유지
 
 주의
-- 현재 앱 데이터는 브라우저 localStorage에 저장되므로 기기 간 자동 공유는 아직 되지 않습니다.
-- GitHub Pages 배포 후 Google Maps API 키의 Website referrer 제한을 Pages 주소로 설정하는 것을 권장합니다.
-- HTML에 비밀키나 서비스 계정 키를 직접 넣지 마세요.
+- 별도로 제공된 `trip-pocket-supabase-v33-google-maps-secret.sql`은 Supabase SQL Editor에서만 실행하세요.
+- SQL 파일은 절대 GitHub 저장소에 업로드하지 마세요.
