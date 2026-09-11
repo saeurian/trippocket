@@ -1,15 +1,19 @@
-# Trip Pocket Cloud v33
+# Trip Pocket Cloud v37
 
-GitHub에는 `index.html`만 교체하면 됩니다.
+기존 GitHub 저장소의 `index.html`만 교체하면 됩니다. Supabase SQL 변경은 없습니다.
 
-v33 변경사항
-- Google Maps API key를 HTML에서 완전히 제거
-- Google Maps key를 localStorage에도 저장하지 않음
-- Supabase 로그인 후 `get_google_maps_key()` RPC로 메모리에만 로드
-- 앱 소유자와 소유자가 공유한 여행의 멤버만 공용 Google Maps key 사용 가능
-- 로그아웃 시 페이지를 새로고침하여 메모리의 Maps 연결도 정리
-- 기존 Supabase 여행 공유/자동동기화/여행 삭제/UI 유지
+홈 항공/숙소 개편
+- 항공과 숙소를 좌우 2열에서 세로 1열로 변경: 항공 위 / 숙소 아래
+- 항공은 Tripsy 계열처럼 출발지 → 도착지와 시간을 중심으로 재설계
+- 같은 이동 구간으로 판단되는 항공편(같은 날 또는 연속된 날짜)을 여러 개 입력하면 아래로 연속 표시
+- 현재 날짜 기준으로 이미 지난 항공 구간은 숨기고 다음 항공 구간을 자동 표시
+- 항공 구간은 도착일 당일까지 유지. 별도 도착일 정보가 없으면 탑승일을 도착일로 사용
+- 항공 홈 카드는 접기/펼치기 가능하며 현재 브라우저에 접힘 상태 기억
+- 숙소는 주소 + 체크인/체크아웃 2열 예약카드 형태로 재설계
+- 체크인 중인 숙소를 우선 표시
+- 체크아웃 당일부터는 다음 체크인 숙소가 있으면 자동 전환
+- 같은 체크인 날짜의 숙소가 여러 개면 아래로 연속 표시
+- 마지막 숙소 이후에는 마지막 숙소 정보를 유지
+- 숙소 카드를 누르면 기존처럼 주소만 Google Maps에서 검색
 
-주의
-- 별도로 제공된 `trip-pocket-supabase-v33-google-maps-secret.sql`은 Supabase SQL Editor에서만 실행하세요.
-- SQL 파일은 절대 GitHub 저장소에 업로드하지 마세요.
+기존 v36 기능과 Supabase/Google Maps 비공개 키 구조는 그대로 유지합니다.
