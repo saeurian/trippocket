@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v44</title>
+<title>Trip Pocket Cloud v45</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1544,6 +1544,24 @@ body.plan-dragging-body-v40{user-select:none}
   font-size:10.5px;
   line-height:1.5;
   font-weight:750
+}
+
+
+/* ===== v45 smart-group stability + auth fallback ===== */
+.smart-stable-note-v45{
+  margin:8px 0 10px;
+  padding:9px 11px;
+  border:1px solid #dce9f7;
+  border-radius:12px;
+  background:#f8fbff;
+  color:#7187a2;
+  font-size:10.5px;
+  line-height:1.5;
+  font-weight:750
+}
+.refresh-mini[disabled]{
+  opacity:.5;
+  cursor:default
 }
 
 </style>
@@ -6168,6 +6186,248 @@ let tp44GroupingChanged=false;
   if(tp44ResetGroupingPolicy(t))tp44GroupingChanged=true;
 });
 if(tp44GroupingChanged)save();
+</script>
+
+
+<script>
+/* ===== v45 smart-group stability + auth fallback ===== */
+const TP45_HAD_SESSION_KEY='tripPocket_had_cloud_session_v45';
+const tp45SmartJobs=new Map();
+let tp45DiagRenderTimer=null;
+
+/*
+  v44까지는 스마트 화면을 render할 때 ensureSmartGroups()를 실행하고,
+  계산 상태 updateSmartDiag()가 다시 renderTab()을 호출했습니다.
+  그 renderTab()이 또 ensureSmartGroups()를 실행하면서 재귀적으로 계산이
+  겹칠 수 있었습니다. 모바일 Safari에서 멈춤/강제 종료가 생길 수 있는 구조라
+  v45에서는 '렌더 → 계산 → 렌더 → 계산' 루프를 완전히 끊습니다.
+*/
+const tp45EnsureSmartGroupsBase=ensureSmartGroups;
+
+function tp45SmartVisible(t){
+  return !!t &&
+    currentTripId===t.id &&
+    currentTab==='pool' &&
+    poolView==='group' &&
+    groupViewMode==='smart';
+}
+
+function tp45SmartCurrent(t){
+  if(!t)return false;
+  const sig=poolCoordSignature(t);
+  return t.smartPoolSignature===sig && Array.isArray(t.smartClusters) && t.smartClusters.length>0;
+}
+
+/* 진단 업데이트는 저장/재렌더를 매 요청마다 하지 않고 짧게 묶어서 처리 */
+function updateSmartDiag(t,patch,rerender=true){
+  t.smartDiag={...(t.smartDiag||{}),...patch,updatedAt:Date.now()};
+  const terminal=['done','error','idle'].includes(t.smartDiag.phase);
+
+  if(terminal)save();
+
+  if(rerender&&tp45SmartVisible(t)){
+    if(tp45DiagRenderTimer)clearTimeout(tp45DiagRenderTimer);
+    tp45DiagRenderTimer=setTimeout(()=>{
+      tp45DiagRenderTimer=null;
+      if(tp45SmartVisible(t))renderTab();
+    },terminal?0:180);
+  }
+}
+
+/* 같은 여행에 스마트 계산은 한 번만 실행 */
+ensureSmartGroups=async function(t,force=false,rerender=false){
+  if(!t)return;
+
+  /* 로그인 직후 모든 여행을 백그라운드 계산하던 호출은 차단 */
+  if(!rerender&&!tp45SmartVisible(t))return;
+
+  const existing=tp45SmartJobs.get(t.id);
+  if(existing)return existing;
+
+  if(!force&&tp45SmartCurrent(t)){
+    updateSmartDiag(t,{
+      phase:'done',
+      message:`${t.pool.filter(p=>p.lat!=null&&p.lng!=null).length}개 장소의 저장된 계산 결과를 사용 중입니다.`,
+      error:'',errorName:'',done:1,total:1
+    },rerender);
+    return;
+  }
+
+  const job=(async()=>{
+    try{
+      return await tp45EnsureSmartGroupsBase(t,force,rerender);
+    }finally{
+      tp45SmartJobs.delete(t.id);
+      if(tp45SmartVisible(t))setTimeout(()=>renderTab(),0);
+    }
+  })();
+
+  tp45SmartJobs.set(t.id,job);
+  return job;
+};
+
+function tp45MaybeStartSmart(){
+  const t=trip();
+  if(!tp45SmartVisible(t))return;
+  if(tp45SmartCurrent(t))return;
+  if(tp45SmartJobs.has(t.id))return;
+  if((t.pool||[]).filter(p=>p.lat!=null&&p.lng!=null).length<2)return;
+
+  setTimeout(()=>{
+    if(tp45SmartVisible(t)&&!tp45SmartCurrent(t)&&!tp45SmartJobs.has(t.id)){
+      ensureSmartGroups(t,false,true);
+    }
+  },80);
+}
+
+/* render 단계에서는 계산을 직접 await하지 않음 */
+function renderTab(){
+  tp38SaveUIState();
+  const c=$('#tabContent');if(!c)return;
+
+  if(currentTab==='home'){c.innerHTML=renderHome();return}
+  if(currentTab==='plan'){c.innerHTML=renderPlans();bindPlanDrag();return}
+  if(currentTab==='pool'){
+    c.innerHTML=renderPool();
+    if(poolView==='group')bindClusterDrag();
+    if(poolView==='group'&&groupViewMode==='smart')tp45MaybeStartSmart();
+    return;
+  }
+  if(currentTab==='flight'){c.innerHTML=tp20RenderFlights();return}
+  if(currentTab==='hotel'){c.innerHTML=tp20RenderHotels();return}
+  if(currentTab==='packing'){c.innerHTML=tp20RenderPackingHub();return}
+  if(currentTab==='expense'){c.innerHTML=tp20RenderExpenseTab();return}
+  c.innerHTML=renderHome();
+}
+
+function setGroupViewMode(v){
+  groupViewMode=v==='smart'?'smart':'distance';
+  tp38SaveUIState();
+  renderTab();
+  if(groupViewMode==='smart')tp45MaybeStartSmart();
+}
+
+async function refreshSmartGroups(force=true){
+  const t=trip();
+  if(!t)return;
+
+  if(tp45SmartJobs.has(t.id)){
+    toast('이동시간을 계산하고 있어요');
+    return tp45SmartJobs.get(t.id);
+  }
+
+  tp44ClearSmartGrouping(t);
+  t.groupingPolicyVersion=TP44_GROUP_POLICY_VERSION;
+  tp38PoolSelection.clear();
+
+  updateSmartDiag(t,{
+    phase:'loading_maps',
+    message:'기존 그룹을 초기화하고 이동시간 기준으로 다시 계산합니다.',
+    error:'',errorName:'',failedPhase:'',done:0,total:0,
+    walkDone:0,walkTotal:0,transitDone:0,transitTotal:0
+  },true);
+
+  return ensureSmartGroups(t,true,true);
+}
+
+/* 장소가 바뀌면 거리 그룹만 즉시 계산. 스마트 계산은 스마트 화면에 들어갔을 때 실행 */
+function refreshLocationGroupsAfterPoolChange(t){
+  if(!t)return;
+  tp44RebuildDistanceGroups(t);
+  tp44ClearSmartGrouping(t);
+  t.groupingPolicyVersion=TP44_GROUP_POLICY_VERSION;
+  save();
+
+  if(tp45SmartVisible(t))tp45MaybeStartSmart();
+}
+
+/* 스마트 화면 상태 표시도 '계산 중'을 명확히 표시 */
+const tp45RenderGroupViewBase=renderGroupView;
+renderGroupView=function(){
+  const html=tp45RenderGroupViewBase();
+  const t=trip();
+  if(groupViewMode!=='smart'||!t)return html;
+
+  const running=tp45SmartJobs.has(t.id);
+  if(!running)return html;
+
+  return html.replace(
+    '<div class="subhead">',
+    `<div class="smart-stable-note-v45">이동시간을 계산 중입니다. 계산 중에도 화면을 이동할 수 있으며, 같은 계산을 중복 실행하지 않습니다.</div><div class="subhead">`
+  );
+};
+
+/* ===== 로그인 만료 시 홈으로 복귀 ===== */
+function tp45ClearRestoredTripState(){
+  currentTripId=null;
+  tp38PendingTripId='';
+  archiveMode=false;
+  currentTab='home';
+  tp38PlanDate='';
+
+  try{
+    const raw=sessionStorage.getItem(TP38_UI_KEY)||localStorage.getItem(TP38_UI_KEY);
+    if(raw){
+      const x=JSON.parse(raw);
+      x.currentTripId=null;
+      x.currentTab='home';
+      x.archiveMode=false;
+      x.planDate='';
+      const payload=JSON.stringify(x);
+      sessionStorage.setItem(TP38_UI_KEY,payload);
+      localStorage.setItem(TP38_UI_KEY,payload);
+    }
+  }catch(e){}
+}
+
+async function tpCloudHandleSession(session){
+  const hadSession=localStorage.getItem(TP45_HAD_SESSION_KEY)==='1';
+
+  tpCloudSession=session||null;
+  tpCloudLastError='';
+
+  if(tpCloudSession){
+    localStorage.setItem(TP45_HAD_SESSION_KEY,'1');
+    tpCloudUpdateButton();
+
+    await tpCloudLoadGoogleMapsKey();
+    tpCloudSetupRealtime();
+    await tpCloudLoadRemote();
+
+    /* 로그인 직후 스마트 그룹 전체 자동계산은 하지 않음 */
+    render();
+    if(document.getElementById('cloudBack')?.classList.contains('show'))tpCloudRenderModal();
+    return;
+  }
+
+  tripPocketGoogleMapsKey='';
+  tripPocketGoogleMapsKeyState='signed_out';
+  tripPocketGoogleMapsKeyError='';
+  mapsLoading=false;
+  tpCloudReadyForAutoSync=false;
+  tpCloudBaseline.clear();
+  tpCloudMeta.clear();
+
+  if(tpCloudRealtime&&tpSb){
+    tpSb.removeChannel(tpCloudRealtime);
+    tpCloudRealtime=null;
+  }
+
+  tpCloudLastMessage='로그인이 필요합니다. 다시 로그인해주세요.';
+  tpCloudUpdateButton();
+
+  if(hadSession){
+    tp45ClearRestoredTripState();
+    render();
+
+    setTimeout(()=>{
+      cloudAuthMode='signin';
+      tpOpenCloudModal();
+    },80);
+  }else{
+    render();
+  }
+}
 </script>
 
 </body>
