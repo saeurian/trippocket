@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v42</title>
+<title>Trip Pocket Cloud v44</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1522,6 +1522,28 @@ body.plan-dragging-body-v40{user-select:none}
   .cluster-place-meta-v42{font-size:11px}
   .cluster-footer-v42{padding:0 10px 11px;gap:6px}
   .cluster-footer-v42 button{min-height:34px;padding:7px 9px;font-size:10px}
+}
+
+
+/* ===== v43 group selection fix ===== */
+.cluster-select-all-v43.active{
+  background:#dcecff!important;
+  color:#245d9a!important;
+  border:1px solid #bcd7f4!important
+}
+
+
+/* ===== v44 automatic location grouping ===== */
+.group-auto-note-v44{
+  margin:8px 0 10px;
+  padding:9px 11px;
+  border:1px solid #dce9f7;
+  border-radius:12px;
+  background:#f7fbff;
+  color:#7187a2;
+  font-size:10.5px;
+  line-height:1.5;
+  font-weight:750
 }
 
 </style>
@@ -5873,6 +5895,279 @@ function renderClusters(clusters,mode){
     </section>`;
   }).join('');
 }
+</script>
+
+
+<script>
+/* ===== v43 group selection fix ===== */
+function tp38UpdateSelectionUI(){
+  const n=tp38PoolSelection.size;
+
+  document.querySelectorAll('[data-v38-selection-count]').forEach(el=>{
+    el.textContent=String(n);
+  });
+  document.querySelectorAll('[data-v38-selection-action]').forEach(el=>{
+    el.disabled=n===0;
+  });
+
+  /* v42+ group cards */
+  document.querySelectorAll('.cluster-place-v42[data-pool]').forEach(el=>{
+    const id=el.dataset.pool;
+    const on=tp38PoolSelection.has(id);
+    el.classList.toggle('selected',on);
+    const ck=el.querySelector('input[type="checkbox"]');
+    if(ck)ck.checked=on;
+  });
+
+  /* compatibility with older rendered group cards */
+  document.querySelectorAll('.cluster-place-v38[data-pool]').forEach(el=>{
+    const id=el.dataset.pool;
+    const on=tp38PoolSelection.has(id);
+    el.classList.toggle('selected',on);
+    const ck=el.querySelector('input[type="checkbox"]');
+    if(ck)ck.checked=on;
+  });
+
+  /* reflect all-selected state on each group's button */
+  document.querySelectorAll('[data-cluster-select-all]').forEach(btn=>{
+    const id=btn.dataset.clusterSelectAll;
+    const mode=btn.dataset.clusterMode;
+    const t=trip();
+    if(!t)return;
+    const field=mode==='smart'?'smartClusterId':'distanceClusterId';
+    const ids=t.pool
+      .filter(p=>p[field]===id&&!tp38IsPoolScheduled(p,t))
+      .map(p=>p.id);
+    const all=ids.length>0&&ids.every(x=>tp38PoolSelection.has(x));
+    btn.classList.toggle('active',all);
+    btn.textContent=all?'새 장소 모두 해제':'새 장소 모두 선택';
+  });
+}
+
+function tp38SelectCluster(id,mode){
+  const t=trip();
+  if(!t)return;
+  const field=mode==='smart'?'smartClusterId':'distanceClusterId';
+  const ids=t.pool
+    .filter(p=>p[field]===id&&!tp38IsPoolScheduled(p,t))
+    .map(p=>p.id);
+
+  if(!ids.length){
+    toast('이 그룹에는 새로 선택할 장소가 없어요');
+    return;
+  }
+
+  const allSelected=ids.every(x=>tp38PoolSelection.has(x));
+  ids.forEach(x=>{
+    if(allSelected)tp38PoolSelection.delete(x);
+    else tp38PoolSelection.add(x);
+  });
+
+  tp38UpdateSelectionUI();
+}
+
+function renderClusters(clusters,mode){
+  const t=trip(),idField=mode==='smart'?'smartClusterId':'distanceClusterId';
+
+  return clusters.map((cl,idx)=>{
+    const places=t.pool
+      .filter(p=>p[idField]===cl.id)
+      .sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0)));
+    if(!places.length)return '';
+
+    const scheduledCount=places.filter(p=>tp38IsPoolScheduled(p,t)).length;
+    const newPlaces=places.filter(p=>!tp38IsPoolScheduled(p,t));
+    const newCount=newPlaces.length;
+    const allNewSelected=newCount>0&&newPlaces.every(p=>tp38PoolSelection.has(p.id));
+
+    return `<section class="cluster-v42" data-cluster="${cl.id}" data-mode="${mode}">
+      <div class="cluster-head-v42">
+        <div class="cluster-title-row-v42">
+          <div class="cluster-name-v42">${esc(cl.name||`GROUP ${idx+1}`)}</div>
+          <button class="cluster-rename-v42" onclick="renameCluster('${cl.id}','${mode}')" aria-label="그룹 이름 수정" title="그룹 이름 수정">${tp42PencilIcon()}</button>
+        </div>
+        <div class="cluster-stats-v42">
+          <span class="cluster-stat-v42"><b>${places.length}</b>곳</span>
+          <span class="cluster-stat-v42 new">새 장소 <b>${newCount}</b></span>
+          ${scheduledCount?`<span class="cluster-stat-v42 done">일정 완료 <b>${scheduledCount}</b></span>`:''}
+        </div>
+      </div>
+
+      <div class="cluster-places-v42">
+        ${places.map(p=>{
+          tp38EnsureReservation(p);
+          const scheduled=tp38IsPoolScheduled(p,t);
+          const url=tp40PoolMapUrl(p,t);
+
+          return `<div class="cluster-place-v42 ${scheduled?'scheduled':''} ${tp38PoolSelection.has(p.id)?'selected':''}" data-pool="${p.id}">
+            <div class="cluster-select-slot-v42">
+              ${scheduled
+                ?`<span class="cluster-done-v42" title="일정 추가 완료">${tp42CheckIcon()}</span>`
+                :`<label class="cluster-select-v42" onclick="event.stopPropagation()" aria-label="${esc(p.placeName)} 선택">
+                    <input type="checkbox" ${tp38PoolSelection.has(p.id)?'checked':''} onchange="tp38TogglePoolSelection('${p.id}',this.checked)">
+                  </label>`
+              }
+            </div>
+            <a class="cluster-place-main-v42" href="${esc(url)}" target="_blank" rel="noopener" title="Google 지도에서 열기">
+              <div class="cluster-place-title-v42">${esc(p.placeName)}</div>
+              <div class="cluster-place-meta-v42">${esc(p.category||'기타')}</div>
+              <div class="cluster-place-badges-v42">${scheduled?tp40ScheduledBadge(p,t):''}${tp38ReservationBadge(p)}</div>
+            </a>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="cluster-footer-v42">
+        ${newCount?`<button
+          class="cluster-select-all-v43 ${allNewSelected?'active':''}"
+          data-cluster-select-all="${cl.id}"
+          data-cluster-mode="${mode}"
+          onclick="tp38SelectCluster('${cl.id}','${mode}')"
+        >${allNewSelected?'새 장소 모두 해제':'새 장소 모두 선택'}</button>`:''}
+        <button class="map" onclick="openGroupMap('${mode}','${cl.id}')">⌖ 지도에서 보기</button>
+        ${newCount?`<button class="primary" onclick="assignClusterDate('${cl.id}','${mode}')">새 장소 전체 추가</button>`:''}
+      </div>
+    </section>`;
+  }).join('');
+}
+</script>
+
+
+<script>
+/* ===== v44 automatic location grouping ===== */
+const TP44_GROUP_POLICY_VERSION=14;
+
+function tp44ClearDistanceGrouping(t){
+  t.distanceClusters=[];
+  (t.pool||[]).forEach(p=>p.distanceClusterId=null);
+}
+function tp44ClearSmartGrouping(t){
+  t.smartClusters=[];
+  t.smartPoolSignature='';
+  (t.pool||[]).forEach(p=>p.smartClusterId=null);
+}
+function tp44RebuildDistanceGroups(t){
+  tp44ClearDistanceGrouping(t);
+  buildDistanceGroups(t);
+}
+function tp44ResetGroupingPolicy(t){
+  if(!t)return false;
+  if(Number(t.groupingPolicyVersion||0)>=TP44_GROUP_POLICY_VERSION)return false;
+
+  /* 테스트 중 생성된 수동/분리 그룹을 모두 버리고 좌표 기준으로 재구성 */
+  tp44RebuildDistanceGroups(t);
+  tp44ClearSmartGrouping(t);
+
+  /* 이동시간 캐시는 좌표가 같으면 재사용 가능하므로 유지 */
+  t.groupingPolicyVersion=TP44_GROUP_POLICY_VERSION;
+  return true;
+}
+
+/* 거리 재계산은 기존 그룹 구조/ID를 참고하지 않고 좌표만으로 새로 만듭니다. */
+function refreshDistanceGroups(){
+  const t=trip();
+  if(!t)return;
+  tp44RebuildDistanceGroups(t);
+  t.groupingPolicyVersion=TP44_GROUP_POLICY_VERSION;
+  save();
+  tp38PoolSelection.clear();
+  renderTab();
+  toast('위치 기준으로 그룹을 새로 만들었어요');
+}
+
+/* 스마트 그룹도 기존 수동 분류를 먼저 폐기한 뒤 이동시간으로 다시 계산합니다. */
+async function refreshSmartGroups(force=true){
+  const t=trip();
+  if(!t)return;
+
+  tp44ClearSmartGrouping(t);
+  t.groupingPolicyVersion=TP44_GROUP_POLICY_VERSION;
+  tp38PoolSelection.clear();
+  save();
+
+  updateSmartDiag(t,{
+    phase:'loading_maps',
+    message:'기존 그룹을 초기화하고 이동시간 기준으로 다시 계산합니다.',
+    error:'',errorName:'',failedPhase:'',done:0,total:0
+  },true);
+
+  await ensureSmartGroups(t,force,true);
+}
+
+/* 장소 추가/삭제/좌표 변경 때도 예전 그룹을 이어붙이지 않고 자동 재그룹 */
+function refreshLocationGroupsAfterPoolChange(t){
+  if(!t)return;
+
+  tp44RebuildDistanceGroups(t);
+  tp44ClearSmartGrouping(t);
+  t.groupingPolicyVersion=TP44_GROUP_POLICY_VERSION;
+  save();
+
+  if(getApiKey()){
+    setTimeout(
+      ()=>ensureSmartGroups(
+        t,false,
+        currentTripId===t.id&&currentTab==='pool'&&poolView==='group'&&groupViewMode==='smart'
+      ),
+      80
+    );
+  }
+}
+
+/* 그룹 소속을 사람이 직접 옮기는 기능은 사용하지 않음 */
+function bindClusterDrag(){}
+
+/* 혹시 예전 UI/캐시에서 호출되더라도 수동 분리는 만들지 않음 */
+function splitCluster(){
+  toast('위치그룹은 거리/이동시간 기준으로 자동 생성됩니다');
+}
+
+/* 그룹 화면: 자동 그룹임을 명확히 표시 */
+function renderGroupView(){
+  const t=trip();
+  if(tp44ResetGroupingPolicy(t))save();
+
+  const smart=groupViewMode==='smart',clusters=smart?t.smartClusters:t.distanceClusters;
+  const count=t.pool.filter(p=>p.lat!=null&&p.lng!=null).length;
+  const sig=poolCoordSignature(t);
+  const smartReady=t.smartPoolSignature===sig&&clusters.length>0;
+
+  let status='';
+  if(smart){
+    status=`<div class="group-status"><div class="row"><span>${smartReady?'스마트 그룹 계산 완료':'스마트 그룹 확인 필요'} · 좌표 ${count}곳</span><button class="refresh-mini" onclick="refreshSmartGroups(true)">↻ 이동시간 재그룹</button></div></div>
+      ${renderSmartDiagnostics(t)}
+      <div class="smart-note">대중교통 10분 이내 또는 도보 20분 이내를 같은 생활권 후보로 보고 자동으로 묶습니다.</div>`;
+  }else{
+    status=`<div class="group-status"><div class="row"><span>직선거리 약 1.5km 기준 · 자동 그룹</span><button class="refresh-mini" onclick="refreshDistanceGroups()">↻ 위치 기준 재그룹</button></div></div>`;
+  }
+
+  tp38CleanPoolSelection();
+  const selectable=t.pool.filter(p=>!tp38IsPoolScheduled(p,t)&&p.lat!=null&&p.lng!=null).length;
+
+  const groupsHtml=clusters.length?`
+    <div class="group-auto-note-v44">재그룹 시 기존의 잘못된 분류나 테스트 중 만들어진 그룹은 유지하지 않고, 현재 장소 좌표만 기준으로 처음부터 다시 묶습니다.</div>
+    <div class="map-toolbar"><button class="map-view-btn" onclick="openGroupMap('${smart?'smart':'distance'}')">⌖ 전체 그룹 지도</button></div>
+    ${selectable?`<div class="pool-select-bar-v38"><div class="count">새 장소 선택 <span data-v38-selection-count>${tp38PoolSelection.size}</span>곳</div><button data-v38-selection-action ${tp38PoolSelection.size?'':'disabled'} onclick="tp38OpenAssignSelected()">선택 일정에 추가</button></div>`:''}
+    ${renderClusters(clusters,smart?'smart':'distance')}`:
+    `<div class="card empty">${smart
+      ?(t.smartDiag?.phase==='error'?'계산이 중단되었습니다. 위 오류 내용을 확인해주세요.':'이동시간 기준으로 그룹을 계산하고 있습니다.')
+      :'좌표가 있는 장소가 있으면 위치 기준으로 자동 그룹화됩니다.'}</div>`;
+
+  return `<div class="subhead"><div class="subhead-title">그룹 기준</div></div>
+    <div class="mode-toggle">
+      <button class="mode-btn ${!smart?'active':''}" onclick="setGroupViewMode('distance')">단순 거리 기준</button>
+      <button class="mode-btn ${smart?'active':''}" onclick="setGroupViewMode('smart')">스마트 이동시간</button>
+    </div>
+    ${status}${groupsHtml}`;
+}
+
+/* v44 최초 실행 시 현재 여행들의 테스트 그룹 흔적을 한 번 정리 */
+let tp44GroupingChanged=false;
+(state.trips||[]).forEach(t=>{
+  normalizeTrip(t);
+  if(tp44ResetGroupingPolicy(t))tp44GroupingChanged=true;
+});
+if(tp44GroupingChanged)save();
 </script>
 
 </body>
