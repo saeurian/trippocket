@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v37</title>
+<title>Trip Pocket Cloud v39</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1063,6 +1063,143 @@ textarea{min-height:86px;resize:vertical}
   .home-hotel-night{font-size:10px;padding:5px 7px}
 }
 
+
+/* ===== v39 itinerary / wishlist workflow (audited) ===== */
+.plan-toolbar-v38{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;
+  margin:0 0 13px
+}
+.plan-day-select-v38{
+  width:100%;height:43px;border:1px solid var(--line);border-radius:13px;background:#fff;
+  color:var(--navy);font-size:13px;font-weight:900;padding:0 11px
+}
+.plan-map-btn-v38{
+  height:43px;border:0;border-radius:13px;background:#e8f2ff;color:var(--navy);
+  padding:0 12px;font-size:12px;font-weight:900;white-space:nowrap
+}
+.plan-sort-note-v38{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin:-3px 0 11px;padding:8px 10px;border-radius:11px;background:#f5f8fc;
+  color:var(--muted);font-size:10.5px;font-weight:750
+}
+.plan-sort-note-v38 button{
+  border:0;background:#fff;color:var(--blue);font-size:10.5px;font-weight:900;
+  border-radius:9px;padding:6px 8px
+}
+.dayhead-v38{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:9px}
+.dayhead-left-v38{display:flex;align-items:center;gap:8px;min-width:0}
+.day-map-mini-v38{
+  border:0;background:#edf5ff;color:var(--navy);border-radius:10px;
+  padding:7px 9px;font-size:10.5px;font-weight:900;white-space:nowrap
+}
+.plan-card-v38{position:relative}
+.plan-card-top-v38{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.plan-card-main-v38{min-width:0;flex:1}
+.plan-order-v38{display:flex;gap:4px;flex:0 0 auto}
+.plan-order-v38 button{
+  width:30px;height:30px;border:1px solid #dce7f4;background:#fff;color:var(--navy);
+  border-radius:9px;font-size:14px;font-weight:900;padding:0
+}
+.plan-order-v38 button:disabled{opacity:.32}
+.res-badge-v38{
+  display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;
+  font-size:10px;font-weight:900
+}
+.res-badge-v38.need{background:#fff0dc;color:#945d10}
+.res-badge-v38.done{background:#e4f5e9;color:#2e7044}
+.res-detail-v38{
+  margin-top:10px;padding:10px 11px;border:1px solid #e7edf5;border-radius:12px;
+  background:#fbfdff;display:grid;gap:5px
+}
+.res-line-v38{display:grid;grid-template-columns:46px minmax(0,1fr);gap:7px;font-size:11px;line-height:1.45}
+.res-line-v38 b{color:#7d91ab}
+.res-line-v38 span{color:var(--ink);overflow-wrap:anywhere}
+.res-quick-v38{
+  justify-self:start;border:0;border-radius:9px;background:#e9f3ff;color:var(--navy);
+  padding:7px 9px;font-size:10.5px;font-weight:900;margin-top:2px
+}
+.reservation-fields-v38{
+  border:1px solid #e1ebf6;border-radius:15px;background:#f9fcff;padding:11px;margin-top:8px
+}
+.reservation-fields-v38 .field:last-child{margin-bottom:0}
+.v38-checkline{
+  display:flex;align-items:center;gap:8px;font-size:12px;font-weight:850;color:var(--ink);
+  padding:8px 0 10px
+}
+.v38-checkline input{width:18px;height:18px;accent-color:var(--blue)}
+
+.pool-split-head-v38{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 9px
+}
+.pool-split-head-v38 h4{margin:0;font-size:14px;color:var(--navy)}
+.pool-split-head-v38 span{font-size:10.5px;color:var(--muted);font-weight:850}
+.pool-card-v38.scheduled{background:#f7f9fc}
+.pool-status-row-v38{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.scheduled-day-v38{
+  display:inline-flex;padding:5px 8px;border-radius:999px;background:#e8f2ff;
+  color:var(--blue);font-size:10px;font-weight:900
+}
+.pool-select-bar-v38{
+  position:sticky;top:6px;z-index:4;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin:10px 0;padding:9px 10px;border-radius:13px;border:1px solid #d7e6f6;
+  background:rgba(247,251,255,.96);backdrop-filter:blur(8px)
+}
+.pool-select-bar-v38 .count{font-size:11px;font-weight:900;color:var(--navy)}
+.pool-select-bar-v38 button{
+  border:0;border-radius:10px;background:var(--blue);color:#fff;padding:8px 10px;
+  font-size:11px;font-weight:900
+}
+.pool-select-bar-v38 button:disabled{opacity:.45}
+.cluster-place-v38{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center
+}
+.cluster-place-v38.selected{outline:2px solid #86b8f2;outline-offset:1px}
+.cluster-check-v38{display:grid;place-items:center;padding:4px}
+.cluster-check-v38 input{width:18px;height:18px;accent-color:var(--blue)}
+.cluster-place-link-v38{
+  display:block;min-width:0;color:inherit;text-decoration:none;padding:3px 0
+}
+.cluster-place-link-v38 b{display:block;font-size:13px;line-height:1.35;color:var(--ink)}
+.cluster-place-link-v38 .small{line-height:1.4}
+.cluster-mini-actions-v38{display:flex;flex-direction:column;gap:4px}
+.cluster-mini-actions-v38 button{
+  width:28px;height:27px;border:1px solid #dce7f4;border-radius:8px;background:#fff;
+  color:var(--navy);font-size:12px;font-weight:900;padding:0
+}
+.cluster-actions-v38{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.cluster-actions-v38 button{
+  border:0;border-radius:10px;padding:8px 9px;font-size:10.5px;font-weight:900;
+  background:#eaf3ff;color:var(--navy)
+}
+.cluster-actions-v38 .primary{background:var(--blue);color:#fff}
+.scheduled-list-v38{display:grid;gap:8px}
+.scheduled-place-v38{
+  border:1px solid #e4eaf1;border-radius:14px;background:#f8fafc;padding:11px 12px
+}
+.scheduled-place-top-v38{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.scheduled-place-main-v38{min-width:0}
+.scheduled-place-main-v38 b{font-size:13px;color:var(--ink)}
+.scheduled-place-main-v38 .small{margin-top:4px}
+.scheduled-place-actions-v38{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.scheduled-place-actions-v38 a,.scheduled-place-actions-v38 button{
+  border:0;border-radius:9px;background:#edf3fa;color:var(--navy);padding:7px 8px;
+  font-size:10px;font-weight:900;text-decoration:none
+}
+.pool-add-plan-v38{
+  border:0!important;background:#e8f2ff!important;color:var(--navy)!important
+}
+
+@media(max-width:520px){
+  .plan-toolbar-v38{grid-template-columns:minmax(0,1fr) auto}
+  .plan-day-select-v38{font-size:12px}
+  .plan-map-btn-v38{font-size:10.5px;padding:0 10px}
+  .plan-row .time-label{font-size:10.5px}
+  .plan-card-v38 h4{font-size:15px}
+  .plan-order-v38 button{width:28px;height:28px}
+  .pool-select-bar-v38{top:4px}
+  .cluster-place-v38{grid-template-columns:auto minmax(0,1fr) auto;gap:6px}
+}
+
 </style>
 </head>
 <body>
@@ -1582,7 +1719,7 @@ function deleteItem(type,id){if(!confirm('삭제할까요?'))return;trip()[type]
 function openPoolForm(id,draft=null,selectedPlace=null){
   const p=id?trip().pool.find(x=>x.id===id):null,base=draft||p;editingPoolId=id||null;
   if(selectedPlace)window._poolSelectedPlace=selectedPlace;else if(!draft)window._poolSelectedPlace=p?.googlePlaceId?{placeName:p.placeName,googlePlaceId:p.googlePlaceId,address:p.address,lat:p.lat,lng:p.lng,areaName:p.areaName,areaType:p.areaType,mapsUrl:p.mapsUrl,weekdayHours:p.weekdayHours,openingPeriods:p.openingPeriods,businessStatus:p.businessStatus}:null;
-  openSheet(`<h2>${p?'가고 싶은 곳 수정':'가고 싶은 곳 추가'}</h2><form id="poolForm"><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}" placeholder="예: Daikanyama T-SITE"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 없음</option><option value="true" ${base?.reserved?'selected':''}>예약함</option></select></div><div class="field"><label>메모</label><textarea name="memo" placeholder="먹고 싶은 메뉴, 쇼핑할 것 등">${esc(base?.memo||'')}</textarea></div><div class="inline-note">${window._poolSelectedPlace?.googlePlaceId?'Google 장소가 선택되어 있습니다. 내용을 확인한 뒤 저장을 눌러주세요.':getApiKey()?'장소검색으로 Google의 정확한 장소를 선택한 뒤 저장해주세요.':'Google Maps가 아직 연결되지 않아 장소 검색 없이 입력한 정보만 저장됩니다.'}</div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button type="button" class="ghost" id="poolSearchBtn" ${getApiKey()?'':'disabled'}>장소검색</button><button type="submit" class="primary">저장</button></div></form>`);
+  openSheet(`<h2>${p?'가고 싶은 곳 수정':'가고 싶은 곳 추가'}</h2><form id="poolForm"><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}" placeholder="예: Daikanyama T-SITE"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 필요 없음</option><option value="true" ${base?.reserved?'selected':''}>예약 필요함</option></select></div><div class="field"><label>메모</label><textarea name="memo" placeholder="먹고 싶은 메뉴, 쇼핑할 것 등">${esc(base?.memo||'')}</textarea></div><div class="inline-note">${window._poolSelectedPlace?.googlePlaceId?'Google 장소가 선택되어 있습니다. 내용을 확인한 뒤 저장을 눌러주세요.':getApiKey()?'장소검색으로 Google의 정확한 장소를 선택한 뒤 저장해주세요.':'Google Maps가 아직 연결되지 않아 장소 검색 없이 입력한 정보만 저장됩니다.'}</div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button type="button" class="ghost" id="poolSearchBtn" ${getApiKey()?'':'disabled'}>장소검색</button><button type="submit" class="primary">저장</button></div></form>`);
   $('#poolSearchBtn').onclick=async()=>{const f=$('#poolForm'),d=Object.fromEntries(new FormData(f));d.reserved=d.reserved==='true';pendingPlaceDraft=d;const btn=$('#poolSearchBtn'),oldText=btn.textContent;btn.disabled=true;btn.textContent='검색 중…';try{const res=await searchPlaceCandidates(d.placeName);showPlaceCandidates(res,'poolSelect',p?.id||'')}catch(err){console.error('Places search error',err);showPlaceSearchError(err,'poolSelect',p?.id||'')}finally{btn.disabled=false;btn.textContent=oldText}};
   $('#poolForm').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));d.reserved=d.reserved==='true';if(window._poolSelectedPlace)Object.assign(d,window._poolSelectedPlace);savePoolBasic(d,p);window._poolSelectedPlace=null};
 }
@@ -1591,7 +1728,7 @@ function openPlanForm(id,draft=null){
   const t=trip(),p=id?t.plans.find(x=>x.id===id):null,base=draft||p;editingPlanId=id||null;
   const dates=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${base?.date===d?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
   const time=base?.time||'',h=time?+time.split(':')[0]:10,m=time?+time.split(':')[1]:0,ap=h>=12?'PM':'AM',h12=(h%12)||12;
-  openSheet(`<h2>${p?'일정 수정':'일정 바로 추가'}</h2><form id="planForm"><div class="field"><label>방문일</label><select name="date">${dates}</select></div><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','이동','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>방문 시간</label>${timePicker(ap,h12,m,!time)}</div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 없음</option><option value="true" ${base?.reserved?'selected':''}>예약함</option></select></div><div class="field"><label>메모</label><textarea name="memo">${esc(base?.memo||'')}</textarea></div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">${p?'수정 저장':getApiKey()?'장소 검색':'일정 추가'}</button></div></form>`);
+  openSheet(`<h2>${p?'일정 수정':'일정 바로 추가'}</h2><form id="planForm"><div class="field"><label>방문일</label><select name="date">${dates}</select></div><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','이동','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>방문 시간</label>${timePicker(ap,h12,m,!time)}</div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 필요 없음</option><option value="true" ${base?.reserved?'selected':''}>예약 필요함</option></select></div><div class="field"><label>메모</label><textarea name="memo">${esc(base?.memo||'')}</textarea></div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">${p?'수정 저장':getApiKey()?'장소 검색':'일정 추가'}</button></div></form>`);
   initTimePicker(ap);
   $('#planForm').onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));d.reserved=d.reserved==='true';d.time=readTimePicker();pendingPlaceDraft=d;if(p){Object.assign(p,d);save();closeSheet();renderTab();toast('일정을 수정했어요');return}if(!getApiKey())return savePlanBasic(d);const btn=e.currentTarget.querySelector('button.primary');const oldText=btn.textContent;btn.disabled=true;btn.textContent='검색 중…';try{const res=await searchPlaceCandidates(d.placeName);showPlaceCandidates(res,'plan','')}catch(err){console.error('Places search error',err);showPlaceSearchError(err,'plan','')}finally{btn.disabled=false;btn.textContent=oldText}};
 }
@@ -4279,6 +4416,557 @@ function renderHome(){
     <div class="section-card"><div class="home-section-title"><h3>소비 요약</h3></div>${tp22HomeExpenseSummary(t)}</div>
   </div>`;
 }
+</script>
+
+
+<script>
+/* ===== v38 itinerary / wishlist workflow ===== */
+const TP38_UI_KEY='tripPocket_ui_v38';
+let tp38PlanDate='';
+let tp38PendingTripId='';
+let tp38PoolSelection=new Set();
+
+function tp38Bool(v){return v===true||v==='true'||v==='on'||v===1||v==='1'}
+function tp38EnsureReservation(x){
+  if(!x)return x;
+  const legacy=tp38Bool(x.reserved);
+  x.reservationRequired=x.reservationRequired==null?legacy:tp38Bool(x.reservationRequired);
+  x.reservationDone=x.reservationDone==null?legacy:tp38Bool(x.reservationDone);
+  if(!x.reservationRequired)x.reservationDone=false;
+  x.reservationWhen=String(x.reservationWhen||'');
+  x.reservationWhere=String(x.reservationWhere||'');
+  x.reservationHow=String(x.reservationHow||'');
+  x.reserved=!!x.reservationDone;
+  return x;
+}
+const tp38NormalizeTripBase=normalizeTrip;
+normalizeTrip=function(t){
+  t=tp38NormalizeTripBase(t);if(!t)return t;
+  t.planManualOrderDates=t.planManualOrderDates||{};
+  (t.plans||[]).forEach(tp38EnsureReservation);
+  (t.pool||[]).forEach(tp38EnsureReservation);
+  return t;
+};
+
+function tp38SaveUIState(){
+  try{
+    const payload=JSON.stringify({
+      currentTripId:currentTripId||tp38PendingTripId||null,currentTab,archiveMode,
+      poolView,poolCategory,groupViewMode,planDate:tp38PlanDate
+    });
+    sessionStorage.setItem(TP38_UI_KEY,payload);
+    localStorage.setItem(TP38_UI_KEY,payload);
+  }catch(e){}
+}
+function tp38RestoreUIState(){
+  try{
+    const raw=sessionStorage.getItem(TP38_UI_KEY)||localStorage.getItem(TP38_UI_KEY)||'null';
+    const x=JSON.parse(raw);if(!x)return;
+    if(x.currentTripId){
+      if((state.trips||[]).some(t=>t.id===x.currentTripId))currentTripId=x.currentTripId;
+      else tp38PendingTripId=x.currentTripId;
+    }
+    if(['home','plan','pool','flight','hotel','packing','expense'].includes(x.currentTab))currentTab=x.currentTab;
+    archiveMode=!!x.archiveMode;
+    if(['all','group','category'].includes(x.poolView))poolView=x.poolView;
+    if(typeof x.poolCategory==='string')poolCategory=x.poolCategory;
+    if(['distance','smart'].includes(x.groupViewMode))groupViewMode=x.groupViewMode;
+    if(typeof x.planDate==='string')tp38PlanDate=x.planDate;
+  }catch(e){}
+}
+function render(){
+  if(!currentTripId&&tp38PendingTripId&&(state.trips||[]).some(t=>t.id===tp38PendingTripId)){
+    currentTripId=tp38PendingTripId;tp38PendingTripId='';
+  }
+  if(archiveMode)renderArchive();
+  else if(!currentTripId)renderTripList();
+  else renderTrip();
+  tp38SaveUIState();
+}
+function openTrip(id){
+  currentTripId=id;tp38PendingTripId='';archiveMode=false;currentTab='home';tp38PlanDate='';
+  tp38SaveUIState();render();
+}
+function setTab(x){
+  currentTab=x;
+  if(x==='plan')tp38EnsurePlanDate(trip());
+  tp38SaveUIState();renderTrip();
+}
+function setPoolView(v){poolView=v;tp38SaveUIState();renderTab()}
+function setPoolCategory(c){poolCategory=c;tp38SaveUIState();renderTab()}
+function setGroupViewMode(v){groupViewMode=v;tp38SaveUIState();renderTab();if(v==='smart')ensureSmartGroups(trip(),false,true)}
+
+function tp38DefaultPlanDate(t){
+  if(!t)return '';
+  const now=todayISO();
+  if(now<t.start)return t.start;
+  if(now>t.end)return t.end;
+  return now;
+}
+function tp38EnsurePlanDate(t){
+  if(!t)return '';
+  const range=dateRange(t.start,t.end);
+  if(tp38PlanDate!=='all'&&!range.includes(tp38PlanDate))tp38PlanDate=tp38DefaultPlanDate(t);
+  return tp38PlanDate;
+}
+function tp38SetPlanDate(v){tp38PlanDate=v;tp38SaveUIState();renderTab()}
+function tp38PlanAutoCompare(a,b){
+  const at=String(a.time||''),bt=String(b.time||'');
+  if(at&&bt&&at!==bt)return at.localeCompare(bt);
+  if(at&&!bt)return -1;
+  if(!at&&bt)return 1;
+  const ao=Number.isFinite(Number(a.order))?Number(a.order):9999;
+  const bo=Number.isFinite(Number(b.order))?Number(b.order):9999;
+  return ao-bo;
+}
+function plansForDate(d){
+  const t=trip();if(!t)return [];
+  const arr=t.plans.filter(p=>p.date===d);
+  if(t.planManualOrderDates?.[d]){
+    return arr.sort((a,b)=>(Number(a.order??9999)-Number(b.order??9999))||tp38PlanAutoCompare(a,b));
+  }
+  return arr.sort(tp38PlanAutoCompare);
+}
+function tp38ResetPlanOrder(d){
+  const t=trip();if(!t)return;
+  const arr=t.plans.filter(p=>p.date===d).sort(tp38PlanAutoCompare);
+  arr.forEach((p,i)=>p.order=i);
+  t.planManualOrderDates[d]=false;
+  save();renderTab();toast('시간순으로 다시 정렬했어요');
+}
+function tp38MovePlan(id,dir){
+  const t=trip(),p=t?.plans.find(x=>x.id===id);if(!p)return;
+  const arr=plansForDate(p.date).slice(),idx=arr.findIndex(x=>x.id===id),j=idx+dir;
+  if(idx<0||j<0||j>=arr.length)return;
+  [arr[idx],arr[j]]=[arr[j],arr[idx]];
+  arr.forEach((x,i)=>x.order=i);
+  t.planManualOrderDates[p.date]=true;
+  save();renderTab();toast('순서를 바꿨어요');
+}
+function movePlanBefore(srcId,targetId){
+  const t=trip(),src=t?.plans.find(p=>p.id===srcId),target=t?.plans.find(p=>p.id===targetId);
+  if(!src||!target||src.date!==target.date||src.id===target.id)return;
+  const arr=plansForDate(src.date).filter(p=>p.id!==src.id),idx=arr.findIndex(p=>p.id===target.id);
+  arr.splice(Math.max(0,idx),0,src);arr.forEach((p,i)=>p.order=i);
+  t.planManualOrderDates[src.date]=true;
+  save();renderTab();toast('순서를 바꿨어요');
+}
+
+function tp38ReservationFields(base,prefix){
+  base=tp38EnsureReservation({...base});
+  const req=!!base?.reservationRequired,done=!!base?.reservationDone;
+  return `<div class="field"><label>예약 필요 여부</label><select name="reservationRequired" id="${prefix}ReservationRequired" onchange="tp38ToggleReservationFields('${prefix}')"><option value="false" ${!req?'selected':''}>예약 필요 없음</option><option value="true" ${req?'selected':''}>예약 필요함</option></select></div>
+  <div class="reservation-fields-v38" id="${prefix}ReservationFields" style="${req?'':'display:none'}">
+    <label class="v38-checkline"><input type="checkbox" name="reservationDone" ${done?'checked':''}> 예약 완료</label>
+    <div class="field"><label>언제 예약?</label><input name="reservationWhen" value="${esc(base?.reservationWhen||'')}" placeholder="예: 방문 30일 전 / 11월 13일 오전 10시"></div>
+    <div class="field"><label>어디서 예약?</label><input name="reservationWhere" value="${esc(base?.reservationWhere||'')}" placeholder="예: 공식 홈페이지 / TableCheck / 전화"></div>
+    <div class="field"><label>어떻게 예약?</label><textarea name="reservationHow" placeholder="예: 공식 사이트에서 2명, 19:00로 예약">${esc(base?.reservationHow||'')}</textarea></div>
+  </div>`;
+}
+function tp38ToggleReservationFields(prefix){
+  const sel=document.getElementById(prefix+'ReservationRequired'),box=document.getElementById(prefix+'ReservationFields');
+  if(!sel||!box)return;
+  const show=sel.value==='true';box.style.display=show?'':'none';
+  if(!show){const ck=box.querySelector('input[name="reservationDone"]');if(ck)ck.checked=false}
+}
+function tp38ReadReservation(fd){
+  const required=String(fd.get('reservationRequired'))==='true';
+  const done=required&&fd.get('reservationDone')==='on';
+  return {
+    reservationRequired:required,reservationDone:done,reserved:done,
+    reservationWhen:required?String(fd.get('reservationWhen')||'').trim():'',
+    reservationWhere:required?String(fd.get('reservationWhere')||'').trim():'',
+    reservationHow:required?String(fd.get('reservationHow')||'').trim():''
+  };
+}
+function tp38ReservationBadge(p){
+  p=tp38EnsureReservation(p);
+  if(!p?.reservationRequired)return '';
+  return p.reservationDone?`<span class="res-badge-v38 done">예약 완료</span>`:`<span class="res-badge-v38 need">예약 필요</span>`;
+}
+function tp38ReservationPanel(p){
+  p=tp38EnsureReservation(p);if(!p?.reservationRequired)return '';
+  const rows=[
+    p.reservationWhen?`<div class="res-line-v38"><b>언제</b><span>${esc(p.reservationWhen)}</span></div>`:'',
+    p.reservationWhere?`<div class="res-line-v38"><b>어디서</b><span>${esc(p.reservationWhere)}</span></div>`:'',
+    p.reservationHow?`<div class="res-line-v38"><b>방법</b><span>${esc(p.reservationHow)}</span></div>`:''
+  ].join('');
+  return `<div class="res-detail-v38">${rows||`<div class="res-line-v38"><b>예약</b><span>예약 방법을 아직 적지 않았어요.</span></div>`}
+    <button class="res-quick-v38" onclick="event.stopPropagation();tp38ToggleReservationDone('${p.id}')">${p.reservationDone?'예약 완료 취소':'예약 완료 처리'}</button>
+  </div>`;
+}
+function tp38ToggleReservationDone(id){
+  const p=trip()?.plans.find(x=>x.id===id);if(!p)return;
+  tp38EnsureReservation(p);if(!p.reservationRequired)return;
+  p.reservationDone=!p.reservationDone;p.reserved=p.reservationDone;
+  save();renderTab();toast(p.reservationDone?'예약 완료로 표시했어요':'예약 완료 표시를 취소했어요');
+}
+
+function openPoolForm(id,draft=null,selectedPlace=null){
+  const p=id?trip().pool.find(x=>x.id===id):null,base=draft||p;editingPoolId=id||null;
+  if(base)tp38EnsureReservation(base);
+  if(selectedPlace)window._poolSelectedPlace=selectedPlace;
+  else if(!draft)window._poolSelectedPlace=p?.googlePlaceId?{placeName:p.placeName,googlePlaceId:p.googlePlaceId,address:p.address,lat:p.lat,lng:p.lng,areaName:p.areaName,areaType:p.areaType,mapsUrl:p.mapsUrl,weekdayHours:p.weekdayHours,openingPeriods:p.openingPeriods,businessStatus:p.businessStatus}:null;
+  openSheet(`<h2>${p?'가고 싶은 곳 수정':'가고 싶은 곳 추가'}</h2><form id="poolForm">
+    <div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}" placeholder="예: Daikanyama T-SITE"></div>
+    <div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div>
+    ${tp38ReservationFields(base,'pool')}
+    <div class="field"><label>메모</label><textarea name="memo" placeholder="먹고 싶은 메뉴, 쇼핑할 것 등">${esc(base?.memo||'')}</textarea></div>
+    <div class="inline-note">${window._poolSelectedPlace?.googlePlaceId?'Google 장소가 선택되어 있습니다. 내용을 확인한 뒤 저장을 눌러주세요.':getApiKey()?'장소검색으로 Google의 정확한 장소를 선택한 뒤 저장해주세요.':'Google Maps가 아직 연결되지 않아 장소 검색 없이 입력한 정보만 저장됩니다.'}</div>
+    <div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button type="button" class="ghost" id="poolSearchBtn" ${getApiKey()?'':'disabled'}>장소검색</button><button type="submit" class="primary">저장</button></div>
+  </form>`);
+  tp38ToggleReservationFields('pool');
+  $('#poolSearchBtn').onclick=async()=>{
+    const f=$('#poolForm'),fd=new FormData(f),d=Object.fromEntries(fd);Object.assign(d,tp38ReadReservation(fd));
+    pendingPlaceDraft=d;const btn=$('#poolSearchBtn'),oldText=btn.textContent;btn.disabled=true;btn.textContent='검색 중…';
+    try{const res=await searchPlaceCandidates(d.placeName);showPlaceCandidates(res,'poolSelect',p?.id||'')}
+    catch(err){console.error('Places search error',err);showPlaceSearchError(err,'poolSelect',p?.id||'')}
+    finally{btn.disabled=false;btn.textContent=oldText}
+  };
+  $('#poolForm').onsubmit=e=>{
+    e.preventDefault();const fd=new FormData(e.currentTarget),d=Object.fromEntries(fd);Object.assign(d,tp38ReadReservation(fd));
+    if(window._poolSelectedPlace)Object.assign(d,window._poolSelectedPlace);
+    savePoolBasic(d,p);window._poolSelectedPlace=null;
+  };
+}
+function savePoolBasic(d,p){
+  const t=trip();tp38EnsureReservation(d);
+  if(p)Object.assign(p,d);
+  else t.pool.push({id:uid(),createdAt:Date.now(),...d,mapsUrl:mapsSearch(d.placeName+' '+t.destination),distanceClusterId:null,smartClusterId:null});
+  refreshLocationGroupsAfterPoolChange(t);closeSheet();renderTab();toast('가고 싶은 곳에 저장했어요');
+}
+function openPlanForm(id,draft=null){
+  const t=trip(),p=id?t.plans.find(x=>x.id===id):null,base=draft||p;editingPlanId=id||null;
+  if(base)tp38EnsureReservation(base);
+  const selectedDate=base?.date||(tp38EnsurePlanDate(t)!=='all'?tp38PlanDate:tp38DefaultPlanDate(t));
+  const dates=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${selectedDate===d?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  const time=base?.time||'',h=time?+time.split(':')[0]:10,m=time?+time.split(':')[1]:0,ap=h>=12?'PM':'AM',h12=(h%12)||12;
+  openSheet(`<h2>${p?'일정 수정':'일정 바로 추가'}</h2><form id="planForm">
+    <div class="field"><label>방문일</label><select name="date">${dates}</select></div>
+    <div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}"></div>
+    <div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','이동','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div>
+    <div class="field"><label>방문 시간</label>${timePicker(ap,h12,m,!time)}</div>
+    ${tp38ReservationFields(base,'plan')}
+    <div class="field"><label>메모</label><textarea name="memo">${esc(base?.memo||'')}</textarea></div>
+    <div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">${p?'수정 저장':getApiKey()?'장소 검색':'일정 추가'}</button></div>
+  </form>`);
+  initTimePicker(ap);tp38ToggleReservationFields('plan');
+  $('#planForm').onsubmit=async e=>{
+    e.preventDefault();
+    const fd=new FormData(e.currentTarget),d=Object.fromEntries(fd);Object.assign(d,tp38ReadReservation(fd));d.time=readTimePicker();
+    pendingPlaceDraft=d;
+    if(p){
+      const oldDate=p.date,oldTime=p.time;Object.assign(p,d);tp38EnsureReservation(p);
+      if(oldDate!==p.date||oldTime!==p.time){t.planManualOrderDates[oldDate]=false;t.planManualOrderDates[p.date]=false}
+      save();closeSheet();tp38PlanDate=p.date;renderTab();toast('일정을 수정했어요');return;
+    }
+    if(!getApiKey())return savePlanBasic(d);
+    const btn=e.currentTarget.querySelector('button.primary'),oldText=btn.textContent;btn.disabled=true;btn.textContent='검색 중…';
+    try{const res=await searchPlaceCandidates(d.placeName);showPlaceCandidates(res,'plan','')}
+    catch(err){console.error('Places search error',err);showPlaceSearchError(err,'plan','')}
+    finally{btn.disabled=false;btn.textContent=oldText}
+  };
+}
+function savePlanBasic(d){
+  const t=trip(),order=t.plans.filter(p=>p.date===d.date).length;tp38EnsureReservation(d);
+  t.plans.push({id:uid(),order,...d,mapsUrl:mapsSearch(d.placeName+' '+t.destination)});
+  tp38PlanDate=d.date;save();closeSheet();renderTab();toast('일정에 추가했어요');
+}
+function selectPlaceCandidate(i){
+  const p=window._placeCandidates[i],d=pendingPlaceDraft,t=trip(),mode=window._candidateMode,nm=typeof p.displayName==='string'?p.displayName:(p.displayName?.text||d.placeName),lat=p.location?.lat?.()??p.location?.lat??null,lng=p.location?.lng?.()??p.location?.lng??null;
+  const openingPeriods=(p.regularOpeningHours?.periods||[]).map(x=>({openDay:x.open?.day,openHour:x.open?.hour,openMinute:x.open?.minute,closeDay:x.close?.day??null,closeHour:x.close?.hour??null,closeMinute:x.close?.minute??null}));
+  const common={placeName:nm,googlePlaceId:p.id||'',address:p.formattedAddress||'',lat,lng,areaName:'',areaType:'',mapsUrl:p.googleMapsURI||mapsSearch(nm+' '+t.destination),weekdayHours:p.regularOpeningHours?.weekdayDescriptions||[],openingPeriods,businessStatus:p.businessStatus||''};
+  if(mode==='poolSelect'){
+    window._poolSelectedPlace=common;window._candidateDraft={...d,placeName:nm};
+    openPoolForm(window._candidateEditId||null,window._candidateDraft,common);toast('장소를 선택했어요. 저장을 눌러 완료하세요');return;
+  }
+  if(mode==='pool'){
+    const full={...d,...common},existing=window._candidateEditId?t.pool.find(x=>x.id===window._candidateEditId):null;tp38EnsureReservation(full);
+    if(existing)Object.assign(existing,full);else t.pool.push({id:uid(),createdAt:Date.now(),distanceClusterId:null,smartClusterId:null,...full});
+    refreshLocationGroupsAfterPoolChange(t);closeSheet();renderTab();toast('가고 싶은 곳에 저장했어요');return;
+  }
+  const full={...d,...common},order=t.plans.filter(p=>p.date===d.date).length;tp38EnsureReservation(full);
+  t.plans.push({id:uid(),order,...full});tp38PlanDate=d.date;save();closeSheet();renderTab();toast('일정에 추가했어요');
+}
+
+function tp38PoolIdentity(p){
+  if(!p)return '';
+  if(p.sourcePoolId)return 'pool:'+p.sourcePoolId;
+  if(p.googlePlaceId)return 'google:'+p.googlePlaceId;
+  if(p.address)return 'address:'+String(p.address).trim().toLowerCase();
+  return 'name:'+String(p.placeName||'').trim().toLowerCase();
+}
+function tp38PlanMatchesPool(plan,p){
+  if(!plan||!p)return false;
+  if(plan.sourcePoolId&&plan.sourcePoolId===p.id)return true;
+  if(p.googlePlaceId&&plan.googlePlaceId&&p.googlePlaceId===plan.googlePlaceId)return true;
+  if(p.address&&plan.address&&String(p.address).trim().toLowerCase()===String(plan.address).trim().toLowerCase())return true;
+  return String(p.placeName||'').trim().toLowerCase()===String(plan.placeName||'').trim().toLowerCase();
+}
+function tp38PoolPlanMatches(p,t=trip()){
+  return (t?.plans||[]).filter(pl=>tp38PlanMatchesPool(pl,p)).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||tp38PlanAutoCompare(a,b));
+}
+function tp38IsPoolScheduled(p,t=trip()){return tp38PoolPlanMatches(p,t).length>0}
+function tp38DayLabel(date,t=trip()){
+  const i=dateRange(t.start,t.end).indexOf(date);
+  return i>=0?`DAY ${i+1}`:fmt(date);
+}
+function tp38OpenPlanAt(date){
+  currentTab='plan';tp38PlanDate=date||tp38DefaultPlanDate(trip());tp38SaveUIState();renderTrip();
+}
+
+function tp38RenderScheduledSection(t,category='전체'){
+  const groups=new Map();
+  (t.plans||[]).forEach(pl=>{
+    if(category!=='전체'&&pl.category!==category)return;
+    tp38EnsureReservation(pl);
+    const key=tp38PoolIdentity(pl);
+    if(!groups.has(key))groups.set(key,{sample:pl,plans:[]});
+    groups.get(key).plans.push(pl);
+  });
+  const rows=[...groups.values()].sort((a,b)=>{
+    const ap=a.plans.slice().sort((x,y)=>String(x.date).localeCompare(String(y.date))||tp38PlanAutoCompare(x,y))[0];
+    const bp=b.plans.slice().sort((x,y)=>String(x.date).localeCompare(String(y.date))||tp38PlanAutoCompare(x,y))[0];
+    return String(ap.date).localeCompare(String(bp.date))||tp38PlanAutoCompare(ap,bp);
+  });
+  if(!rows.length)return '';
+  return `<div class="pool-split-head-v38"><h4>일정에 넣은 곳</h4><span>${rows.length}곳 · 아래에서 다시 확인</span></div>
+    <div class="scheduled-list-v38">${rows.map(r=>{
+      const ps=r.plans.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||tp38PlanAutoCompare(a,b)),p=r.sample;
+      const url=p.mapsUrl||mapsSearch((p.address||p.placeName)+' '+t.destination);
+      return `<div class="scheduled-place-v38"><div class="scheduled-place-top-v38"><div class="scheduled-place-main-v38">
+        <b>${esc(p.placeName||'일정')}</b><div class="small muted">${esc(p.category||'기타')}${p.address?' · '+esc(p.address):''}</div>
+        <div class="pool-status-row-v38">${ps.map(x=>`<span class="scheduled-day-v38">${esc(tp38DayLabel(x.date,t))}${x.time?' · '+esc(displayTime(x.time)):''}</span>`).join('')}${tp38ReservationBadge(p)}</div>
+      </div></div>
+      <div class="scheduled-place-actions-v38"><a target="_blank" rel="noopener" href="${esc(url)}">Google 지도</a><button onclick="tp38OpenPlanAt('${ps[0].date}')">일정 보기</button></div></div>`;
+    }).join('')}</div>`;
+}
+
+function renderPoolCards(arr){
+  const t=trip();
+  return arr.map(p=>{
+    tp38EnsureReservation(p);const url=p.mapsUrl||mapsSearch((p.address||p.placeName)+' '+t.destination);
+    return `<div class="item pool-card pool-card-v38"><div class="row between"><div><div class="pool-title">${esc(p.placeName)}</div><div class="pool-meta">${esc(p.category)}${p.address?' · '+esc(p.address):''}</div><div class="pool-status-row-v38">${tp38ReservationBadge(p)}</div></div></div>
+      ${p.memo?`<div class="memo">${esc(p.memo)}</div>`:''}
+      <div class="actions"><a target="_blank" rel="noopener" href="${esc(url)}">Google 지도</a><button class="pool-add-plan-v38" onclick="tp38OpenAssignPool(['${p.id}'])">일정에 추가</button><button onclick="openPoolForm('${p.id}')">수정</button><button onclick="deletePool('${p.id}')">삭제</button></div>
+    </div>`;
+  }).join('');
+}
+function tp38CleanPoolSelection(){
+  const t=trip(),valid=new Set((t?.pool||[]).filter(p=>!tp38IsPoolScheduled(p,t)).map(p=>p.id));
+  [...tp38PoolSelection].forEach(id=>{if(!valid.has(id))tp38PoolSelection.delete(id)});
+}
+function tp38UpdateSelectionUI(){
+  const n=tp38PoolSelection.size;
+  document.querySelectorAll('[data-v38-selection-count]').forEach(el=>el.textContent=String(n));
+  document.querySelectorAll('[data-v38-selection-action]').forEach(el=>el.disabled=n===0);
+  document.querySelectorAll('.cluster-place-v38').forEach(el=>{
+    const on=tp38PoolSelection.has(el.dataset.pool);el.classList.toggle('selected',on);
+    const ck=el.querySelector('input[type="checkbox"]');if(ck)ck.checked=on;
+  });
+}
+function tp38TogglePoolSelection(id,on){
+  if(on)tp38PoolSelection.add(id);else tp38PoolSelection.delete(id);tp38UpdateSelectionUI();
+}
+function tp38SelectCluster(id,mode){
+  const t=trip(),field=mode==='smart'?'smartClusterId':'distanceClusterId';
+  const ids=t.pool.filter(p=>p[field]===id&&!tp38IsPoolScheduled(p,t)).map(p=>p.id);
+  const all=ids.length&&ids.every(x=>tp38PoolSelection.has(x));
+  ids.forEach(x=>all?tp38PoolSelection.delete(x):tp38PoolSelection.add(x));tp38UpdateSelectionUI();
+}
+function tp38MovePoolWithinGroup(id,mode,dir){
+  const t=trip(),p=t?.pool.find(x=>x.id===id);if(!p)return;
+  const field=mode==='smart'?'smartClusterId':'distanceClusterId',cl=p[field];
+  const arr=t.pool.filter(x=>x[field]===cl&&!tp38IsPoolScheduled(x,t)).sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0)));
+  const idx=arr.findIndex(x=>x.id===id),j=idx+dir;if(idx<0||j<0||j>=arr.length)return;
+  arr.forEach((x,i)=>{if(!Number.isFinite(Number(x.createdAt)))x.createdAt=Date.now()+i});
+  const a=arr[idx].createdAt,b=arr[j].createdAt;arr[idx].createdAt=b;arr[j].createdAt=a;
+  save();renderTab();toast('그룹 안 순서를 바꿨어요');
+}
+function renderClusters(clusters,mode){
+  const t=trip(),idField=mode==='smart'?'smartClusterId':'distanceClusterId';
+  return clusters.map((cl,idx)=>{
+    const all=t.pool.filter(p=>p[idField]===cl.id).sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0)));
+    const places=all.filter(p=>!tp38IsPoolScheduled(p,t));
+    if(!places.length)return '';
+    const scheduled=all.length-places.length;
+    const subtitle=`남은 ${places.length}곳${scheduled?` · 일정 등록 ${scheduled}곳`:''}${mode==='distance'?' · 직선거리 기준':''}`;
+    return `<section class="cluster" data-cluster="${cl.id}" data-mode="${mode}">
+      <div class="cluster-head"><div><div class="cluster-name">${esc(cl.name||`GROUP ${idx+1}`)}</div><div class="cluster-sub">${subtitle}</div></div><button class="addmini" onclick="renameCluster('${cl.id}','${mode}')">이름</button></div>
+      ${places.map((p,pi)=>{tp38EnsureReservation(p);const url=p.mapsUrl||mapsSearch((p.address||p.placeName)+' '+t.destination);return `<div class="cluster-place cluster-place-v38 ${tp38PoolSelection.has(p.id)?'selected':''}" draggable="true" data-pool="${p.id}">
+        <label class="cluster-check-v38" onclick="event.stopPropagation()"><input type="checkbox" ${tp38PoolSelection.has(p.id)?'checked':''} onchange="tp38TogglePoolSelection('${p.id}',this.checked)"></label>
+        <a class="cluster-place-link-v38" href="${esc(url)}" target="_blank" rel="noopener" title="Google 지도에서 열기"><b>${esc(p.placeName)}</b><div class="small muted" style="margin-top:4px">${esc(p.category)}${p.address?' · '+esc(p.address):''}</div><div class="pool-status-row-v38">${tp38ReservationBadge(p)}</div></a>
+        <div class="cluster-mini-actions-v38"><button ${pi===0?'disabled':''} onclick="event.stopPropagation();tp38MovePoolWithinGroup('${p.id}','${mode}',-1)" aria-label="위로">↑</button><button ${pi===places.length-1?'disabled':''} onclick="event.stopPropagation();tp38MovePoolWithinGroup('${p.id}','${mode}',1)" aria-label="아래로">↓</button></div>
+      </div>`}).join('')}
+      <div class="cluster-actions-v38"><button onclick="tp38SelectCluster('${cl.id}','${mode}')">이 그룹 선택/해제</button><button onclick="openGroupMap('${mode}','${cl.id}')">⌖ 지도에서 보기</button><button class="primary" onclick="assignClusterDate('${cl.id}','${mode}')">그룹 일정에 추가</button><button onclick="splitCluster('${cl.id}','${mode}')">새 그룹 만들기</button></div>
+    </section>`;
+  }).join('');
+}
+function renderGroupView(){
+  const t=trip(),smart=groupViewMode==='smart',clusters=smart?t.smartClusters:t.distanceClusters;
+  const count=t.pool.filter(p=>p.lat!=null&&p.lng!=null).length,sig=poolCoordSignature(t),smartReady=t.smartPoolSignature===sig&&clusters.length>0;
+  let status='';
+  if(smart){
+    status=`<div class="group-status"><div class="row"><span>${smartReady?'스마트 그룹 계산 완료':'스마트 그룹 확인 필요'} · 좌표 ${count}곳</span><button class="refresh-mini" onclick="refreshSmartGroups(true)">↻ 전체 다시 계산</button></div></div>${renderSmartDiagnostics(t)}<div class="smart-note">대중교통 10분 이내 또는 도보 20분 이내를 같은 생활권 후보로 보고, 가까운 장소만 실제 이동시간을 확인합니다.</div>`;
+  }else{
+    status=`<div class="group-status"><div class="row"><span>직선거리 약 1.5km 기준 · 자동 계산</span><button class="refresh-mini" onclick="refreshDistanceGroups()">↻ 다시 계산</button></div></div>`;
+  }
+  tp38CleanPoolSelection();
+  const groupsHtml=clusters.length?`<div class="map-toolbar"><button class="map-view-btn" onclick="openGroupMap('${smart?'smart':'distance'}')">⌖ 전체 그룹 지도</button></div>
+    <div class="pool-select-bar-v38"><div class="count">선택 <span data-v38-selection-count>${tp38PoolSelection.size}</span>곳</div><button data-v38-selection-action ${tp38PoolSelection.size?'':'disabled'} onclick="tp38OpenAssignSelected()">선택 일정에 추가</button></div>
+    ${renderClusters(clusters,smart?'smart':'distance')}`:`<div class="card empty">${smart?(t.smartDiag?.phase==='error'?'계산이 중단되었습니다. 위 오류 내용을 확인해주세요.':'스마트 이동시간 그룹을 계산하고 있습니다.'):'좌표가 있는 장소가 2곳 이상이면 자동으로 묶입니다.'}</div>`;
+  return `<div class="subhead"><div class="subhead-title">그룹 기준</div></div><div class="mode-toggle"><button class="mode-btn ${!smart?'active':''}" onclick="setGroupViewMode('distance')">단순 거리 기준</button><button class="mode-btn ${smart?'active':''}" onclick="setGroupViewMode('smart')">스마트 이동시간</button></div>${status}${groupsHtml}${tp38RenderScheduledSection(t)}`;
+}
+function renderPool(){
+  const t=trip(),hasCoords=t.pool.filter(p=>p.lat!=null&&p.lng!=null).length;
+  const cats=['전체',...new Set(t.pool.map(p=>p.category).filter(Boolean))];
+  const scheduledPoolCount=t.pool.filter(p=>tp38IsPoolScheduled(p,t)).length;
+  const viewTabs=`<div class="view-tabs"><button class="view-tab ${poolView==='all'?'active':''}" onclick="setPoolView('all')">전체</button><button class="view-tab ${poolView==='group'?'active':''}" onclick="setPoolView('group')">위치그룹</button><button class="view-tab ${poolView==='category'?'active':''}" onclick="setPoolView('category')">카테고리</button></div>`;
+  let body='';
+  if(poolView==='group')body=renderGroupView();
+  else{
+    const base=t.pool.slice().sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0))).filter(p=>poolView!=='category'||poolCategory==='전체'||p.category===poolCategory);
+    const remain=base.filter(p=>!tp38IsPoolScheduled(p,t));
+    if(poolView==='category')body=`<div class="filter-wrap"><div class="filter-label">카테고리 필터</div><div class="filter-chips">${cats.map(c=>`<button class="filter-chip ${poolCategory===c?'active':''}" onclick="setPoolCategory('${esc(c)}')">${esc(c)}</button>`).join('')}</div></div>`;
+    body+=remain.length?renderPoolCards(remain):`<div class="card empty">${base.length?'이 조건의 장소는 모두 일정에 넣었어요.':'표시할 장소가 없습니다.'}</div>`;
+    body+=tp38RenderScheduledSection(t,poolView==='category'?poolCategory:'전체');
+  }
+  return `${!getApiKey()?`<div class="api-note"><b>Google Places 자동 검색이 아직 연결되지 않았습니다.</b><br>상단 구름 아이콘에서 로그인하면 공용 Google Maps가 자동 연결됩니다.</div>`:''}
+    <div class="section-title"><h3>가고 싶은 곳</h3><button class="addmini" onclick="openPoolForm()">＋ 장소 추가</button></div>
+    <div class="pool-summary"><span><b>${t.pool.length}곳</b> 등록</span><span>·</span><span>일정 등록 ${scheduledPoolCount}곳</span><span>·</span><span>좌표 ${hasCoords}곳</span></div>${viewTabs}${t.pool.length===0&&!t.plans.length?`<div class="card empty">날짜와 시간은 정하지 말고<br>가고 싶은 장소부터 쌓아보세요.</div>`:body}`;
+}
+function tp38OpenAssignSelected(){
+  tp38CleanPoolSelection();if(!tp38PoolSelection.size)return toast('장소를 먼저 선택해주세요');
+  tp38OpenAssignPool([...tp38PoolSelection]);
+}
+function assignClusterDate(id,mode){
+  const t=trip(),field=mode==='smart'?'smartClusterId':'distanceClusterId';
+  const ids=t.pool.filter(p=>p[field]===id&&!tp38IsPoolScheduled(p,t)).map(p=>p.id);
+  if(!ids.length)return toast('이 그룹의 장소는 모두 일정에 들어가 있어요');
+  const arr=mode==='smart'?t.smartClusters:t.distanceClusters,cl=arr.find(x=>x.id===id);
+  tp38OpenAssignPool(ids,cl?.name||'선택 그룹');
+}
+function tp38OpenAssignPool(ids,label='선택 장소'){
+  const t=trip(),places=ids.map(id=>t.pool.find(p=>p.id===id)).filter(Boolean).filter(p=>!tp38IsPoolScheduled(p,t));
+  if(!places.length)return toast('추가할 새 장소가 없어요');
+  const defaultDate=tp38EnsurePlanDate(t)!=='all'?tp38PlanDate:tp38DefaultPlanDate(t);
+  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${d===defaultDate?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  openSheet(`<h2>일정에 추가</h2><div class="info-note"><b>${esc(label)}</b> · ${places.length}곳을 선택한 날짜에 추가합니다.<br>장소는 ‘가고 싶은 곳’에서 삭제하지 않고 아래 ‘일정에 넣은 곳’으로 정리됩니다.</div>
+    <div class="field"><label>방문일</label><select id="tp38AssignDate">${options}</select></div>
+    <div class="form-actions"><button class="ghost" onclick="closeSheet()">취소</button><button class="primary" id="tp38AssignBtn">이 날짜에 추가</button></div>`);
+  $('#tp38AssignBtn').onclick=()=>tp38CommitPoolPlans(places.map(p=>p.id),$('#tp38AssignDate').value);
+}
+function tp38CommitPoolPlans(ids,date){
+  const t=trip();let added=0,order=t.plans.filter(p=>p.date===date).length;
+  ids.forEach(id=>{
+    const p=t.pool.find(x=>x.id===id);if(!p||tp38IsPoolScheduled(p,t))return;
+    tp38EnsureReservation(p);
+    t.plans.push({
+      id:uid(),sourcePoolId:p.id,placeName:p.placeName,category:p.category,memo:p.memo||'',
+      reservationRequired:p.reservationRequired,reservationDone:p.reservationDone,reserved:p.reservationDone,
+      reservationWhen:p.reservationWhen||'',reservationWhere:p.reservationWhere||'',reservationHow:p.reservationHow||'',
+      date,time:'',order:order++,address:p.address||'',lat:p.lat,lng:p.lng,mapsUrl:p.mapsUrl||'',
+      weekdayHours:p.weekdayHours||[],openingPeriods:p.openingPeriods||[],googlePlaceId:p.googlePlaceId||''
+    });added++;
+  });
+  ids.forEach(id=>tp38PoolSelection.delete(id));
+  tp38PlanDate=date;currentTab='plan';save();closeSheet();tp38SaveUIState();renderTrip();
+  toast(added?`${added}곳을 일정에 추가했어요`:'이미 일정에 들어가 있어요');
+}
+
+function tp38PlanStatusText(p){
+  tp38EnsureReservation(p);
+  if(!p.reservationRequired)return '';
+  return p.reservationDone?'예약 완료':'예약 필요';
+}
+function planCard(p){
+  tp38EnsureReservation(p);
+  const h=hoursForDate(p.date,p.weekdayHours||[],p.openingPeriods||[]);
+  const arr=plansForDate(p.date),idx=arr.findIndex(x=>x.id===p.id);
+  return `<div class="plan-row" data-plan="${p.id}" data-date="${p.date}">
+    <div class="time-label">${displayTime(p.time)}</div>
+    <article class="plan-card plan-card-v38" draggable="true">
+      <div class="plan-card-top-v38"><div class="plan-card-main-v38">
+        <div class="row wrap" style="gap:6px"><span class="badge">${esc(p.category)}</span>${tp38ReservationBadge(p)}</div>
+        <h4 style="margin-top:8px">${esc(p.placeName)}</h4>${p.address?`<div class="itemline">${esc(p.address)}</div>`:''}
+      </div>
+      <div class="plan-order-v38"><button ${idx<=0?'disabled':''} onclick="event.stopPropagation();tp38MovePlan('${p.id}',-1)" aria-label="위로">↑</button><button ${idx<0||idx>=arr.length-1?'disabled':''} onclick="event.stopPropagation();tp38MovePlan('${p.id}',1)" aria-label="아래로">↓</button></div></div>
+      ${h?`<div class="hours"><b>방문일 영업시간</b><br>${esc(h)}</div>`:''}
+      ${tp38ReservationPanel(p)}
+      ${p.memo?`<div class="memo">${esc(p.memo)}</div>`:''}
+      <div class="actions"><a target="_blank" rel="noopener" href="${esc(p.mapsUrl||mapsSearch((p.address||p.placeName)+' '+trip().destination))}">Google 지도</a><button onclick="openPlanForm('${p.id}')">수정</button><button onclick="deletePlan('${p.id}')">삭제</button></div>
+    </article>
+  </div>`;
+}
+function renderPlans(){
+  const t=trip();normalizeTrip(t);const selected=tp38EnsurePlanDate(t),range=dateRange(t.start,t.end);
+  const options=[`<option value="all" ${selected==='all'?'selected':''}>전체 일정</option>`,...range.map((d,i)=>`<option value="${d}" ${selected===d?'selected':''}>DAY ${i+1} · ${fmt(d)} · ${t.plans.filter(p=>p.date===d).length}개</option>`)].join('');
+  const shownDates=selected==='all'?range:[selected];
+  const hasSelectedCoords=selected!=='all'&&plansForDate(selected).some(p=>p.lat!=null&&p.lng!=null);
+  const manual=selected!=='all'&&!!t.planManualOrderDates?.[selected];
+  return `<div class="section-title"><h3>일정</h3><button class="addmini" onclick="openPlanForm()">＋ 바로 추가</button></div>
+    <div class="plan-toolbar-v38"><select class="plan-day-select-v38" onchange="tp38SetPlanDate(this.value)">${options}</select><button class="plan-map-btn-v38" ${selected==='all'||!hasSelectedCoords?'disabled':''} onclick="openPlanDayMap('${selected}')">⌖ 선택일 지도</button></div>
+    ${manual?`<div class="plan-sort-note-v38"><span>이 날짜는 수동 순서가 적용되어 있습니다.</span><button onclick="tp38ResetPlanOrder('${selected}')">시간순 정렬</button></div>`:`<div class="plan-sort-note-v38"><span>시간을 입력한 일정은 자동으로 시간순 정렬됩니다. ↑↓를 누르면 수동 순서로 전환됩니다.</span></div>`}
+    ${shownDates.map(d=>{
+      const day=range.indexOf(d)+1,arr=plansForDate(d);
+      return `<div class="dayblock" data-date="${d}"><div class="dayhead-v38"><div class="dayhead-left-v38"><div class="daytitle">${fmt(d)}</div><div class="daytag">DAY ${day}</div></div><button class="day-map-mini-v38" ${arr.some(p=>p.lat!=null&&p.lng!=null)?'':'disabled'} onclick="openPlanDayMap('${d}')">지도 보기</button></div>
+        ${arr.length?`<div class="timeline">${arr.map(planCard).join('')}</div>`:`<div class="card empty">이 날짜에는 아직 일정이 없습니다.</div>`}
+      </div>`;
+    }).join('')}`;
+}
+async function openPlanDayMap(date){
+  const t=trip(),places=plansForDate(date).filter(p=>p.lat!=null&&p.lng!=null);
+  if(!places.length)return toast('이 날짜에 지도 좌표가 있는 일정이 없어요');
+  $('#mapBack').classList.add('show');document.body.style.overflow='hidden';$('#mapLoading').style.display='block';$('#mapLoading').textContent='지도를 불러오는 중...';
+  const day=dateRange(t.start,t.end).indexOf(date)+1;
+  $('#mapTitle').textContent=`DAY ${day} 일정 지도`;
+  $('#mapSub').textContent=`${fmt(date)} · ${places.length}곳`;
+  $('#mapLegend').innerHTML=places.map((p,i)=>`<span class="legend-chip"><i class="legend-dot" style="background:${mapColor(i)}"></i>${i+1}. ${esc(p.placeName)}</span>`).join('');
+  try{
+    await loadMaps();const {Map}=await google.maps.importLibrary('maps');
+    const map=new Map($('#groupMap'),{zoom:12,center:{lat:Number(places[0].lat),lng:Number(places[0].lng)},mapTypeControl:false,streetViewControl:false,fullscreenControl:false});
+    const bounds=new google.maps.LatLngBounds(),info=new google.maps.InfoWindow(),path=[];
+    places.forEach((p,i)=>{
+      const pos={lat:Number(p.lat),lng:Number(p.lng)};bounds.extend(pos);path.push(pos);
+      const marker=new google.maps.Marker({position:pos,map,title:p.placeName,label:{text:String(i+1),color:'#ffffff',fontWeight:'700'},icon:{url:markerSvg(mapColor(i),String(i+1)),scaledSize:new google.maps.Size(34,40),anchor:new google.maps.Point(17,40)}});
+      marker.addListener('click',()=>{
+        const url=p.mapsUrl||mapsSearch((p.address||p.placeName)+' '+t.destination),res=tp38PlanStatusText(p);
+        info.setContent(`<div style="max-width:230px;font-family:Arial,sans-serif;padding:3px 1px"><div style="font-weight:800;font-size:14px;margin-bottom:4px">${esc(p.placeName)}</div><div style="font-size:12px;color:#66788d;margin-bottom:7px">${esc(displayTime(p.time))}${res?' · '+esc(res):''}</div>${p.address?`<div style="font-size:11px;color:#7d8ca0;line-height:1.4;margin-bottom:7px">${esc(p.address)}</div>`:''}<a href="${esc(url)}" target="_blank" style="font-size:12px;font-weight:700;color:#2368d8">Google Maps에서 열기 ↗</a></div>`);
+        info.open({map,anchor:marker});
+      });
+    });
+    if(path.length>1)new google.maps.Polyline({path,map,strokeColor:'#4b8ee8',strokeOpacity:.55,strokeWeight:3});
+    if(places.length===1){map.setCenter(path[0]);map.setZoom(15)}else map.fitBounds(bounds,50);
+    $('#mapLoading').style.display='none';
+  }catch(err){console.error('plan map error',err);$('#mapLoading').textContent='지도를 불러오지 못했습니다 · '+errorText(err)}
+}
+
+function tp20RenderPlanSnippet(t,d,isDuring){
+  const plans=plansForDate(d);
+  return plans.length?plans.slice(0,4).map(p=>{tp38EnsureReservation(p);return `<div class="home-mini-item"><div class="home-mini-main"><b>${esc(p.placeName||'일정')}</b><div class="sub">${p.time?esc(displayTime(p.time))+' · ':''}${esc(p.category||'')}${p.reservationRequired?` · ${p.reservationDone?'예약 완료':'예약 필요'}`:''}${p.memo?`<br>${esc(p.memo)}`:''}</div></div></div>`}).join(''):`<div class="empty-note2">${isDuring?'오늘 일정이 없습니다.':'여행 전이라 첫째 날 일정을 보여줄 예정이에요.'}</div>`;
+}
+
+function renderTab(){
+  tp38SaveUIState();
+  const c=$('#tabContent');if(!c)return;
+  if(currentTab==='home'){c.innerHTML=renderHome();return}
+  if(currentTab==='plan'){c.innerHTML=renderPlans();bindPlanDrag();return}
+  if(currentTab==='pool'){
+    c.innerHTML=renderPool();
+    if(poolView==='group')bindClusterDrag();
+    if(poolView==='group'&&groupViewMode==='smart')ensureSmartGroups(trip(),false,true);
+    return;
+  }
+  if(currentTab==='flight'){c.innerHTML=tp20RenderFlights();return}
+  if(currentTab==='hotel'){c.innerHTML=tp20RenderHotels();return}
+  if(currentTab==='packing'){c.innerHTML=tp20RenderPackingHub();return}
+  if(currentTab==='expense'){c.innerHTML=tp20RenderExpenseTab();return}
+  c.innerHTML=renderHome();
+}
+
+tp38RestoreUIState();
+(state.trips||[]).forEach(normalizeTrip);
+render();
 </script>
 
 </body>
