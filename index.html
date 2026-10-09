@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v41</title>
+<title>Trip Pocket Cloud v42</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1294,6 +1294,234 @@ body.plan-dragging-body-v40{user-select:none}
 }
 @media(max-width:520px){
   .plan-drag-handle-v41{width:36px;height:36px}
+}
+
+
+/* ===== v42 location-group visual polish ===== */
+.cluster-v42{
+  border:1px solid #dbe8f6;
+  background:#fff;
+  border-radius:22px;
+  padding:0;
+  margin-bottom:14px;
+  overflow:hidden;
+  box-shadow:0 5px 18px rgba(31,75,126,.055)
+}
+.cluster-head-v42{
+  padding:15px 15px 13px;
+  background:linear-gradient(180deg,#f9fcff,#f2f7fd);
+  border-bottom:1px solid #e3edf7
+}
+.cluster-title-row-v42{
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+.cluster-name-v42{
+  min-width:0;
+  font-size:17px;
+  line-height:1.2;
+  font-weight:950;
+  letter-spacing:-.02em;
+  color:var(--navy);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.cluster-rename-v42{
+  flex:0 0 auto;
+  width:32px;height:32px;
+  border:1px solid #d7e5f4;
+  border-radius:10px;
+  background:#fff;
+  color:var(--navy);
+  display:grid;place-items:center;
+  padding:0;
+  cursor:pointer
+}
+.cluster-rename-v42 svg{width:14px;height:14px}
+
+.cluster-stats-v42{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  margin-top:10px
+}
+.cluster-stat-v42{
+  display:inline-flex;align-items:center;gap:4px;
+  min-height:26px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid #dfeaf6;
+  font-size:10.5px;
+  line-height:1;
+  font-weight:850;
+  color:#6f849e;
+  white-space:nowrap
+}
+.cluster-stat-v42 b{color:var(--navy);font-weight:950}
+.cluster-stat-v42.new{background:#edf5ff;color:#4774a6;border-color:#d5e6fa}
+.cluster-stat-v42.done{background:#eaf6ee;color:#4b8060;border-color:#d8ecdf}
+.cluster-stat-v42.done b{color:#317047}
+
+.cluster-places-v42{
+  display:grid;
+  gap:8px;
+  padding:12px
+}
+.cluster-place-v42{
+  min-height:72px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:13px;
+  align-items:center;
+  border:1px solid #dfe9f4;
+  border-radius:16px;
+  background:#fff;
+  padding:12px 13px
+}
+.cluster-place-v42.scheduled{
+  background:#f8fcf9;
+  border-color:#dcecdf
+}
+.cluster-place-v42.selected{
+  border-color:#82b4eb;
+  box-shadow:0 0 0 2px rgba(72,137,214,.11)
+}
+.cluster-select-slot-v42{
+  width:34px;
+  min-height:34px;
+  display:grid;
+  place-items:center;
+  align-self:center
+}
+.cluster-select-v42{
+  display:grid;
+  place-items:center;
+  width:28px;height:28px;
+  cursor:pointer
+}
+.cluster-select-v42 input{
+  appearance:none;
+  -webkit-appearance:none;
+  width:22px;height:22px;
+  margin:0;
+  border:2px solid #9aa9bb;
+  border-radius:7px;
+  background:#fff;
+  position:relative;
+  cursor:pointer
+}
+.cluster-select-v42 input:checked{
+  background:var(--blue);
+  border-color:var(--blue)
+}
+.cluster-select-v42 input:checked:after{
+  content:"";
+  position:absolute;
+  left:6px;top:2px;
+  width:5px;height:10px;
+  border:solid #fff;
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg)
+}
+.cluster-done-v42{
+  width:28px;height:28px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  background:#dff1e5;
+  color:#2f7545
+}
+.cluster-done-v42 svg{width:15px;height:15px}
+
+.cluster-place-main-v42{
+  min-width:0;
+  display:block;
+  color:inherit;
+  text-decoration:none;
+  padding:2px 0
+}
+.cluster-place-title-v42{
+  font-size:14px;
+  line-height:1.35;
+  font-weight:900;
+  color:var(--ink);
+  word-break:keep-all;
+  overflow-wrap:anywhere
+}
+.cluster-place-meta-v42{
+  margin-top:4px;
+  font-size:11.5px;
+  line-height:1.35;
+  color:var(--muted)
+}
+.cluster-place-badges-v42{
+  display:flex;gap:5px;flex-wrap:wrap;
+  margin-top:8px
+}
+.cluster-place-badges-v42:empty{display:none}
+
+.cluster-footer-v42{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  padding:0 12px 13px
+}
+.cluster-footer-v42 button{
+  border:0;
+  border-radius:11px;
+  min-height:36px;
+  padding:8px 10px;
+  font-size:10.5px;
+  font-weight:900;
+  background:#edf4fc;
+  color:var(--navy);
+  white-space:nowrap
+}
+.cluster-footer-v42 .primary{
+  background:var(--blue);
+  color:#fff
+}
+.cluster-footer-v42 .map{
+  background:#e8f2ff;
+  color:#285f9d
+}
+
+/* top controls also become lighter / more app-like */
+.group-status{
+  border-radius:16px!important;
+  padding:12px 14px!important
+}
+.map-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  margin:8px 0 10px!important
+}
+.map-view-btn{
+  min-height:40px;
+  border-radius:12px!important;
+  padding:9px 12px!important
+}
+.pool-select-bar-v38{
+  border-radius:15px!important;
+  padding:10px 12px!important;
+  box-shadow:0 4px 14px rgba(31,75,126,.045)
+}
+
+@media(max-width:520px){
+  .cluster-v42{border-radius:19px}
+  .cluster-head-v42{padding:14px 13px 12px}
+  .cluster-name-v42{font-size:16.5px}
+  .cluster-rename-v42{width:30px;height:30px}
+  .cluster-stats-v42{gap:5px;margin-top:9px}
+  .cluster-stat-v42{font-size:10px;padding:5px 7px}
+  .cluster-places-v42{padding:10px;gap:7px}
+  .cluster-place-v42{
+    grid-template-columns:32px minmax(0,1fr);
+    gap:12px;
+    min-height:68px;
+    padding:11px 12px
+  }
+  .cluster-select-slot-v42{width:32px}
+  .cluster-place-title-v42{font-size:13.5px}
+  .cluster-place-meta-v42{font-size:11px}
+  .cluster-footer-v42{padding:0 10px 11px;gap:6px}
+  .cluster-footer-v42 button{min-height:34px;padding:7px 9px;font-size:10px}
 }
 
 </style>
@@ -5580,6 +5808,71 @@ function bindPlanDrag(){
 /* Run one-time legacy recovery after all v41 overrides are loaded. */
 tp41RestoreAllTrips();
 render();
+</script>
+
+
+<script>
+/* ===== v42 location-group visual polish ===== */
+function tp42PencilIcon(){
+  return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 19 3.8-.8L18.6 7.4a1.8 1.8 0 0 0 0-2.5l-.2-.2a1.8 1.8 0 0 0-2.5 0L6 15.5 5 19Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m14.8 5.9 3.2 3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+}
+function tp42CheckIcon(){
+  return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6.5 12.5 3.5 3.5 7.5-8" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function renderClusters(clusters,mode){
+  const t=trip(),idField=mode==='smart'?'smartClusterId':'distanceClusterId';
+  return clusters.map((cl,idx)=>{
+    const places=t.pool
+      .filter(p=>p[idField]===cl.id)
+      .sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0)));
+    if(!places.length)return '';
+
+    const scheduledCount=places.filter(p=>tp38IsPoolScheduled(p,t)).length;
+    const newCount=places.length-scheduledCount;
+
+    return `<section class="cluster-v42" data-cluster="${cl.id}" data-mode="${mode}">
+      <div class="cluster-head-v42">
+        <div class="cluster-title-row-v42">
+          <div class="cluster-name-v42">${esc(cl.name||`GROUP ${idx+1}`)}</div>
+          <button class="cluster-rename-v42" onclick="renameCluster('${cl.id}','${mode}')" aria-label="그룹 이름 수정" title="그룹 이름 수정">${tp42PencilIcon()}</button>
+        </div>
+        <div class="cluster-stats-v42">
+          <span class="cluster-stat-v42"><b>${places.length}</b>곳</span>
+          <span class="cluster-stat-v42 new">새 장소 <b>${newCount}</b></span>
+          ${scheduledCount?`<span class="cluster-stat-v42 done">일정 완료 <b>${scheduledCount}</b></span>`:''}
+        </div>
+      </div>
+
+      <div class="cluster-places-v42">
+        ${places.map(p=>{
+          tp38EnsureReservation(p);
+          const scheduled=tp38IsPoolScheduled(p,t);
+          const url=tp40PoolMapUrl(p,t);
+          return `<div class="cluster-place-v42 ${scheduled?'scheduled':''} ${tp38PoolSelection.has(p.id)?'selected':''}" data-pool="${p.id}">
+            <div class="cluster-select-slot-v42">
+              ${scheduled
+                ?`<span class="cluster-done-v42" title="일정 추가 완료">${tp42CheckIcon()}</span>`
+                :`<label class="cluster-select-v42" onclick="event.stopPropagation()" aria-label="${esc(p.placeName)} 선택"><input type="checkbox" ${tp38PoolSelection.has(p.id)?'checked':''} onchange="tp38TogglePoolSelection('${p.id}',this.checked)"></label>`
+              }
+            </div>
+            <a class="cluster-place-main-v42" href="${esc(url)}" target="_blank" rel="noopener" title="Google 지도에서 열기">
+              <div class="cluster-place-title-v42">${esc(p.placeName)}</div>
+              <div class="cluster-place-meta-v42">${esc(p.category||'기타')}</div>
+              <div class="cluster-place-badges-v42">${scheduled?tp40ScheduledBadge(p,t):''}${tp38ReservationBadge(p)}</div>
+            </a>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="cluster-footer-v42">
+        ${newCount?`<button onclick="tp38SelectCluster('${cl.id}','${mode}')">새 장소 선택/해제</button>`:''}
+        <button class="map" onclick="openGroupMap('${mode}','${cl.id}')">⌖ 지도에서 보기</button>
+        ${newCount?`<button class="primary" onclick="assignClusterDate('${cl.id}','${mode}')">새 장소 전체 추가</button>`:''}
+        <button onclick="splitCluster('${cl.id}','${mode}')">새 그룹 만들기</button>
+      </div>
+    </section>`;
+  }).join('');
+}
 </script>
 
 </body>
