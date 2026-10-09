@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v47</title>
+<title>Trip Pocket Cloud v48</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1652,6 +1652,55 @@ body.plan-dragging-body-v40{user-select:none}
 .route-error-actions-v47 .primary{
   background:var(--blue);
   color:#fff
+}
+
+
+/* ===== v48 group actions moved to header ===== */
+.cluster-head-actions-v48{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:10px
+}
+.cluster-head-actions-v48 button{
+  min-height:34px;
+  border:0;
+  border-radius:10px;
+  padding:7px 9px;
+  font-size:10px;
+  font-weight:900;
+  white-space:nowrap;
+  background:#edf4fc;
+  color:var(--navy)
+}
+.cluster-head-actions-v48 .select.active{
+  background:#dcecff;
+  color:#245d9a;
+  box-shadow:inset 0 0 0 1px #bcd7f4
+}
+.cluster-head-actions-v48 .add{
+  background:var(--blue);
+  color:#fff
+}
+.cluster-head-actions-v48 .map{
+  background:#e8f2ff;
+  color:#285f9d
+}
+.cluster-head-actions-v48 button:disabled{
+  opacity:.42;
+  cursor:default
+}
+/* v48 removes the old bottom action footer */
+.cluster-footer-v42{display:none!important}
+
+@media(max-width:520px){
+  .cluster-head-actions-v48{gap:5px}
+  .cluster-head-actions-v48 button{
+    min-height:32px;
+    padding:7px 8px;
+    font-size:9.8px
+  }
 }
 
 </style>
@@ -6997,6 +7046,148 @@ function renderGroupView(){
       <button class="mode-btn ${smart?'active':''}" onclick="setGroupViewMode('smart')">스마트 이동시간</button>
     </div>
     ${status}${groupsHtml}`;
+}
+</script>
+
+
+<script>
+/* ===== v48 group actions moved to header ===== */
+function tp48GroupSelectableIds(clusterId,mode){
+  const t=trip();
+  if(!t)return [];
+  const field=mode==='smart'?'smartClusterId':'distanceClusterId';
+  return t.pool
+    .filter(p=>p[field]===clusterId&&!tp38IsPoolScheduled(p,t))
+    .map(p=>p.id);
+}
+function tp48GroupSelectedIds(clusterId,mode){
+  return tp48GroupSelectableIds(clusterId,mode).filter(id=>tp38PoolSelection.has(id));
+}
+function tp48AddSelectedFromGroup(clusterId,mode){
+  const ids=tp48GroupSelectedIds(clusterId,mode);
+  if(!ids.length)return toast('추가할 장소를 먼저 선택해주세요');
+  const t=trip();
+  const arr=mode==='smart'?t.smartClusters:t.distanceClusters;
+  const cl=arr.find(x=>x.id===clusterId);
+  tp38OpenAssignPool(ids,cl?.name||'선택 장소');
+}
+
+function tp38UpdateSelectionUI(){
+  const n=tp38PoolSelection.size;
+
+  document.querySelectorAll('[data-v38-selection-count]').forEach(el=>{
+    el.textContent=String(n);
+  });
+  document.querySelectorAll('[data-v38-selection-action]').forEach(el=>{
+    el.disabled=n===0;
+  });
+
+  document.querySelectorAll('.cluster-place-v42[data-pool]').forEach(el=>{
+    const id=el.dataset.pool;
+    const on=tp38PoolSelection.has(id);
+    el.classList.toggle('selected',on);
+    const ck=el.querySelector('input[type="checkbox"]');
+    if(ck)ck.checked=on;
+  });
+  document.querySelectorAll('.cluster-place-v38[data-pool]').forEach(el=>{
+    const id=el.dataset.pool;
+    const on=tp38PoolSelection.has(id);
+    el.classList.toggle('selected',on);
+    const ck=el.querySelector('input[type="checkbox"]');
+    if(ck)ck.checked=on;
+  });
+
+  document.querySelectorAll('[data-cluster-select-all]').forEach(btn=>{
+    const id=btn.dataset.clusterSelectAll;
+    const mode=btn.dataset.clusterMode;
+    const ids=tp48GroupSelectableIds(id,mode);
+    const all=ids.length>0&&ids.every(x=>tp38PoolSelection.has(x));
+    btn.classList.toggle('active',all);
+    btn.textContent=all?'모두 해제':'모두 선택';
+  });
+
+  document.querySelectorAll('[data-cluster-add-selected]').forEach(btn=>{
+    const id=btn.dataset.clusterAddSelected;
+    const mode=btn.dataset.clusterMode;
+    const selected=tp48GroupSelectedIds(id,mode);
+    btn.disabled=selected.length===0;
+    btn.textContent=selected.length?`추가 ${selected.length}`:'추가';
+  });
+}
+
+function renderClusters(clusters,mode){
+  const t=trip(),idField=mode==='smart'?'smartClusterId':'distanceClusterId';
+
+  return clusters.map((cl,idx)=>{
+    const places=t.pool
+      .filter(p=>p[idField]===cl.id)
+      .sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0)));
+    if(!places.length)return '';
+
+    const scheduledCount=places.filter(p=>tp38IsPoolScheduled(p,t)).length;
+    const newPlaces=places.filter(p=>!tp38IsPoolScheduled(p,t));
+    const newCount=newPlaces.length;
+    const selectedCount=newPlaces.filter(p=>tp38PoolSelection.has(p.id)).length;
+    const allNewSelected=newCount>0&&selectedCount===newCount;
+
+    return `<section class="cluster-v42" data-cluster="${cl.id}" data-mode="${mode}">
+      <div class="cluster-head-v42">
+        <div class="cluster-title-row-v42">
+          <div class="cluster-name-v42">${esc(cl.name||`GROUP ${idx+1}`)}</div>
+          <button class="cluster-rename-v42" onclick="renameCluster('${cl.id}','${mode}')" aria-label="그룹 이름 수정" title="그룹 이름 수정">${tp42PencilIcon()}</button>
+        </div>
+
+        <div class="cluster-stats-v42">
+          <span class="cluster-stat-v42"><b>${places.length}</b>곳</span>
+          <span class="cluster-stat-v42 new">새 장소 <b>${newCount}</b></span>
+          ${scheduledCount?`<span class="cluster-stat-v42 done">일정 완료 <b>${scheduledCount}</b></span>`:''}
+        </div>
+
+        <div class="cluster-head-actions-v48">
+          ${newCount?`<button
+            class="select ${allNewSelected?'active':''}"
+            data-cluster-select-all="${cl.id}"
+            data-cluster-mode="${mode}"
+            onclick="tp38SelectCluster('${cl.id}','${mode}')"
+          >${allNewSelected?'모두 해제':'모두 선택'}</button>`:''}
+
+          ${newCount?`<button
+            class="add"
+            data-cluster-add-selected="${cl.id}"
+            data-cluster-mode="${mode}"
+            ${selectedCount?'':'disabled'}
+            onclick="tp48AddSelectedFromGroup('${cl.id}','${mode}')"
+          >${selectedCount?`추가 ${selectedCount}`:'추가'}</button>`:''}
+
+          <button class="map" onclick="openGroupMap('${mode}','${cl.id}')">⌖ 지도</button>
+        </div>
+      </div>
+
+      <div class="cluster-places-v42">
+        ${places.map(p=>{
+          tp38EnsureReservation(p);
+          const scheduled=tp38IsPoolScheduled(p,t);
+          const url=tp40PoolMapUrl(p,t);
+
+          return `<div class="cluster-place-v42 ${scheduled?'scheduled':''} ${tp38PoolSelection.has(p.id)?'selected':''}" data-pool="${p.id}">
+            <div class="cluster-select-slot-v42">
+              ${scheduled
+                ?`<span class="cluster-done-v42" title="일정 추가 완료">${tp42CheckIcon()}</span>`
+                :`<label class="cluster-select-v42" onclick="event.stopPropagation()" aria-label="${esc(p.placeName)} 선택">
+                    <input type="checkbox" ${tp38PoolSelection.has(p.id)?'checked':''} onchange="tp38TogglePoolSelection('${p.id}',this.checked)">
+                  </label>`
+              }
+            </div>
+            <a class="cluster-place-main-v42" href="${esc(url)}" target="_blank" rel="noopener" title="Google 지도에서 열기">
+              <div class="cluster-place-title-v42">${esc(p.placeName)}</div>
+              <div class="cluster-place-meta-v42">${esc(p.category||'기타')}</div>
+              <div class="cluster-place-badges-v42">${scheduled?tp40ScheduledBadge(p,t):''}${tp38ReservationBadge(p)}</div>
+            </a>
+          </div>`;
+        }).join('')}
+      </div>
+    </section>`;
+  }).join('');
 }
 </script>
 
