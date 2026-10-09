@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v40</title>
+<title>Trip Pocket Cloud v41</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1266,6 +1266,34 @@ body.plan-dragging-body-v40{user-select:none}
   .cluster-status-slot-v40{width:26px}
   .plan-drag-handle-v40{width:32px;height:32px}
   .map-place-label-v40{font-size:10px!important;padding:2px 5px}
+}
+
+
+/* ===== v41 legacy pool restore + reliable drag ===== */
+.legacy-restored-v41{display:none}
+
+.plan-drag-handle-v41{
+  width:38px;height:38px;flex:0 0 auto;border:1px solid #d8e5f3;border-radius:11px;
+  background:#f8fbff;color:#5f7fa5;display:grid;place-items:center;padding:0;
+  cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none
+}
+.plan-drag-handle-v41:active{cursor:grabbing;background:#edf5ff}
+.plan-drag-handle-v41 svg{width:18px;height:18px}
+.plan-row.drag-active-v41{position:relative;z-index:30}
+.plan-row.drag-active-v41 .plan-card-v38{
+  border-color:#83b4ec;box-shadow:0 14px 32px rgba(31,75,126,.20);opacity:.95
+}
+.plan-row.drag-target-v41 .plan-card-v38{
+  outline:2px solid #8bbbed;outline-offset:2px
+}
+.plan-drag-placeholder-v41{
+  height:6px;border-radius:999px;background:#7fb4ef;margin:3px 0
+}
+.plan-drag-copy-v41{
+  font-size:9.5px;font-weight:900;color:#7791b2;margin-top:3px;white-space:nowrap
+}
+@media(max-width:520px){
+  .plan-drag-handle-v41{width:36px;height:36px}
 }
 
 </style>
@@ -5303,6 +5331,255 @@ function bindPlanDrag(){
     handle.addEventListener('pointercancel',e=>{if(e.pointerId===pointerId)finish()});
   });
 }
+</script>
+
+
+<script>
+/* ===== v41 fix: restore legacy scheduled places + reliable mobile drag ===== */
+
+/*
+  Older Trip Pocket versions removed a wishlist place from t.pool when a group
+  was assigned to a date. v40 could only mark places that still existed in
+  t.pool, so those legacy scheduled places could not reappear or receive the
+  "일정 추가 완료" badge. This one-time bridge reconstructs them from plans.
+*/
+function tp41LegacyPoolKey(p){
+  if(!p)return '';
+  if(p.sourcePoolId)return 'pool:'+String(p.sourcePoolId);
+  if(p.googlePlaceId)return 'google:'+String(p.googlePlaceId);
+  if(p.lat!=null&&p.lng!=null)return 'coord:'+Number(p.lat).toFixed(5)+','+Number(p.lng).toFixed(5);
+  return 'name:'+String(p.placeName||'').trim().toLowerCase()+'|'+String(p.category||'').trim().toLowerCase();
+}
+function tp41FindPoolMatch(t,plan){
+  if(plan.sourcePoolId){
+    const exact=t.pool.find(p=>p.id===plan.sourcePoolId);
+    if(exact)return exact;
+  }
+  if(plan.googlePlaceId){
+    const g=t.pool.find(p=>p.googlePlaceId&&p.googlePlaceId===plan.googlePlaceId);
+    if(g)return g;
+  }
+  if(plan.lat!=null&&plan.lng!=null){
+    const near=t.pool.find(p=>p.lat!=null&&p.lng!=null&&Math.abs(Number(p.lat)-Number(plan.lat))<0.00003&&Math.abs(Number(p.lng)-Number(plan.lng))<0.00003);
+    if(near)return near;
+  }
+  const name=String(plan.placeName||'').trim().toLowerCase();
+  if(name)return t.pool.find(p=>String(p.placeName||'').trim().toLowerCase()===name)||null;
+  return null;
+}
+function tp41RestoreLegacyScheduledPool(t){
+  if(!t||Number(t.poolPlanBridgeVersion||0)>=2)return false;
+  t.pool=t.pool||[];t.plans=t.plans||[];
+  let changed=false;
+  const seen=new Map();
+  t.pool.forEach(p=>seen.set(tp41LegacyPoolKey(p),p));
+
+  t.plans.forEach((pl,idx)=>{
+    let pool=tp41FindPoolMatch(t,pl);
+    if(!pool){
+      const newId=(pl.sourcePoolId&&!t.pool.some(p=>p.id===pl.sourcePoolId))?pl.sourcePoolId:uid();
+      pool={
+        id:newId,
+        createdAt:Number(pl.createdAt||0)||Date.now()+idx,
+        placeName:pl.placeName||'일정 장소',
+        category:pl.category||'기타',
+        memo:pl.memo||'',
+        reservationRequired:!!pl.reservationRequired,
+        reservationDone:!!pl.reservationDone,
+        reserved:!!pl.reservationDone||!!pl.reserved,
+        reservationWhen:pl.reservationWhen||'',
+        reservationWhere:pl.reservationWhere||'',
+        reservationHow:pl.reservationHow||'',
+        googlePlaceId:pl.googlePlaceId||'',
+        address:pl.address||'',
+        lat:pl.lat??null,
+        lng:pl.lng??null,
+        mapsUrl:pl.mapsUrl||'',
+        weekdayHours:pl.weekdayHours||[],
+        openingPeriods:pl.openingPeriods||[],
+        businessStatus:pl.businessStatus||'',
+        distanceClusterId:null,
+        smartClusterId:null,
+        restoredFromPlan:true
+      };
+      t.pool.push(pool);changed=true;
+    }
+    if(!pl.sourcePoolId||pl.sourcePoolId!==pool.id){
+      pl.sourcePoolId=pool.id;changed=true;
+    }
+  });
+
+  t.poolPlanBridgeVersion=2;
+  if(changed){
+    buildDistanceGroups(t);
+    t.smartPoolSignature='';
+    t.smartClusters=[];
+  }
+  return changed;
+}
+function tp41RestoreAllTrips(){
+  let changed=false;
+  (state.trips||[]).forEach(t=>{
+    normalizeTrip(t);
+    if(tp41RestoreLegacyScheduledPool(t))changed=true;
+  });
+  if(changed)save();
+  return changed;
+}
+
+/* Badge matching is deliberately tolerant for migrated/legacy data. */
+function tp38PlanMatchesPool(plan,p){
+  if(!plan||!p)return false;
+  if(plan.sourcePoolId&&plan.sourcePoolId===p.id)return true;
+  if(p.googlePlaceId&&plan.googlePlaceId&&p.googlePlaceId===plan.googlePlaceId)return true;
+  if(p.lat!=null&&p.lng!=null&&plan.lat!=null&&plan.lng!=null&&Math.abs(Number(p.lat)-Number(plan.lat))<0.00003&&Math.abs(Number(p.lng)-Number(plan.lng))<0.00003)return true;
+  const pn=String(p.placeName||'').trim().toLowerCase(),qn=String(plan.placeName||'').trim().toLowerCase();
+  return !!pn&&pn===qn;
+}
+
+/* Re-run pool render after bridge so scheduled places remain in their original context. */
+function renderPool(){
+  const t=trip();
+  if(tp41RestoreLegacyScheduledPool(t)){save()}
+  const hasCoords=t.pool.filter(p=>p.lat!=null&&p.lng!=null).length;
+  const cats=['전체',...new Set(t.pool.map(p=>p.category).filter(Boolean))];
+  const scheduledPoolCount=t.pool.filter(p=>tp38IsPoolScheduled(p,t)).length;
+  const viewTabs=`<div class="view-tabs"><button class="view-tab ${poolView==='all'?'active':''}" onclick="setPoolView('all')">전체</button><button class="view-tab ${poolView==='group'?'active':''}" onclick="setPoolView('group')">위치그룹</button><button class="view-tab ${poolView==='category'?'active':''}" onclick="setPoolView('category')">카테고리</button></div>`;
+  let body='';
+  if(poolView==='group')body=renderGroupView();
+  else{
+    const base=t.pool.slice().sort((a,b)=>(Number(a.createdAt||0)-Number(b.createdAt||0))).filter(p=>poolView!=='category'||poolCategory==='전체'||p.category===poolCategory);
+    if(poolView==='category'){
+      body=`<div class="filter-wrap"><div class="filter-label">카테고리 필터</div><div class="filter-chips">${cats.map(c=>`<button class="filter-chip ${poolCategory===c?'active':''}" onclick="setPoolCategory('${esc(c)}')">${esc(c)}</button>`).join('')}</div></div>`;
+    }
+    body+=base.length?renderPoolCards(base):`<div class="card empty">표시할 장소가 없습니다.</div>`;
+  }
+  return `${!getApiKey()?`<div class="api-note"><b>Google Places 자동 검색이 아직 연결되지 않았습니다.</b><br>상단 구름 아이콘에서 로그인하면 공용 Google Maps가 자동 연결됩니다.</div>`:''}
+    <div class="section-title"><h3>가고 싶은 곳</h3><button class="addmini" onclick="openPoolForm()">＋ 장소 추가</button></div>
+    <div class="pool-summary"><span><b>${t.pool.length}곳</b> 등록</span><span>·</span><span>일정 추가 완료 ${scheduledPoolCount}곳</span><span>·</span><span>좌표 ${hasCoords}곳</span></div>
+    ${viewTabs}${t.pool.length===0?`<div class="card empty">날짜와 시간은 정하지 말고<br>가고 싶은 장소부터 쌓아보세요.</div>`:body}`;
+}
+
+/* More obvious drag control. Desktop: native drag. Mobile: touch drag on the handle. */
+function tp41DragHandle(){
+  return `<div><button type="button" class="plan-drag-handle-v41" draggable="true" aria-label="끌어서 일정 순서 변경" title="끌어서 일정 순서 변경"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="6" r="1.5"/><circle cx="16" cy="6" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg></button><div class="plan-drag-copy-v41">순서 이동</div></div>`;
+}
+function planCard(p){
+  tp38EnsureReservation(p);
+  const h=hoursForDate(p.date,p.weekdayHours||[],p.openingPeriods||[]);
+  return `<div class="plan-row" data-plan="${p.id}" data-date="${p.date}">
+    <div class="time-label">${displayTime(p.time)}</div>
+    <article class="plan-card plan-card-v38">
+      <div class="plan-card-top-v38"><div class="plan-card-main-v38">
+        <div class="row wrap" style="gap:6px"><span class="badge">${esc(p.category)}</span>${tp38ReservationBadge(p)}</div>
+        <h4 style="margin-top:8px">${esc(p.placeName)}</h4>${p.address?`<div class="itemline">${esc(p.address)}</div>`:''}
+      </div>${tp41DragHandle()}</div>
+      ${h?`<div class="hours"><b>방문일 영업시간</b><br>${esc(h)}</div>`:''}
+      ${tp38ReservationPanel(p)}
+      ${p.memo?`<div class="memo">${esc(p.memo)}</div>`:''}
+      <div class="actions"><a target="_blank" rel="noopener" href="${esc(p.mapsUrl||mapsSearch((p.address||p.placeName)+' '+trip().destination))}">Google 지도</a><button onclick="openPlanForm('${p.id}')">수정</button><button onclick="deletePlan('${p.id}')">삭제</button></div>
+    </article>
+  </div>`;
+}
+function tp41PersistDomOrder(date){
+  const t=trip();
+  const rows=[...document.querySelectorAll(`.plan-row[data-date="${date}"]`)];
+  if(!rows.length)return;
+  rows.forEach((r,i)=>{
+    const p=t.plans.find(x=>x.id===r.dataset.plan);
+    if(p)p.order=i;
+  });
+  t.planManualOrderDates=t.planManualOrderDates||{};
+  t.planManualOrderDates[date]=true;
+  save();
+}
+function tp41MoveRowByPoint(row,date,clientX,clientY){
+  const el=document.elementFromPoint(clientX,clientY);
+  const target=el?.closest?.(`.plan-row[data-date="${date}"]`);
+  if(!target||target===row)return false;
+  const rect=target.getBoundingClientRect();
+  const parent=target.parentNode;
+  if(clientY<rect.top+rect.height/2)parent.insertBefore(row,target);
+  else parent.insertBefore(row,target.nextSibling);
+  return true;
+}
+function bindPlanDrag(){
+  document.querySelectorAll('.plan-drag-handle-v41').forEach(handle=>{
+    const row=handle.closest('.plan-row');
+    const date=row?.dataset.date;
+    if(!row||!date)return;
+
+    /* Desktop / mouse HTML5 drag */
+    handle.addEventListener('dragstart',e=>{
+      dragPlanId=row.dataset.plan;
+      row.classList.add('drag-active-v41');
+      try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',row.dataset.plan)}catch(_){}
+    });
+    handle.addEventListener('dragend',()=>{
+      if(dragPlanId){
+        tp41PersistDomOrder(date);
+        dragPlanId=null;
+        row.classList.remove('drag-active-v41');
+        document.querySelectorAll('.plan-row').forEach(x=>x.classList.remove('drag-target-v41'));
+        renderTab();toast('일정 순서를 바꿨어요');
+      }
+    });
+    document.querySelectorAll(`.plan-row[data-date="${date}"]`).forEach(target=>{
+      if(target.dataset.tp41DesktopBound==='1')return;
+      target.dataset.tp41DesktopBound='1';
+      target.addEventListener('dragover',e=>{
+        if(!dragPlanId)return;e.preventDefault();
+        target.classList.add('drag-target-v41');
+      });
+      target.addEventListener('dragleave',()=>target.classList.remove('drag-target-v41'));
+      target.addEventListener('drop',e=>{
+        if(!dragPlanId)return;e.preventDefault();
+        const src=document.querySelector(`.plan-row[data-plan="${dragPlanId}"]`);
+        if(src&&src!==target&&src.dataset.date===target.dataset.date){
+          const rect=target.getBoundingClientRect();
+          if(e.clientY<rect.top+rect.height/2)target.parentNode.insertBefore(src,target);
+          else target.parentNode.insertBefore(src,target.nextSibling);
+        }
+        target.classList.remove('drag-target-v41');
+      });
+    });
+
+    /* Mobile Safari/Chrome: explicit touch events on the grip. */
+    let touchActive=false,touchMoved=false;
+    handle.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1)return;
+      touchActive=true;touchMoved=false;
+      row.classList.add('drag-active-v41');
+      document.body.classList.add('plan-dragging-body-v40');
+      e.preventDefault();
+    },{passive:false});
+    handle.addEventListener('touchmove',e=>{
+      if(!touchActive||e.touches.length!==1)return;
+      const touch=e.touches[0];
+      if(tp41MoveRowByPoint(row,date,touch.clientX,touch.clientY))touchMoved=true;
+      if(touch.clientY<95)window.scrollBy(0,-12);
+      else if(touch.clientY>window.innerHeight-95)window.scrollBy(0,12);
+      e.preventDefault();
+    },{passive:false});
+    const finishTouch=e=>{
+      if(!touchActive)return;
+      touchActive=false;
+      row.classList.remove('drag-active-v41');
+      document.body.classList.remove('plan-dragging-body-v40');
+      if(touchMoved){
+        tp41PersistDomOrder(date);
+        renderTab();toast('일정 순서를 바꿨어요');
+      }
+      if(e?.cancelable)e.preventDefault();
+    };
+    handle.addEventListener('touchend',finishTouch,{passive:false});
+    handle.addEventListener('touchcancel',finishTouch,{passive:false});
+  });
+}
+
+/* Run one-time legacy recovery after all v41 overrides are loaded. */
+tp41RestoreAllTrips();
+render();
 </script>
 
 </body>
