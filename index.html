@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v46</title>
+<title>Trip Pocket Cloud v47</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1614,6 +1614,44 @@ body.plan-dragging-body-v40{user-select:none}
 @media(max-width:520px){
   .smart-manual-v46{align-items:flex-start;padding:12px}
   .smart-manual-btn-v46{padding:8px 9px}
+}
+
+
+/* ===== v47 routes request error guard ===== */
+.route-error-card-v47{
+  margin:10px 0;
+  padding:12px 13px;
+  border:1px solid #efd9d6;
+  border-radius:14px;
+  background:#fff8f7;
+  color:#8c4b46;
+  font-size:10.5px;
+  line-height:1.5
+}
+.route-error-card-v47 b{
+  display:block;
+  margin-bottom:4px;
+  font-size:11.5px;
+  color:#7d3e39
+}
+.route-error-actions-v47{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:9px
+}
+.route-error-actions-v47 button{
+  border:0;
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:10px;
+  font-weight:900;
+  background:#edf4fc;
+  color:var(--navy)
+}
+.route-error-actions-v47 .primary{
+  background:var(--blue);
+  color:#fff
 }
 
 </style>
@@ -6707,6 +6745,258 @@ async function tpCloudHandleSession(session){
   }else{
     render();
   }
+}
+</script>
+
+
+<script>
+/* ===== v47 routes request error guard ===== */
+function tp47MapsErrorDetails(err){
+  const out={
+    name:err?.name||'',
+    code:err?.code!=null?String(err.code):'',
+    status:err?.status!=null?String(err.status):'',
+    endpoint:err?.endpoint!=null?String(err.endpoint):'',
+    message:err?.message||''
+  };
+  const blob=[out.name,out.code,out.status,out.endpoint,out.message].join(' ').toUpperCase();
+
+  if(/RESOURCE_EXHAUSTED|OVER_QUERY_LIMIT|QUOTA|RATE_LIMIT|429/.test(blob)){
+    out.kind='quota';
+    out.userTitle='Routes API 요청 한도에 도달한 것 같아요.';
+    out.userMessage='스마트 이동시간 계산을 중단했습니다. 오늘은 단순 거리 그룹을 그대로 사용할 수 있습니다.';
+  }else if(/PERMISSION_DENIED|REQUEST_DENIED|API_KEY|REFERER|403/.test(blob)){
+    out.kind='permission';
+    out.userTitle='Routes API 권한 또는 API 키 제한을 확인해야 해요.';
+    out.userMessage='Maps JavaScript API는 열리지만 Route Matrix 요청만 거부될 때 발생할 수 있습니다.';
+  }else if(/INVALID_ARGUMENT|400/.test(blob)){
+    out.kind='request';
+    out.userTitle='Routes API 요청 값이 거부됐어요.';
+    out.userMessage='문제가 된 요청은 중단하고 앱은 계속 사용할 수 있게 처리했습니다.';
+  }else{
+    out.kind='request';
+    out.userTitle='Google Routes 요청을 완료하지 못했어요.';
+    out.userMessage='스마트 계산만 중단하고 다른 기능은 계속 사용할 수 있습니다.';
+  }
+  return out;
+}
+
+function errorText(err){
+  if(!err)return '알 수 없는 오류';
+  const d=tp47MapsErrorDetails(err);
+  const parts=[d.name,d.code,d.status,d.endpoint,d.message].filter(Boolean);
+  try{
+    if(err.details)parts.push(typeof err.details==='string'?err.details:JSON.stringify(err.details));
+  }catch(e){}
+  return [...new Set(parts)].join(' · ')||String(err);
+}
+
+/*
+  Smart grouping only needs a rough, stable grouping. Coordinate-keyed cache is
+  reused indefinitely until a place's coordinates change. Do not burn quota by
+  force-recalculating already known pairs on every button press.
+*/
+async function tp46StartSmart(force=false){
+  const t=trip();
+  if(!t)return;
+
+  const pointCount=(t.pool||[]).filter(p=>p.lat!=null&&p.lng!=null).length;
+  if(pointCount<2){
+    toast('좌표가 있는 장소가 2곳 이상 필요해요');
+    return;
+  }
+  if(!getApiKey()){
+    toast('Google Maps 연결을 확인해주세요');
+    return;
+  }
+  if(tp46SmartRunning(t)){
+    toast('이동시간을 계산하고 있어요');
+    return tp45SmartJobs.get(t.id);
+  }
+
+  /*
+    Do not clear smartRouteCache. If coordinates changed, routeCacheEntry()
+    invalidates only the affected pair automatically.
+  */
+  if(force){
+    t.smartClusters=[];
+    t.smartPoolSignature='';
+    (t.pool||[]).forEach(p=>p.smartClusterId=null);
+    save();
+  }
+
+  updateSmartDiag(t,{
+    phase:'loading_maps',
+    message:'저장된 이동시간은 재사용하고 필요한 구간만 계산합니다.',
+    error:'',errorName:'',failedPhase:'',done:0,total:0,
+    walkDone:0,walkTotal:0,transitDone:0,transitTotal:0
+  },true);
+
+  try{
+    return await ensureSmartGroups(t,false,true);
+  }catch(err){
+    const d=tp47MapsErrorDetails(err);
+    updateSmartDiag(t,{
+      phase:'error',
+      failedPhase:t.smartDiag?.failedPhase||'routes',
+      message:d.userTitle,
+      error:errorText(err),
+      errorName:d.name||'MAPS_REQUEST_ERROR',
+      errorKind:d.kind
+    },true);
+  }
+}
+
+async function refreshSmartGroups(){
+  return tp46StartSmart(false);
+}
+
+/* If the underlying matrix call fails, never let it bubble into the page. */
+const tp47ComputePairModeBase=computePairMode;
+computePairMode=async function(t,pairs,mode){
+  try{
+    return await tp47ComputePairModeBase(t,pairs,mode);
+  }catch(err){
+    const d=tp47MapsErrorDetails(err);
+    console.error('Route Matrix request failed',d,err);
+    updateSmartDiag(t,{
+      phase:'error',
+      failedPhase:mode==='walk'?'walk':'transit',
+      message:d.userTitle,
+      error:errorText(err),
+      errorName:d.name||'MAPS_REQUEST_ERROR',
+      errorKind:d.kind
+    },true);
+    return false;
+  }
+};
+
+/*
+  Wrapper around smart grouping: if either walking or transit returned false,
+  stop cleanly instead of continuing with half-computed data.
+*/
+ensureSmartGroups=async function(t,force=false,rerender=false){
+  if(!t)return;
+  if(!getApiKey()){
+    updateSmartDiag(t,{phase:'error',failedPhase:'loading_maps',message:'Google Maps 연결이 필요합니다.',error:'로그인/Google Maps 연결 상태를 확인해주세요.',errorName:'NO_API_KEY'},rerender);
+    return;
+  }
+
+  const pts=t.pool.filter(p=>p.lat!=null&&p.lng!=null);
+  if(pts.length<2){
+    updateSmartDiag(t,{phase:'idle',message:'좌표가 있는 장소가 2곳 이상 필요합니다.',error:'',errorName:'',done:0,total:0},rerender);
+    return;
+  }
+
+  const sig=poolCoordSignature(t);
+  if(!force&&t.smartPoolSignature===sig&&t.smartClusters.length){
+    updateSmartDiag(t,{phase:'done',message:`${pts.length}개 장소의 저장된 계산 결과를 사용 중입니다.`,error:'',errorName:'',done:1,total:1},rerender);
+    return;
+  }
+
+  const pairs=getCandidatePairs(t,6);
+  updateSmartDiag(t,{
+    phase:'loading_maps',
+    message:`후보 ${pairs.length}개 쌍 · 저장값 확인 중`,
+    error:'',errorName:'',errorKind:'',failedPhase:'',
+    done:0,total:pairs.length,walkDone:0,walkTotal:0,transitDone:0,transitTotal:0
+  },rerender);
+
+  const walkNeed=pairs.filter(pair=>!routeCacheEntry(t,pair).walkChecked);
+  if(walkNeed.length){
+    const ok=await computePairMode(t,walkNeed,'walk');
+    if(ok===false)return;
+  }
+
+  const transitNeed=pairs.filter(pair=>{
+    const e=routeCacheEntry(t,pair);
+    return !(e.walkMin!=null&&e.walkMin<=20)&&!e.transitChecked;
+  });
+
+  if(transitNeed.length){
+    const ok=await computePairMode(t,transitNeed,'transit');
+    if(ok===false)return;
+  }
+
+  updateSmartDiag(t,{phase:'grouping',message:'저장된 이동시간 결과로 그룹 생성 중',done:0,total:1},rerender);
+  buildSmartGroupsFromCache(t,pairs);
+  t.smartPoolSignature=sig;
+  updateSmartDiag(t,{phase:'done',message:`완료 · ${t.smartClusters.length}개 그룹 생성`,done:1,total:1,error:'',errorName:'',errorKind:'',failedPhase:''},rerender);
+  save();
+}
+
+/* Error-aware smart page. */
+function renderGroupView(){
+  const t=trip();
+  if(tp44ResetGroupingPolicy(t))save();
+
+  const smart=groupViewMode==='smart';
+  const clusters=smart?t.smartClusters:t.distanceClusters;
+  const count=t.pool.filter(p=>p.lat!=null&&p.lng!=null).length;
+  const ready=smart&&tp46SmartReady(t);
+  const running=smart&&tp46SmartRunning(t);
+  const diag=t.smartDiag||{};
+
+  let status='';
+  if(smart){
+    const label=running?'이동시간 계산 중':ready?'이동시간 계산 완료':diag.phase==='error'?'이동시간 계산 오류':'아직 이동시간 계산 전';
+    status=`<div class="group-status"><div class="row"><span>${label} · 좌표 ${count}곳</span></div></div>
+      <div class="smart-manual-v46">
+        <div class="smart-manual-copy-v46">
+          <b>${running?'계산하고 있습니다.':ready?'저장된 이동시간 그룹을 사용 중입니다.':diag.phase==='error'?'스마트 계산을 중단했습니다.':'필요할 때만 계산합니다.'}</b>
+          ${running
+            ?esc(diag.message||'도보/대중교통 이동시간을 확인하고 있습니다.')
+            :ready
+              ?'같은 좌표의 이동시간은 다시 요청하지 않습니다.'
+              :diag.phase==='error'
+                ?'단순 거리 기준은 계속 사용할 수 있습니다.'
+                :'버튼을 눌렀을 때만 Routes API를 호출하며, 이미 계산한 구간은 캐시를 재사용합니다.'}
+        </div>
+        <button class="smart-manual-btn-v46" ${running?'disabled':''} onclick="tp46StartSmart(false)">
+          ${running?'계산 중…':ready?'저장 결과 확인':'이동시간 계산'}
+        </button>
+      </div>`;
+
+    if(diag.phase==='error'){
+      const fake={name:diag.errorName||'',message:diag.error||'',code:'',status:'',endpoint:''};
+      const d=tp47MapsErrorDetails(fake);
+      status+=`<div class="route-error-card-v47">
+        <b>${esc(diag.message||d.userTitle)}</b>
+        ${esc(d.userMessage)}
+        ${diag.error?`<div style="margin-top:5px;opacity:.78">${esc(diag.error)}</div>`:''}
+        <div class="route-error-actions-v47">
+          <button class="primary" onclick="setGroupViewMode('distance')">단순 거리 기준으로 보기</button>
+          <button onclick="tp46StartSmart(false)">누락 구간 다시 시도</button>
+        </div>
+      </div>`;
+    }
+  }else{
+    status=`<div class="group-status"><div class="row"><span>직선거리 약 1.5km 기준 · 자동 그룹</span><button class="refresh-mini" onclick="refreshDistanceGroups()">↻ 위치 기준 재그룹</button></div></div>`;
+  }
+
+  tp38CleanPoolSelection();
+  const selectable=t.pool.filter(p=>!tp38IsPoolScheduled(p,t)&&p.lat!=null&&p.lng!=null).length;
+
+  let groupsHtml='';
+  if(smart&&!ready&&!running){
+    groupsHtml=`<div class="card empty">${diag.phase==='error'?'스마트 이동시간 계산을 사용할 수 없습니다. 위 오류 내용을 확인해주세요.':'이동시간 계산 전입니다.<br>「이동시간 계산」을 누르면 필요한 구간만 계산합니다.'}</div>`;
+  }else if(smart&&running&&!clusters.length){
+    groupsHtml=`<div class="card empty">${esc(diag.message||'이동시간을 계산하고 있습니다.')}</div>`;
+  }else if(clusters.length){
+    groupsHtml=`
+      <div class="map-toolbar"><button class="map-view-btn" onclick="openGroupMap('${smart?'smart':'distance'}')">⌖ 전체 그룹 지도</button></div>
+      ${selectable?`<div class="pool-select-bar-v38"><div class="count">새 장소 선택 <span data-v38-selection-count>${tp38PoolSelection.size}</span>곳</div><button data-v38-selection-action ${tp38PoolSelection.size?'':'disabled'} onclick="tp38OpenAssignSelected()">선택 일정에 추가</button></div>`:''}
+      ${renderClusters(clusters,smart?'smart':'distance')}`;
+  }else{
+    groupsHtml=`<div class="card empty">${smart?'계산 결과가 아직 없습니다.':'좌표가 있는 장소가 있으면 위치 기준으로 자동 그룹화됩니다.'}</div>`;
+  }
+
+  return `<div class="subhead"><div class="subhead-title">그룹 기준</div></div>
+    <div class="mode-toggle">
+      <button class="mode-btn ${!smart?'active':''}" onclick="setGroupViewMode('distance')">단순 거리 기준</button>
+      <button class="mode-btn ${smart?'active':''}" onclick="setGroupViewMode('smart')">스마트 이동시간</button>
+    </div>
+    ${status}${groupsHtml}`;
 }
 </script>
 
