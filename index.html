@@ -1779,6 +1779,16 @@ body.plan-dragging-body-v40{user-select:none}
 @media(max-width:360px){.person-settlement-head{gap:8px}.person-settlement-balance{font-size:13px!important}.person-item-done{padding:8px}.person-settlement-item{gap:7px}}
 </style>
 
+<style>
+.batch-settlement{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+.batch-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.batch-top h4{font-size:15px;margin:0}.batch-top button{font-size:12px!important;min-height:44px}
+.batch-people{margin:12px 0;border-top:1px solid #edf0f5}.batch-person{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #edf0f5;font-size:13px;line-height:1.5}.batch-person b{min-width:0;overflow-wrap:anywhere}.batch-person>span{display:grid;text-align:right;min-width:0;overflow-wrap:anywhere;font-size:13px}.batch-person strong{font-size:13px}.batch-person .receive{color:#299768}.batch-person .owe{color:#d85766}
+.batch-filters{display:flex;background:#f0f3f8;border-radius:12px;padding:4px;gap:4px;margin-top:14px}.batch-filters button{flex:1;border:0;background:transparent;min-height:44px;border-radius:9px;font-size:13px;color:#738197;font-weight:750}.batch-filters button.active{background:#fff;color:var(--navy);box-shadow:0 1px 5px #16325a0d}.batch-filters span{font-size:11px;margin-left:3px}
+.batch-select-all{display:flex;gap:9px;align-items:center;min-height:48px;font-size:12px;color:#62738a}.batch-select-all span{margin-left:auto;font-size:11px}.batch-settlement input[type=checkbox]{width:20px;height:20px;flex:0 0 20px;accent-color:#4b87db;margin:0;cursor:pointer}.batch-check{min-height:44px;width:32px;display:flex;align-items:flex-start;justify-content:center;padding-top:3px;box-sizing:border-box;color:#299768}
+.batch-item{display:flex;align-items:flex-start;gap:8px;border-top:1px solid #edf0f5;padding:14px 0}.batch-item-body{min-width:0;flex:1}.batch-title{font-size:14px!important;line-height:1.5;font-weight:750;overflow-wrap:anywhere}.batch-meta{font-size:11px!important;line-height:1.5;color:#8290a2;margin-top:3px;overflow-wrap:anywhere}.batch-money{font-size:14px!important;font-weight:800;color:var(--navy);margin-top:7px;overflow-wrap:anywhere}.batch-detail{font-size:11px;color:#7c899b;margin-top:6px}.batch-detail summary{cursor:pointer;min-height:32px;display:flex;align-items:center}.batch-detail summary:after{content:'⌄';margin-left:6px}.batch-detail[open] summary:after{content:'⌃'}.batch-detail>div{padding:6px 0;line-height:1.7;overflow-wrap:anywhere}.batch-undo{border:0;border-radius:8px;min-height:44px;padding:8px;background:#f0f3f7;color:#6b7c92;font-size:11px!important;white-space:nowrap}.batch-empty{padding:32px 10px;text-align:center;font-size:13px;color:#8290a2}
+.batch-submit{position:sticky;bottom:0;z-index:5;margin:8px -14px -14px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#fffffffa;border-top:1px solid #e5eaf1;border-radius:0 0 18px 18px;box-shadow:0 -5px 18px #24364c08;backdrop-filter:blur(10px)}.batch-selected-total{font-size:13px;font-weight:750;color:var(--navy);margin-bottom:9px;line-height:1.5;overflow-wrap:anywhere}.batch-submit button{width:100%;min-height:48px;border:0;border-radius:12px;background:#387dda;color:#fff;font-size:14px!important;font-weight:800}.batch-submit button:disabled{background:#e6ebf2;color:#9aa6b6}.batch-submit small{display:block;font-size:10px;color:#8c99aa;margin-top:7px;text-align:center}.batch-note{font-size:11px;line-height:1.6;color:#8b7655;background:#fff8e9;padding:10px;border-radius:8px}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -7283,23 +7293,42 @@ function tp43ToggleItem(key){
   t.itemSettlementDone[key]=!t.itemSettlementDone[key];save();renderTab();
 }
 function tp49RememberOpen(key,open){window.tp49SettlementOpen=window.tp49SettlementOpen||{};window.tp49SettlementOpen[key]=open}
+function tp50UI(){
+  window.tp50SettlementUI=window.tp50SettlementUI||{};
+  const id=trip().id;return window.tp50SettlementUI[id]||(window.tp50SettlementUI[id]={filter:'pending',selected:new Set()});
+}
+function tp50VisibleRows(t){
+  const ui=tp50UI();return tp43SettlementRows(t).filter(r=>ui.filter==='all'||(ui.filter==='done'?r.done:!r.done));
+}
+function tp50Filter(filter){
+  const ui=tp50UI();ui.filter=filter;ui.selected.clear();renderTab();
+}
+function tp50Select(key,checked){
+  const ui=tp50UI();if(checked)ui.selected.add(key);else ui.selected.delete(key);renderTab();
+}
+function tp50SelectAll(checked){
+  const ui=tp50UI();tp50VisibleRows(trip()).filter(r=>!r.done).forEach(r=>{if(checked)ui.selected.add(r.key);else ui.selected.delete(r.key)});renderTab();
+}
+function tp50Complete(){
+  const t=trip(),ui=tp50UI(),rows=tp43SettlementRows(t).filter(r=>!r.done&&ui.selected.has(r.key));if(!rows.length)return;
+  t.itemSettlementDone=t.itemSettlementDone||{};rows.forEach(r=>t.itemSettlementDone[r.key]=true);ui.selected.clear();save();renderTab();toast(`${rows.length}건 정산 완료 처리했어요`);
+}
 function tp23SettlementView(t){
-  const rows=tp43SettlementRows(t),stats=tp22ExpenseStatsDisplay(t);
+  const ui=tp50UI(),rows=tp43SettlementRows(t),visible=tp50VisibleRows(t),pending=rows.filter(r=>!r.done),done=rows.filter(r=>r.done);
+  const valid=new Set(pending.map(r=>r.key));for(const key of ui.selected)if(!valid.has(key))ui.selected.delete(key);
+  const selected=pending.filter(r=>ui.selected.has(r.key)),selectable=visible.filter(r=>!r.done),net={},totals={};let unknown=0;
+  const amountOf=r=>settlementDisplayMode==='krw'?r.krw:r.amount,currencyOf=r=>settlementDisplayMode==='krw'?'KRW':r.e.currency;
+  pending.forEach(r=>{const c=currencyOf(r),v=amountOf(r);if(v==null)return;net[c]=net[c]||{};net[c][r.person]=(net[c][r.person]||0)-v;net[c][r.e.payer]=(net[c][r.e.payer]||0)+v});
+  selected.forEach(r=>{const v=amountOf(r),c=currencyOf(r);if(v==null)unknown++;else totals[c]=(totals[c]||0)+v});
   const people=[...new Set([...(t.expenseMembers||[]),...rows.flatMap(r=>[r.person,r.e.payer])])];
-  const legacy=Object.values(t.settlementDone||{}).some(Boolean);
-  return `<div class="settle-summary"><div class="settle-stat"><div class="k">총 지출</div><div class="v">${tp20FmtKRW(stats.totalKrw)}</div></div><div class="settle-stat"><div class="k">참여 인원</div><div class="v">${people.length}명</div></div><div class="settle-stat"><div class="k">항목별 정산 완료</div><div class="v">${rows.filter(r=>r.done).length}/${rows.length}</div></div></div>
-  ${legacy?'<div class="notice-inline">기존 합산 완료 기록은 보존됩니다. 항목별 완료 여부는 아래에서 확인해 주세요.</div>':''}
-  <section class="settle-section settlement-compact"><div class="settle-section-head"><h4>사람별 정산</h4><div class="settle-display-toggle"><button class="${settlementDisplayMode==='original'?'active':''}" onclick="settlementDisplayMode='original';renderTab()">결제 통화</button><button class="${settlementDisplayMode==='krw'?'active':''}" onclick="settlementDisplayMode='krw';renderTab()">원화</button></div></div>
-  ${settlementDisplayMode==='krw'&&rows.some(r=>!r.done&&r.krw==null)?'<div class="notice-inline">환율 미확인 항목은 원화 합계에서 제외됩니다.</div>':''}
-  <div class="person-settlements">${people.map(person=>{
-    const items=rows.filter(r=>r.person===person||r.e.payer===person),net={};
-    items.filter(r=>!r.done).forEach(r=>{const currency=settlementDisplayMode==='krw'?'KRW':r.e.currency,v=settlementDisplayMode==='krw'?r.krw:r.amount;if(v!=null)net[currency]=(net[currency]||0)+(r.e.payer===person?v:-v)});
-    const balances=Object.entries(net).filter(([,v])=>Math.abs(v)>.001);
-    const key=JSON.stringify([t.id,person]),open=!!window.tp49SettlementOpen?.[key];
-    return `<div class="person-settlement"><div class="person-settlement-head"><span class="person-settlement-name">${esc(person)}</span><div class="person-settlement-balance">${balances.map(([c,v])=>`<span class="${v>0?'receive':'owe'}">${v>0?'받을':'지불'} ${tp20FmtMoney(Math.abs(v),c)}</span>`).join('')||'<span class="muted">남은 잔액 없음</span>'}</div></div>
-    <details class="person-settlement-details" ${open?'open':''} ontoggle="tp49RememberOpen(${esc(JSON.stringify(key))},this.open)"><summary><span class="when-closed">정산 확인 펼치기</span><span class="when-open">정산 확인 접기</span><span class="person-settlement-count">${items.filter(r=>r.done).length}/${items.length}건 완료</span><span class="person-settlement-chevron" aria-hidden="true">⌄</span></summary>
-    <div class="person-settlement-items">${items.slice().sort((a,b)=>String(a.e.date).localeCompare(String(b.e.date))).map(r=>`<div class="person-settlement-item"><div class="person-item-info"><div class="person-item-title">${esc(r.e.merchant||'결제 내역')}</div><div class="person-item-meta">${fmt(r.e.date)} · ${esc(r.person)} → ${esc(r.e.payer)}</div><div class="person-item-amount">${settlementDisplayMode==='original'?tp20FmtMoney(r.amount,r.e.currency):r.krw==null?'환율 확인 필요':tp20FmtKRW(r.krw)}</div></div><button type="button" class="person-item-done ${r.done?'is-done':''}" aria-pressed="${r.done}" onclick="tp43ToggleItem(${esc(JSON.stringify(r.key))})">${r.done?'✓ 완료 취소':'정산 완료'}</button></div>`).join('')||'<div class="person-item-empty">정산할 항목이 없습니다.</div>'}</div></details></div>`;
-  }).join('')||'<div class="settle-empty">등록된 정산 멤버가 없습니다.</div>'}</div></section>`;
+  const money=r=>amountOf(r)==null?'환율 확인 필요':tp20FmtMoney(amountOf(r),currencyOf(r));
+  return `<section class="batch-settlement"><div class="batch-top"><h4>남은 정산</h4><div class="settle-display-toggle"><button class="${settlementDisplayMode==='original'?'active':''}" onclick="settlementDisplayMode='original';renderTab()">결제 통화</button><button class="${settlementDisplayMode==='krw'?'active':''}" onclick="settlementDisplayMode='krw';renderTab()">원화</button></div></div>
+  <div class="batch-people">${people.map(p=>`<div class="batch-person"><b>${esc(p)}</b><span>${Object.entries(net).filter(([,n])=>Math.abs(n[p]||0)>.001).map(([c,n])=>`<strong class="${n[p]>0?'receive':'owe'}">${n[p]>0?'받을':'보낼'} ${tp20FmtMoney(Math.abs(n[p]),c)}</strong>`).join('')||'남은 잔액 없음'}</span></div>`).join('')}</div>
+  ${settlementDisplayMode==='krw'&&pending.some(r=>r.krw==null)?'<div class="batch-note">환율 미확인 항목은 원화 요약에서 제외됩니다. 결제 통화로 확인해 주세요.</div>':''}
+  <div class="batch-filters">${[['pending','미정산',pending.length],['done','완료',done.length],['all','전체',rows.length]].map(([key,label,count])=>`<button aria-pressed="${ui.filter===key}" class="${ui.filter===key?'active':''}" onclick="tp50Filter('${key}')">${label} <span>${count}</span></button>`).join('')}</div>
+  ${selectable.length?`<label class="batch-select-all"><input type="checkbox" ${selectable.every(r=>ui.selected.has(r.key))?'checked':''} onchange="tp50SelectAll(this.checked)">미정산 전체 선택 <span>${selected.length}건 선택</span></label>`:''}
+  <div class="batch-list">${visible.slice().sort((a,b)=>String(a.e.date).localeCompare(String(b.e.date))).map(r=>`<article class="batch-item ${r.done?'is-complete':''}"><div class="batch-check">${r.done?'<span aria-label="정산 완료">✓</span>':`<input type="checkbox" aria-label="${esc(r.e.merchant||'결제 내역')} ${esc(r.person)} 정산 선택" ${ui.selected.has(r.key)?'checked':''} onchange="tp50Select(${esc(JSON.stringify(r.key))},this.checked)">`}</div><div class="batch-item-body"><div class="batch-title">${esc(r.e.merchant||'결제 내역')}</div><div class="batch-meta">${fmt(r.e.date)} · ${esc(r.person)} → ${esc(r.e.payer)}</div><div class="batch-money">${money(r)}</div><details class="batch-detail"><summary>상세 정보</summary><div>${esc(r.e.category||'기타')} · ${esc(r.e.payMethod||'결제수단 미등록')}<br>전체 결제 ${tp20FmtMoney(r.e.amount,r.e.currency)}${r.e.memo?`<br>${esc(r.e.memo)}`:''}</div></details></div>${r.done?`<button class="batch-undo" onclick="tp43ToggleItem(${esc(JSON.stringify(r.key))})">완료 취소</button>`:''}</article>`).join('')||`<div class="batch-empty">${ui.filter==='done'?'완료한 정산이 없습니다.':ui.filter==='pending'?'미정산 항목이 없습니다.':'정산할 항목이 없습니다.'}</div>`}</div>
+  ${ui.filter!=='done'?`<div class="batch-submit"><div class="batch-selected-total">${selected.length}건 선택${selected.length?' · '+Object.entries(totals).map(([c,v])=>tp20FmtMoney(v,c)).join(' + '):''}${unknown?` · ${unknown}건 환율 미확인`:''}</div><button ${selected.length?'':'disabled'} onclick="tp50Complete()">${selected.length?`선택한 ${selected.length}건 정산 완료`:'정산할 항목을 선택하세요'}</button><small>실제 송금 후 완료 처리해 주세요.</small></div>`:''}</section>`;
 }
 
 /* Daily course map and editable title */
