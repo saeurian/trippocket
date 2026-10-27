@@ -4810,6 +4810,7 @@ function tp20RenderFlights(){
         <div class="transport-meta-line nowrap"><span>${esc(tp34FormatFlightTime(f.departTime))}</span><span class="meta-arrow">→</span><span>${esc(tp34FormatFlightTime(f.arriveTime))}</span></div>
         ${f.from&&f.to?`<div class="transport-meta-line route"><span>${esc(f.from)}</span><span class="meta-arrow">→</span><span>${esc(f.to)}</span></div>`:''}
       </div>
+      <div class="transport-actions"><button class="ghost-mini" onclick="openFlightForm(${esc(JSON.stringify(f.id))})">수정</button></div>
     </div>`).join('')}</div>`:`<div class="empty-note2">등록한 항공편이 없습니다.</div>`}
   </div>`;
 }
