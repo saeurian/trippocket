@@ -1704,6 +1704,44 @@ body.plan-dragging-body-v40{user-select:none}
 }
 
 </style>
+<style>
+/* Mobile layout refinements */
+@media(max-width:600px){
+  .app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+  input,select,textarea{font-size:16px!important;max-width:100%;min-width:0;box-sizing:border-box}
+  button,a.transport-link{touch-action:manipulation}
+  button{min-height:44px}
+  .tab-grid{display:flex!important;overflow-x:auto;gap:6px!important;padding:4px 0 9px;scrollbar-width:thin;grid-template-columns:none!important}
+  .tab-grid .tab{flex:0 0 auto;min-width:60px;padding:10px 12px!important;white-space:nowrap}
+  .section-card,.settle-section{padding:14px;border-radius:18px;min-width:0}
+  .section-head,.home-section-title,.settle-section-head,.exp-list-toolbar{flex-wrap:wrap;gap:10px}
+  .section-head .actions{flex-wrap:wrap;max-width:100%}
+  .triphead2-top{gap:10px}.trip-meta2 h2{font-size:22px;overflow-wrap:anywhere}
+  .home-two-col,.home-expense-graph-grid,.chart-grid{grid-template-columns:minmax(0,1fr)}
+  .expense-settings-strip{display:flex;flex-wrap:wrap;gap:8px}.exp-setting{flex:1 1 100%}.exp-setting-btn{flex:1 1 100px}
+  .filter-row{display:flex;flex-wrap:wrap;gap:6px}
+  .exp-flat-main{grid-template-columns:34px minmax(0,1fr)!important;gap:10px}
+  .exp-money-pair{grid-column:1/-1;width:100%;box-sizing:border-box}
+  .exp-money-val,.exp-total-krw,.transfer-amt,.settle-stat .v{overflow-wrap:anywhere}
+  .exp-list-merchant,.transport-title,.transport-meta,.exp-sub,.exp-title{overflow-wrap:anywhere}
+  .exp-total-main{flex-wrap:wrap;gap:12px}.exp-currency-totals{max-width:100%}
+  .settle-summary{gap:6px}.settle-stat{padding:10px 7px}.settle-stat .v{font-size:16px}
+  .transfer-card{gap:10px;flex-wrap:wrap;padding:12px 0}.transfer-done{flex-shrink:0;min-height:44px}
+  .member-settle-row{grid-template-columns:32px minmax(0,1fr)!important;gap:8px}
+  .member-settle-row .balance-stack{grid-column:2;text-align:left}
+  .transport-actions{display:flex;gap:8px;margin-top:12px}.transport-actions button{min-width:76px}
+  .sheet{max-height:92dvh;padding:12px 16px calc(24px + env(safe-area-inset-bottom));overscroll-behavior:contain;box-sizing:border-box}
+  .sheet .form-actions{position:sticky;bottom:0;background:var(--bg);padding:10px 0;z-index:2}
+  .sheet .field{min-width:0}.sheet .grid2{gap:10px}
+  .flight-time-fields{grid-template-columns:72px minmax(0,1fr) 10px minmax(0,1fr)}
+  .sheet .grid2:has(.flight-time-fields){grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:380px){
+  .sheet .grid2{grid-template-columns:minmax(0,1fr)}
+  .settle-stat .v{font-size:14px}.settle-stat .k{font-size:10px}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -4543,13 +4581,14 @@ function tp34ReadFlightTime(prefix){
   if(ap==='AM'&&h===12)h=0;
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 }
-function openFlightForm(){
-  const t=trip();
-  openSheet(`<h2>항공편 추가</h2><form id="flightForm">
-    <div class="field"><label>탑승일</label><input type="date" name="date" value="${esc(t.start)}" required></div>
-    <div class="grid2"><div class="field"><label>출발지</label><input name="from" required></div><div class="field"><label>도착지</label><input name="to" required></div></div>
-    <div class="grid2">${tp34FlightTimeField('depart','출발 시간','09:00','09:00')}${tp34FlightTimeField('arrive','도착 시간','11:00','11:00')}</div>
-    <div class="grid2"><div class="field"><label>항공사</label><input name="airline"></div><div class="field"><label>편명</label><input name="flightNo"></div></div>
+function openFlightForm(id=null){
+  const t=trip(), flight=id?t.flights.find(f=>f.id===id):null;
+  if(id&&!flight)return toast("항공편을 찾을 수 없습니다");
+  openSheet(`<h2>항공편 ${flight?"수정":"추가"}</h2><form id="flightForm">
+    <div class="field"><label>탑승일</label><input type="date" name="date" value="${esc(flight?.date||t.start)}" required></div>
+    <div class="grid2"><div class="field"><label>출발지</label><input name="from" value="${esc(flight?.from||'')}" required></div><div class="field"><label>도착지</label><input name="to" value="${esc(flight?.to||'')}" required></div></div>
+    <div class="grid2">${tp34FlightTimeField('depart','출발 시간',flight?.departTime||'09:00','09:00')}${tp34FlightTimeField('arrive','도착 시간',flight?.arriveTime||'11:00','11:00')}</div>
+    <div class="grid2"><div class="field"><label>항공사</label><input name="airline" value="${esc(flight?.airline||'')}"></div><div class="field"><label>편명</label><input name="flightNo" value="${esc(flight?.flightNo||'')}"></div></div>
     <div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">저장</button></div>
   </form>`);
   document.getElementById('flightForm').onsubmit=e=>{
@@ -4557,7 +4596,7 @@ function openFlightForm(){
     const d=Object.fromEntries(new FormData(e.currentTarget));
     d.departTime=tp34ReadFlightTime('depart');
     d.arriveTime=tp34ReadFlightTime('arrive');
-    trip().flights.push({id:uid(),...d});
+    if(flight)Object.assign(flight,d);else t.flights.push({id:uid(),...d});
     save();closeSheet();renderTab();toast('항공편을 저장했어요');
   };
 }
@@ -7188,6 +7227,42 @@ function renderClusters(clusters,mode){
       </div>
     </section>`;
   }).join('');
+}
+/* Item-level settlement: stored independently of display currency and exchange rates. */
+function tp43SettlementRows(t){
+  return (t.expenses||[]).flatMap(e=>{
+    const original=tp23OriginalShares(e), d=tp22GetExpenseViewData(e,t.expenseRateMode);
+    const krw=d.krw==null?{}:tp22ExpenseShareKrw(e,d.krw);
+    return Object.entries(original).filter(([person,amount])=>person!==e.payer&&amount>0).map(([person,amount])=>{
+      const key=JSON.stringify([e.id,e.payer,person,e.currency,Number(amount)]);
+      return {e,person,amount,krw:krw[person],key,done:!!t.itemSettlementDone?.[key]};
+    });
+  });
+}
+function tp43ToggleItem(key){
+  const t=trip();if(!tp43SettlementRows(t).some(r=>r.key===key))return;
+  t.itemSettlementDone=t.itemSettlementDone||{};
+  t.itemSettlementDone[key]=!t.itemSettlementDone[key];save();renderTab();
+}
+function tp23SettlementView(t){
+  const rows=tp43SettlementRows(t),stats=tp22ExpenseStatsDisplay(t),net={};
+  rows.filter(r=>!r.done).forEach(r=>{
+    const c=settlementDisplayMode==='krw'?'KRW':r.e.currency;
+    const v=settlementDisplayMode==='krw'?r.krw:r.amount;if(v==null)return;
+    net[c]=net[c]||{};net[c][r.person]=(net[c][r.person]||0)-v;net[c][r.e.payer]=(net[c][r.e.payer]||0)+v;
+  });
+  const people=[...new Set([...(t.expenseMembers||[]),...rows.flatMap(r=>[r.person,r.e.payer])])];
+  const legacy=Object.values(t.settlementDone||{}).some(Boolean);
+  return `<div class="settle-summary"><div class="settle-stat"><div class="k">총 지출</div><div class="v">${tp20FmtKRW(stats.totalKrw)}</div></div><div class="settle-stat"><div class="k">참여 인원</div><div class="v">${people.length}명</div></div><div class="settle-stat"><div class="k">항목별 정산 완료</div><div class="v">${rows.filter(r=>r.done).length}/${rows.length}</div></div></div>
+  ${legacy?'<div class="notice-inline">기존 합산 정산 완료 기록은 보존되어 있습니다. 항목별 완료 여부는 자동으로 구분할 수 없어, 아래에서 한 번 확인해 주세요.</div>':''}
+  <div class="settle-section"><div class="settle-section-head"><h4>남은 정산 잔액</h4><div class="settle-display-toggle"><button class="${settlementDisplayMode==='original'?'active':''}" onclick="settlementDisplayMode='original';renderTab()">결제 통화</button><button class="${settlementDisplayMode==='krw'?'active':''}" onclick="settlementDisplayMode='krw';renderTab()">원화</button></div></div>
+  ${settlementDisplayMode==='krw'&&rows.some(r=>!r.done&&r.krw==null)?'<div class="notice-inline">환율을 확인하지 못한 항목은 원화 잔액에서 제외됩니다. 결제 통화로 확인해 주세요.</div>':''}
+  <div class="member-settle-list">${people.map(person=>`<div class="member-settle-row"><div class="member-avatar">${esc(person.slice(0,1))}</div><div class="member-name">${esc(person)}</div><div class="balance-stack">${Object.entries(net).filter(([c,n])=>Math.abs(n[person]||0)>.001).map(([c,n])=>`<div class="${n[person]>0?'balance-positive':'balance-negative'}">${n[person]>0?'받을':'지불'} ${tp20FmtMoney(Math.abs(n[person]),c)}</div>`).join('')||'<div class="balance-zero">잔액 없음</div>'}</div></div>`).join('')}</div></div>
+  <div class="settle-section"><div class="settle-section-head"><h4>항목별 정산 내역</h4></div><div class="small muted" style="margin:10px 0">결제 항목의 참여자별로 완료를 선택하세요. 완료 버튼을 다시 누르면 취소됩니다.</div>
+  ${(t.expenses||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>{
+    const items=rows.filter(r=>r.e===e);
+    return `<div class="exp-card"><div class="exp-title">${esc(e.merchant||'결제 내역')}</div><div class="exp-sub">${fmt(e.date)} · ${esc(e.category||'기타')} · 결제자 ${esc(e.payer)} · ${tp20FmtMoney(e.amount,e.currency)}</div>${items.length?items.map(r=>`<div class="transfer-card"><div style="min-width:0;overflow-wrap:anywhere"><div class="transfer-flow">${esc(r.person)} <span>→</span> ${esc(e.payer)}</div><div class="transfer-amt">${settlementDisplayMode==='original'?tp20FmtMoney(r.amount,e.currency):r.krw==null?'환율 확인 필요':tp20FmtKRW(r.krw)}</div></div><button type="button" aria-pressed="${r.done}" class="transfer-done ${r.done?'done':''}" onclick="tp43ToggleItem(${esc(JSON.stringify(r.key))})">${r.done?'✓ 완료 · 취소':'정산 완료'}</button></div>`).join(''):'<div class="small muted">정산 대상 없음 (본인 부담)</div>'}</div>`;
+  }).join('')||'<div class="settle-empty">등록한 결제 내역이 없습니다.</div>'}</div>`;
 }
 </script>
 
