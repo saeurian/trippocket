@@ -1742,6 +1742,43 @@ body.plan-dragging-body-v40{user-select:none}
 }
 </style>
 
+<style>
+.course-days{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding:4px 0 8px;scrollbar-width:thin}
+.course-days button{flex:0 0 auto;background:transparent;border:0;border-bottom:3px solid transparent;min-height:54px;padding:8px 15px;color:var(--muted);font-size:14px;font-weight:850;cursor:pointer}
+.course-days button.active{color:#7860d8;border-bottom-color:#7860d8}.course-days small{display:block;margin-top:5px;font-size:10px;font-weight:500}
+.course-day{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:22px}
+.course-map{height:320px;width:100%;background:#f0eff7}.course-map-message{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;text-align:center;padding:24px;box-sizing:border-box;color:var(--muted);font-size:13px}.course-map-message small{max-width:100%;overflow-wrap:anywhere}
+.course-map-caption{padding:8px 14px;font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.course-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 16px 12px;border-top:1px solid #f1eff7}.course-heading>div{min-width:0}.course-heading h3{font-size:20px;line-height:1.4;margin:6px 0 0;overflow-wrap:anywhere}.course-heading button{flex-shrink:0}.course-eyebrow{font-size:11px;color:#7860d8;font-weight:800}
+.course-order-note{padding:0 16px 16px;color:var(--muted);font-size:11px;line-height:1.6}
+.course-timeline{padding:4px 12px 20px;background:#fcfbfe}.course-timeline .plan-row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;position:relative;margin:0;padding:8px 0 18px}
+.course-timeline .plan-row:before{content:'';position:absolute;left:19px;top:36px;bottom:-12px;border-left:2px dashed #ddd5f0}.course-timeline .plan-row:last-child:before{display:none}
+.course-timeline .time-label{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:10px;position:relative;z-index:1;padding-top:8px;white-space:normal}
+.course-stop-number{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#7860d8;color:#fff;font-size:13px;font-weight:900}
+.course-timeline .plan-card{min-width:0;padding:14px;border:1px solid #eeebf6;box-shadow:none;border-radius:16px}.course-timeline .plan-card h4{font-size:16px;overflow-wrap:anywhere}.course-timeline .itemline,.course-timeline .memo{overflow-wrap:anywhere}.course-timeline .actions{flex-wrap:wrap}.course-timeline .actions>*{min-width:60px;min-height:44px;box-sizing:border-box}.course-distance{display:table;margin-top:14px;padding:5px 8px;border:1px solid #d9cff4;border-radius:6px;color:#7860d8;font-size:11px;background:#faf8ff}
+@media(max-width:600px){.course-map{height:290px;height:clamp(240px,72vw,340px)}.course-heading{padding:18px 14px 12px}.course-timeline{padding-left:8px;padding-right:8px}.course-timeline .plan-card{padding:12px}.course-heading h3{font-size:18px}}
+</style>
+
+<style>
+.settlement-compact{padding:14px!important;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+.settlement-compact .settle-section-head h4{font-size:15px!important;line-height:1.4;margin:0}
+.settlement-compact .settle-display-toggle button{font-size:12px!important;padding:7px 10px;min-height:40px}
+.person-settlements{display:grid;gap:10px;margin-top:12px}
+.person-settlement{border:1px solid #e5eaf1;border-radius:13px;background:#fff;overflow:hidden}
+.person-settlement-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 12px 10px}
+.person-settlement-name{font-size:14px!important;font-weight:800;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+.person-settlement-balance{display:grid;gap:4px;text-align:right;font-size:14px!important;font-weight:750;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+.person-settlement-balance .receive{color:#299768}.person-settlement-balance .owe{color:#d85766}
+.person-settlement-details summary{list-style:none;display:flex;align-items:center;gap:6px;cursor:pointer;min-height:44px;padding:0 12px;font-size:12px!important;color:#63758d;background:#f8fafc;box-sizing:border-box}
+.person-settlement-details summary::-webkit-details-marker{display:none}
+.person-settlement-count{margin-left:auto;font-size:11px!important;white-space:nowrap;color:#8996a6}
+.person-settlement-details .when-open{display:none}.person-settlement-details[open] .when-open{display:inline}.person-settlement-details[open] .when-closed{display:none}.person-settlement-details[open] .person-settlement-chevron{transform:rotate(180deg)}
+.person-settlement-items{padding:0 12px}.person-settlement-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid #edf0f5}
+.person-item-info{min-width:0}.person-item-title{font-size:13px!important;font-weight:750;line-height:1.5;overflow-wrap:anywhere}.person-item-meta{font-size:11px!important;line-height:1.5;color:#8290a2;margin-top:3px;overflow-wrap:anywhere}.person-item-amount{font-size:13px!important;line-height:1.5;font-weight:750;color:var(--navy);margin-top:5px;overflow-wrap:anywhere}
+.person-item-done{border:0;border-radius:9px;padding:8px 10px;min-height:44px;font-size:11px!important;line-height:1.3;font-weight:750;white-space:nowrap;background:#fff3d2;color:#9d7525;cursor:pointer}.person-item-done.is-done{background:#e9f5ed;color:#35875a}.person-item-empty{padding:12px 0;font-size:12px;color:var(--muted)}
+@media(max-width:360px){.person-settlement-head{gap:8px}.person-settlement-balance{font-size:13px!important}.person-item-done{padding:8px}.person-settlement-item{gap:7px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -6628,7 +6665,7 @@ function renderTab(){
   const c=$('#tabContent');if(!c)return;
 
   if(currentTab==='home'){c.innerHTML=renderHome();return}
-  if(currentTab==='plan'){c.innerHTML=renderPlans();bindPlanDrag();return}
+  if(currentTab==='plan'){c.innerHTML=renderPlans();bindPlanDrag();tp48MountCourseMaps();return}
   if(currentTab==='pool'){
     c.innerHTML=renderPool();
     if(poolView==='group')bindClusterDrag();
@@ -7244,25 +7281,70 @@ function tp43ToggleItem(key){
   t.itemSettlementDone=t.itemSettlementDone||{};
   t.itemSettlementDone[key]=!t.itemSettlementDone[key];save();renderTab();
 }
+function tp49RememberOpen(key,open){window.tp49SettlementOpen=window.tp49SettlementOpen||{};window.tp49SettlementOpen[key]=open}
 function tp23SettlementView(t){
-  const rows=tp43SettlementRows(t),stats=tp22ExpenseStatsDisplay(t),net={};
-  rows.filter(r=>!r.done).forEach(r=>{
-    const c=settlementDisplayMode==='krw'?'KRW':r.e.currency;
-    const v=settlementDisplayMode==='krw'?r.krw:r.amount;if(v==null)return;
-    net[c]=net[c]||{};net[c][r.person]=(net[c][r.person]||0)-v;net[c][r.e.payer]=(net[c][r.e.payer]||0)+v;
-  });
+  const rows=tp43SettlementRows(t),stats=tp22ExpenseStatsDisplay(t);
   const people=[...new Set([...(t.expenseMembers||[]),...rows.flatMap(r=>[r.person,r.e.payer])])];
   const legacy=Object.values(t.settlementDone||{}).some(Boolean);
   return `<div class="settle-summary"><div class="settle-stat"><div class="k">총 지출</div><div class="v">${tp20FmtKRW(stats.totalKrw)}</div></div><div class="settle-stat"><div class="k">참여 인원</div><div class="v">${people.length}명</div></div><div class="settle-stat"><div class="k">항목별 정산 완료</div><div class="v">${rows.filter(r=>r.done).length}/${rows.length}</div></div></div>
-  ${legacy?'<div class="notice-inline">기존 합산 정산 완료 기록은 보존되어 있습니다. 항목별 완료 여부는 자동으로 구분할 수 없어, 아래에서 한 번 확인해 주세요.</div>':''}
-  <div class="settle-section"><div class="settle-section-head"><h4>남은 정산 잔액</h4><div class="settle-display-toggle"><button class="${settlementDisplayMode==='original'?'active':''}" onclick="settlementDisplayMode='original';renderTab()">결제 통화</button><button class="${settlementDisplayMode==='krw'?'active':''}" onclick="settlementDisplayMode='krw';renderTab()">원화</button></div></div>
-  ${settlementDisplayMode==='krw'&&rows.some(r=>!r.done&&r.krw==null)?'<div class="notice-inline">환율을 확인하지 못한 항목은 원화 잔액에서 제외됩니다. 결제 통화로 확인해 주세요.</div>':''}
-  <div class="member-settle-list">${people.map(person=>`<div class="member-settle-row"><div class="member-avatar">${esc(person.slice(0,1))}</div><div class="member-name">${esc(person)}</div><div class="balance-stack">${Object.entries(net).filter(([c,n])=>Math.abs(n[person]||0)>.001).map(([c,n])=>`<div class="${n[person]>0?'balance-positive':'balance-negative'}">${n[person]>0?'받을':'지불'} ${tp20FmtMoney(Math.abs(n[person]),c)}</div>`).join('')||'<div class="balance-zero">잔액 없음</div>'}</div></div>`).join('')}</div></div>
-  <div class="settle-section"><div class="settle-section-head"><h4>항목별 정산 내역</h4></div><div class="small muted" style="margin:10px 0">결제 항목의 참여자별로 완료를 선택하세요. 완료 버튼을 다시 누르면 취소됩니다.</div>
-  ${(t.expenses||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>{
-    const items=rows.filter(r=>r.e===e);
-    return `<div class="exp-card"><div class="exp-title">${esc(e.merchant||'결제 내역')}</div><div class="exp-sub">${fmt(e.date)} · ${esc(e.category||'기타')} · 결제자 ${esc(e.payer)} · ${tp20FmtMoney(e.amount,e.currency)}</div>${items.length?items.map(r=>`<div class="transfer-card"><div style="min-width:0;overflow-wrap:anywhere"><div class="transfer-flow">${esc(r.person)} <span>→</span> ${esc(e.payer)}</div><div class="transfer-amt">${settlementDisplayMode==='original'?tp20FmtMoney(r.amount,e.currency):r.krw==null?'환율 확인 필요':tp20FmtKRW(r.krw)}</div></div><button type="button" aria-pressed="${r.done}" class="transfer-done ${r.done?'done':''}" onclick="tp43ToggleItem(${esc(JSON.stringify(r.key))})">${r.done?'✓ 완료 · 취소':'정산 완료'}</button></div>`).join(''):'<div class="small muted">정산 대상 없음 (본인 부담)</div>'}</div>`;
-  }).join('')||'<div class="settle-empty">등록한 결제 내역이 없습니다.</div>'}</div>`;
+  ${legacy?'<div class="notice-inline">기존 합산 완료 기록은 보존됩니다. 항목별 완료 여부는 아래에서 확인해 주세요.</div>':''}
+  <section class="settle-section settlement-compact"><div class="settle-section-head"><h4>사람별 정산</h4><div class="settle-display-toggle"><button class="${settlementDisplayMode==='original'?'active':''}" onclick="settlementDisplayMode='original';renderTab()">결제 통화</button><button class="${settlementDisplayMode==='krw'?'active':''}" onclick="settlementDisplayMode='krw';renderTab()">원화</button></div></div>
+  ${settlementDisplayMode==='krw'&&rows.some(r=>!r.done&&r.krw==null)?'<div class="notice-inline">환율 미확인 항목은 원화 합계에서 제외됩니다.</div>':''}
+  <div class="person-settlements">${people.map(person=>{
+    const items=rows.filter(r=>r.person===person||r.e.payer===person),net={};
+    items.filter(r=>!r.done).forEach(r=>{const currency=settlementDisplayMode==='krw'?'KRW':r.e.currency,v=settlementDisplayMode==='krw'?r.krw:r.amount;if(v!=null)net[currency]=(net[currency]||0)+(r.e.payer===person?v:-v)});
+    const balances=Object.entries(net).filter(([,v])=>Math.abs(v)>.001);
+    const key=JSON.stringify([t.id,person]),open=!!window.tp49SettlementOpen?.[key];
+    return `<div class="person-settlement"><div class="person-settlement-head"><span class="person-settlement-name">${esc(person)}</span><div class="person-settlement-balance">${balances.map(([c,v])=>`<span class="${v>0?'receive':'owe'}">${v>0?'받을':'지불'} ${tp20FmtMoney(Math.abs(v),c)}</span>`).join('')||'<span class="muted">남은 잔액 없음</span>'}</div></div>
+    <details class="person-settlement-details" ${open?'open':''} ontoggle="tp49RememberOpen(${esc(JSON.stringify(key))},this.open)"><summary><span class="when-closed">정산 확인 펼치기</span><span class="when-open">정산 확인 접기</span><span class="person-settlement-count">${items.filter(r=>r.done).length}/${items.length}건 완료</span><span class="person-settlement-chevron" aria-hidden="true">⌄</span></summary>
+    <div class="person-settlement-items">${items.slice().sort((a,b)=>String(a.e.date).localeCompare(String(b.e.date))).map(r=>`<div class="person-settlement-item"><div class="person-item-info"><div class="person-item-title">${esc(r.e.merchant||'결제 내역')}</div><div class="person-item-meta">${fmt(r.e.date)} · ${esc(r.person)} → ${esc(r.e.payer)}</div><div class="person-item-amount">${settlementDisplayMode==='original'?tp20FmtMoney(r.amount,r.e.currency):r.krw==null?'환율 확인 필요':tp20FmtKRW(r.krw)}</div></div><button type="button" class="person-item-done ${r.done?'is-done':''}" aria-pressed="${r.done}" onclick="tp43ToggleItem(${esc(JSON.stringify(r.key))})">${r.done?'✓ 완료 취소':'정산 완료'}</button></div>`).join('')||'<div class="person-item-empty">정산할 항목이 없습니다.</div>'}</div></details></div>`;
+  }).join('')||'<div class="settle-empty">등록된 정산 멤버가 없습니다.</div>'}</div></section>`;
+}
+
+/* Daily course map and editable title */
+function tp48DayName(i){return ['첫째 날','둘째 날','셋째 날','넷째 날','다섯째 날','여섯째 날','일곱째 날'][i]||`${i+1}일차`}
+function tp48HasCoords(p){return p.lat!=null&&p.lng!=null&&String(p.lat).trim()!==''&&String(p.lng).trim()!==''&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lng))&&Math.abs(Number(p.lat))<=90&&Math.abs(Number(p.lng))<=180}
+function tp48EditCourse(date){
+  const t=trip(),i=dateRange(t.start,t.end).indexOf(date);if(i<0)return;
+  openSheet(`<h2>${tp48DayName(i)} 코스 이름</h2><form id="courseNameForm"><div class="field"><label for="courseNameInput">어떤 코스인가요?</label><input id="courseNameInput" name="name" maxlength="80" value="${esc(t.courseNames?.[date]||'')}" placeholder="예: 해변 산책과 카페 투어"></div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">저장</button></div></form>`);
+  document.getElementById('courseNameForm').onsubmit=e=>{e.preventDefault();t.courseNames=t.courseNames||{};const name=String(new FormData(e.currentTarget).get('name')||'').trim();if(name)t.courseNames[date]=name;else delete t.courseNames[date];save();closeSheet();renderTab();toast('코스 이름을 저장했어요')};
+}
+function renderPlans(){
+  const t=trip();normalizeTrip(t);const range=dateRange(t.start,t.end),selected=tp38EnsurePlanDate(t),dates=selected==='all'?range:[selected];
+  return `<div class="section-title"><h3>나의 여행 코스</h3><button class="addmini" onclick="openPlanForm()">＋ 일정 추가</button></div>
+  <nav class="course-days" aria-label="여행 날짜">${range.map((d,i)=>`<button class="${selected===d?'active':''}" aria-pressed="${selected===d}" onclick="tp38SetPlanDate('${d}')">${tp48DayName(i)}<small>${fmt(d)}</small></button>`).join('')}<button class="${selected==='all'?'active':''}" onclick="tp38SetPlanDate('all')">전체 보기</button></nav>
+  ${dates.map(d=>{const i=range.indexOf(d),arr=plansForDate(d),missing=arr.filter(p=>!tp48HasCoords(p)).length;return `<section class="dayblock course-day" data-date="${d}">
+    <div class="course-map" id="course-map-${d}" data-course-date="${d}"><div class="course-map-message">${arr.length?'지도를 준비하고 있어요…':'일정을 추가하면 이곳에 지도가 표시됩니다.'}</div></div>
+    <div class="course-map-caption">번호는 아래 방문 순서 · 연결선은 직선 기준${missing?` · 위치 미등록 ${missing}곳`:''}<button class="ghost-mini" onclick="openPlanDayMap('${d}')" ${arr.some(tp48HasCoords)?'':'disabled'}>지도 확대</button></div>
+    <div class="course-heading"><div><div class="course-eyebrow">${tp48DayName(i)} · ${fmt(d)} · ${arr.length}곳</div><h3>${esc(t.courseNames?.[d]||'여행코스정보')}</h3></div><button class="ghost-mini" onclick="tp48EditCourse('${d}')">이름 수정</button></div>
+    <div class="course-order-note">오른쪽 손잡이를 끌어 방문 순서를 바꿀 수 있어요.${t.planManualOrderDates?.[d]?`<button class="ghost-mini" onclick="tp38ResetPlanOrder('${d}')">시간순 정렬</button>`:''}</div>
+    ${arr.length?`<div class="timeline course-timeline">${arr.map((p,n)=>planCard(p).replace('<div class="time-label">',`<div class="time-label"><span class="course-stop-number">${n+1}</span>`)).join('')}</div>`:`<div class="card empty">아직 일정이 없어요.<br><button class="ghost-mini" onclick="tp38OpenPlanAt('${d}');openPlanForm()">＋ 이 날짜에 일정 추가</button></div>`}
+  </section>`}).join('')}`;
+}
+async function tp48MountMap(el){
+  if(!el.isConnected)return;
+  const t=trip(),date=el.dataset.courseDate,all=plansForDate(date),places=all.map((p,i)=>({p,n:i+1})).filter(x=>tp48HasCoords(x.p));
+  if(!places.length){el.innerHTML='<div class="course-map-message">'+(all.length?'장소의 위치 정보를 등록하면 지도가 표시됩니다.':'일정을 추가하면 이곳에 지도가 표시됩니다.')+'</div>';return}
+  try{
+    await loadMaps();if(!el.isConnected||trip()?.id!==t.id)return;
+    const {Map}=await google.maps.importLibrary('maps');if(!el.isConnected)return;
+    el.replaceChildren();const map=new Map(el,{center:{lat:Number(places[0].p.lat),lng:Number(places[0].p.lng)},zoom:14,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'cooperative'});
+    const bounds=new google.maps.LatLngBounds(),info=new google.maps.InfoWindow();
+    places.forEach(({p,n})=>{const pos={lat:Number(p.lat),lng:Number(p.lng)};bounds.extend(pos);
+      const marker=new google.maps.Marker({map,position:pos,title:`${n}. ${p.placeName}`,icon:{url:markerSvg('#7860d8',String(n)),scaledSize:new google.maps.Size(34,40),anchor:new google.maps.Point(17,40)}});
+      marker.addListener('click',()=>{info.setContent(`<div style="max-width:220px;padding:6px"><b>${n}. ${esc(p.placeName)}</b><div>${esc(p.address||'')}</div></div>`);info.open({map,anchor:marker})});
+    });
+    // Do not bridge across a stop with missing coordinates.
+    for(let i=1;i<all.length;i++)if(tp48HasCoords(all[i-1])&&tp48HasCoords(all[i]))new google.maps.Polyline({map,path:[all[i-1],all[i]].map(p=>({lat:Number(p.lat),lng:Number(p.lng)})),strokeColor:'#7860d8',strokeOpacity:.7,strokeWeight:3});
+    if(places.length>1)map.fitBounds(bounds,40);
+  }catch(err){if(el.isConnected)el.innerHTML=`<div class="course-map-message">지도를 불러오지 못했어요.<small>${esc(errorText(err))}</small><button class="ghost-mini" onclick="tp48MountMap(this.closest('.course-map'))">다시 시도</button></div>`}
+}
+function tp48MountCourseMaps(){
+  if(window.tp48MapObserver)window.tp48MapObserver.disconnect();
+  const elements=document.querySelectorAll('[data-course-date]');
+  if(!('IntersectionObserver' in window)){elements.forEach(tp48MountMap);return}
+  window.tp48MapObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){window.tp48MapObserver.unobserve(entry.target);tp48MountMap(entry.target)}}),{rootMargin:'120px'});
+  elements.forEach(el=>window.tp48MapObserver.observe(el));
 }
 </script>
 
