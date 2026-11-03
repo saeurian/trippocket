@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#edf5ff">
-<title>Trip Pocket Cloud v48</title>
+<title>Trip Pocket Cloud v52</title>
 <style>
 :root{
   --bg:#f5f9ff;--card:#fff;--ink:#14243b;--muted:#718197;--line:#dce9f8;
@@ -1789,6 +1789,44 @@ body.plan-dragging-body-v40{user-select:none}
 .batch-submit{position:sticky;bottom:0;z-index:5;margin:8px -14px -14px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#fffffffa;border-top:1px solid #e5eaf1;border-radius:0 0 18px 18px;box-shadow:0 -5px 18px #24364c08;backdrop-filter:blur(10px)}.batch-selected-total{font-size:13px;font-weight:750;color:var(--navy);margin-bottom:9px;line-height:1.5;overflow-wrap:anywhere}.batch-submit button{width:100%;min-height:48px;border:0;border-radius:12px;background:#387dda;color:#fff;font-size:14px!important;font-weight:800}.batch-submit button:disabled{background:#e6ebf2;color:#9aa6b6}.batch-submit small{display:block;font-size:10px;color:#8c99aa;margin-top:7px;text-align:center}.batch-note{font-size:11px;line-height:1.6;color:#8b7655;background:#fff8e9;padding:10px;border-radius:8px}
 </style>
 
+<style>
+/* Reset legacy timeline offsets within the daily course only. */
+.course-day .course-timeline{border:0;margin:0;padding:4px 14px 18px;background:#fafbfe;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+.course-day .course-timeline .plan-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:0;padding:0 0 18px;min-width:0}
+.course-day .course-timeline .plan-row:before,.course-day .course-timeline .plan-card:before{content:none;display:none}
+.course-day .course-timeline .time-label{position:static;inset:auto;width:auto;min-width:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;padding:12px 0 0;margin:0;text-align:left;white-space:nowrap;font-size:12px!important;line-height:1.4;font-weight:750}
+.course-day .course-stop-number{width:25px;height:25px;flex:0 0 25px;font-size:12px}
+.course-day .course-timeline .plan-card{width:auto;min-width:0;margin:0;padding:14px;border:1px solid #e6eaf2;border-radius:14px;background:#fff;box-shadow:none;box-sizing:border-box}
+.course-day .plan-card-top-v38{gap:8px;align-items:flex-start}.course-day .plan-card-main-v38{min-width:0}
+.course-day .course-timeline .plan-card h4{font-size:15px!important;line-height:1.45;letter-spacing:-.02em;margin:8px 0 0!important;overflow-wrap:anywhere}
+.course-day .course-timeline .badge{font-size:11px;padding:4px 8px;line-height:1.4}
+.course-day .course-timeline .itemline{font-size:12px;line-height:1.6;margin-top:7px;overflow-wrap:anywhere;word-break:normal}
+.course-day .plan-drag-handle-v41,.course-day .plan-drag-handle-v40{width:40px;height:44px;min-height:44px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px;box-sizing:border-box;flex-shrink:0}
+.course-day .plan-drag-copy-v41{display:none}
+.course-day .course-timeline .hours{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.65}
+.course-day .course-timeline .hours b{font-size:11px}.course-day .course-timeline .memo{font-size:12px;line-height:1.6}
+.course-day .course-timeline .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+.course-day .course-timeline .actions a,.course-day .course-timeline .actions button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;margin:0;padding:8px 4px;font-size:12px!important;line-height:1.3;white-space:nowrap;border-radius:9px;box-sizing:border-box}
+@media(max-width:380px){.course-day .course-timeline{padding:4px 10px 14px}.course-day .course-timeline .plan-card{padding:12px}.course-day .course-timeline .plan-card h4{font-size:14px!important}.course-day .course-timeline .actions a,.course-day .course-timeline .actions button{font-size:11px!important}}
+</style>
+
+<style>
+/* Compact reservation status and note. Scope avoids affecting other forms/cards. */
+.course-day .plan-card-top-v38 .row.wrap{align-items:center;gap:6px!important}
+.reservation-toggle-v52{border:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;max-width:100%;padding:5px 9px;font-size:11px!important;line-height:1.3;font-weight:750;cursor:pointer;white-space:normal;vertical-align:middle;touch-action:manipulation}
+.reservation-toggle-v52 .reservation-action-v52{font-size:10px;font-weight:700;border-left:1px solid currentColor;padding-left:7px;white-space:nowrap}
+.reservation-note-v52{display:grid;gap:5px;margin-top:12px;padding:10px 12px;border:1px solid #e8edf4;border-radius:10px;background:#fafcff;min-width:0}
+.reservation-note-v52>span{font-size:10px;color:#8292a8;font-weight:750}.reservation-note-v52>div{font-size:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.reservation-fields-v52{display:block;padding:12px!important;min-width:0}.reservation-fields-v52[style*="display:none"]{display:none!important}
+.reservation-fields-v52 .v38-checkline{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;line-height:1.4;margin:0 0 8px}
+.reservation-fields-v52 .v38-checkline input{flex:0 0 18px;width:18px;height:18px;min-width:18px;margin:0}
+.reservation-fields-v52 textarea{display:block;width:100%;min-height:88px;resize:vertical;font-size:16px;line-height:1.6;box-sizing:border-box}
+.course-days,.tab-grid{overflow-anchor:none;scroll-behavior:auto;scroll-padding-inline:12px}
+.course-days button,.tab-grid button{scroll-margin-inline:12px}
+.course-day .course-timeline .plan-card{overflow:visible}
+@media(max-width:600px){.course-day .course-timeline .plan-card-main-v38 .row.wrap{padding-right:0}.course-heading h3{line-height:1.4}.course-day .plan-card-top-v38{gap:6px}.course-day .plan-card-main-v38{flex:1;min-width:0}.reservation-toggle-v52{min-height:40px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -1941,7 +1979,7 @@ function renderHome(){
   const plans=plansForDate(d),flights=t.flights.slice().sort((a,b)=>(a.date+a.departTime).localeCompare(b.date+b.departTime));
   const rel=flights.filter(f=>f.date===d),shown=rel.length?rel:flights.slice(0,1);
   const hotel=t.hotels.find(h=>d>=h.checkin&&d<h.checkout)||t.hotels.slice().sort((a,b)=>a.checkin.localeCompare(b.checkin))[0];
-  return `<div class="card home-hero"><div class="home-date">${isDuring?'TODAY':'FIRST DAY'} · ${fmt(d)}</div><div class="home-main">${isDuring?'오늘의 여행':'첫째 날 미리보기'}</div><div class="small muted" style="margin-top:7px">${isDuring?'오늘 필요한 정보만 모았습니다.':'여행 전이라 첫째 날 일정으로 보여드립니다.'}</div></div><div class="home-grid"><div class="mini-card clickable" onclick="setTab('flight')"><div class="kicker">FLIGHT</div>${shown.length?`<div class="main">${esc(shown[0].from)} → ${esc(shown[0].to)}</div><div class="sub">${fmt(shown[0].date)} · ${esc(shown[0].departTime)} 출발</div>`:`<div class="main">항공편 없음</div><div class="sub">항공 탭에서 추가하세요.</div>`}</div><div class="mini-card clickable" onclick="setTab('hotel')"><div class="kicker">STAY</div>${hotel?`<div class="main">${esc(hotel.name)}</div><div class="sub">${fmt(hotel.checkin)} → ${fmt(hotel.checkout)}</div>`:`<div class="main">숙소 없음</div><div class="sub">숙소 탭에서 추가하세요.</div>`}</div></div><div class="section-title"><h3>${isDuring?'오늘 일정':'첫째 날 일정'}</h3><button class="addmini" onclick="setTab('plan')">전체 보기</button></div>${plans.length?plans.map(p=>`<div class="item" onclick="openPlanForm('${p.id}')"><div class="row between"><div><div class="small" style="color:var(--blue);font-weight:900">${displayTime(p.time)}</div><h4 style="margin-top:4px">${esc(p.placeName)}</h4><div class="small muted">${esc(p.category)}${p.reserved?' · 예약':''}</div></div><div>›</div></div></div>`).join(''):`<div class="card empty">이 날에 등록된 일정이 없습니다.</div>`}`;
+  return `<div class="card home-hero"><div class="home-date">${isDuring?'TODAY':'FIRST DAY'} · ${fmt(d)}</div><div class="home-main">${isDuring?'오늘의 여행':'1일차 미리보기'}</div><div class="small muted" style="margin-top:7px">${isDuring?'오늘 필요한 정보만 모았습니다.':'여행 전이라 1일차 일정으로 보여드립니다.'}</div></div><div class="home-grid"><div class="mini-card clickable" onclick="setTab('flight')"><div class="kicker">FLIGHT</div>${shown.length?`<div class="main">${esc(shown[0].from)} → ${esc(shown[0].to)}</div><div class="sub">${fmt(shown[0].date)} · ${esc(shown[0].departTime)} 출발</div>`:`<div class="main">항공편 없음</div><div class="sub">항공 탭에서 추가하세요.</div>`}</div><div class="mini-card clickable" onclick="setTab('hotel')"><div class="kicker">STAY</div>${hotel?`<div class="main">${esc(hotel.name)}</div><div class="sub">${fmt(hotel.checkin)} → ${fmt(hotel.checkout)}</div>`:`<div class="main">숙소 없음</div><div class="sub">숙소 탭에서 추가하세요.</div>`}</div></div><div class="section-title"><h3>${isDuring?'오늘 일정':'1일차 일정'}</h3><button class="addmini" onclick="setTab('plan')">전체 보기</button></div>${plans.length?plans.map(p=>`<div class="item" onclick="openPlanForm('${p.id}')"><div class="row between"><div><div class="small" style="color:var(--blue);font-weight:900">${displayTime(p.time)}</div><h4 style="margin-top:4px">${esc(p.placeName)}</h4><div class="small muted">${esc(p.category)}${p.reserved?' · 예약':''}</div></div><div>›</div></div></div>`).join(''):`<div class="card empty">이 날에 등록된 일정이 없습니다.</div>`}`;
 }
 function renderTab(){
   const t=trip(),c=$('#tabContent');
@@ -2258,7 +2296,7 @@ function splitCluster(id,mode){
 }
 function assignClusterDate(id,mode){
   const t=trip(),arr=mode==='smart'?t.smartClusters:t.distanceClusters,idField=mode==='smart'?'smartClusterId':'distanceClusterId',cl=arr.find(x=>x.id===id),places=t.pool.filter(p=>p[idField]===id);if(!cl||!places.length)return;
-  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}">DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}">${i+1}일차 · ${fmt(d)}</option>`).join('');
   openSheet(`<h2>${esc(cl.name)} 날짜 배정</h2><div class="info-note">${places.length}개 장소를 선택한 날짜에 한꺼번에 넣습니다. 시간은 비워둔 채로 추가됩니다.</div><div class="field"><label>방문일</label><select id="clusterDate">${options}</select></div><div class="form-actions"><button class="ghost" onclick="closeSheet()">취소</button><button class="primary" id="assignClusterBtn">이 날짜에 모두 추가</button></div>`);
   $('#assignClusterBtn').onclick=()=>{
     const d=$('#clusterDate').value,base=plansForDate(d).length;
@@ -2273,7 +2311,7 @@ function dateRange(a,b){const out=[],d=new Date(a+'T00:00:00'),e=new Date(b+'T00
 function renderPlans(){
   const t=trip(),groups={};t.plans.forEach(p=>(groups[p.date]??=[]).push(p));
   const dates=Object.keys(groups).sort();
-  return `<div class="section-title"><h3>일정</h3><button class="addmini" onclick="openPlanForm()">＋ 바로 추가</button></div>${dates.length?dates.map(d=>{const day=dateRange(t.start,t.end).indexOf(d)+1;const arr=groups[d].sort((a,b)=>(a.order??999)-(b.order??999));return `<div class="dayblock" data-date="${d}"><div class="dayhead"><div class="daytitle">${fmt(d)}</div><div class="daytag">DAY ${day}</div></div><div class="timeline">${arr.map(planCard).join('')}</div></div>`}).join(''):`<div class="card empty">아직 날짜가 배정된 일정이 없습니다.</div>`}`;
+  return `<div class="section-title"><h3>일정</h3><button class="addmini" onclick="openPlanForm()">＋ 바로 추가</button></div>${dates.length?dates.map(d=>{const day=dateRange(t.start,t.end).indexOf(d)+1;const arr=groups[d].sort((a,b)=>(a.order??999)-(b.order??999));return `<div class="dayblock" data-date="${d}"><div class="dayhead"><div class="daytitle">${fmt(d)}</div><div class="daytag">${day}일차</div></div><div class="timeline">${arr.map(planCard).join('')}</div></div>`}).join(''):`<div class="card empty">아직 날짜가 배정된 일정이 없습니다.</div>`}`;
 }
 function displayTime(t){if(!t)return '시간 미정';const [h,m]=t.split(':').map(Number),ap=h<12?'오전':'오후',hh=(h%12)||12;return `${ap} ${hh}:${String(m).padStart(2,'0')}`}
 function formatHourMinute(h,m){const ap=h<12?'오전':'오후',hh=(h%12)||12;return `${ap} ${hh}:${String(m).padStart(2,'0')}`}
@@ -2314,7 +2352,7 @@ function openPoolForm(id,draft=null,selectedPlace=null){
 function savePoolBasic(d,p){const t=trip();if(p){Object.assign(p,d)}else t.pool.push({id:uid(),createdAt:Date.now(),...d,mapsUrl:mapsSearch(d.placeName+' '+t.destination),distanceClusterId:null,smartClusterId:null});refreshLocationGroupsAfterPoolChange(t);closeSheet();renderTab();toast('가고 싶은 곳에 저장했어요')}
 function openPlanForm(id,draft=null){
   const t=trip(),p=id?t.plans.find(x=>x.id===id):null,base=draft||p;editingPlanId=id||null;
-  const dates=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${base?.date===d?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  const dates=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${base?.date===d?'selected':''}>${i+1}일차 · ${fmt(d)}</option>`).join('');
   const time=base?.time||'',h=time?+time.split(':')[0]:10,m=time?+time.split(':')[1]:0,ap=h>=12?'PM':'AM',h12=(h%12)||12;
   openSheet(`<h2>${p?'일정 수정':'일정 바로 추가'}</h2><form id="planForm"><div class="field"><label>방문일</label><select name="date">${dates}</select></div><div class="field"><label>장소명</label><input name="placeName" required value="${esc(base?.placeName||'')}"></div><div class="field"><label>카테고리</label><select name="category">${['식당','카페','쇼핑','관광지','전시/문화','이동','기타'].map(x=>`<option ${base?.category===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label>방문 시간</label>${timePicker(ap,h12,m,!time)}</div><div class="field"><label>예약 여부</label><select name="reserved"><option value="false" ${!base?.reserved?'selected':''}>예약 필요 없음</option><option value="true" ${base?.reserved?'selected':''}>예약 필요함</option></select></div><div class="field"><label>메모</label><textarea name="memo">${esc(base?.memo||'')}</textarea></div><div class="form-actions"><button type="button" class="ghost" onclick="closeSheet()">취소</button><button class="primary">${p?'수정 저장':getApiKey()?'장소 검색':'일정 추가'}</button></div></form>`);
   initTimePicker(ap);
@@ -3041,7 +3079,7 @@ function tp20RenderHotelSnippet(t,d){
 }
 function tp20RenderPlanSnippet(t,d,isDuring){
   const plans=plansForDate(d);
-  return plans.length?plans.slice(0,4).map(p=>`<div class="home-mini-item"><div class="home-mini-main"><b>${esc(p.placeName||'일정')}</b><div class="sub">${p.time?esc(p.time)+' · ':''}${esc(p.category||'')} ${p.reserved?'· 예약':''}${p.memo?`<br>${esc(p.memo)}`:''}</div></div></div>`).join(''):`<div class="empty-note2">${isDuring?'오늘 일정이 없습니다.':'여행 전이라 첫째 날 일정을 보여줄 예정이에요.'}</div>`;
+  return plans.length?plans.slice(0,4).map(p=>`<div class="home-mini-item"><div class="home-mini-main"><b>${esc(p.placeName||'일정')}</b><div class="sub">${p.time?esc(p.time)+' · ':''}${esc(p.category||'')} ${p.reserved?'· 예약':''}${p.memo?`<br>${esc(p.memo)}`:''}</div></div></div>`).join(''):`<div class="empty-note2">${isDuring?'오늘 일정이 없습니다.':'여행 전이라 1일차 일정을 보여줄 예정이에요.'}</div>`;
 }
 function renderHome(){
   const t=trip(), d=activeDay(), isDuring=todayISO()>=t.start&&todayISO()<=t.end, stats=tp20ExpenseStats(t);
@@ -3056,7 +3094,7 @@ function renderHome(){
   </div>
   <div class="home-grid2">
     <div class="section-card">
-      <div class="section-head"><h3>${isDuring?'오늘 일정':'첫째 날 일정'}</h3><div class="actions"><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div></div>
+      <div class="section-head"><h3>${isDuring?'오늘 일정':'1일차 일정'}</h3><div class="actions"><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div></div>
       <div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div>
     </div>
     <div class="section-card">
@@ -3197,7 +3235,7 @@ function renderHome(){
       <div class="home-summary-inline"><div class="summary-box"><div class="k">준비물</div><div class="v">${pack.done}/${pack.total}</div><div class="sub">${pack.pct}% 챙김 완료</div></div><div class="summary-box"><div class="k">체크리스트</div><div class="v">${checklistDone}/${checklistTotal}</div><div class="sub">${checklistTotal?Math.round(checklistDone/checklistTotal*100):0}% 완료</div></div></div>
       ${tp20RenderChecklist(false)}
     </div>
-    <div class="section-card"><div class="home-section-title"><h3>${isDuring?'오늘 일정':'첫째 날 일정'}</h3><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div><div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div></div>
+    <div class="section-card"><div class="home-section-title"><h3>${isDuring?'오늘 일정':'1일차 일정'}</h3><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div><div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div></div>
     <div class="section-card"><div class="home-section-title"><h3>소비 요약</h3></div>${tp21HomeExpenseSummary(t)}</div>
   </div>`;
 }
@@ -3409,7 +3447,7 @@ function renderHome(){
       <div class="home-summary-inline"><div class="summary-box"><div class="k">준비물</div><div class="v">${pack.done}/${pack.total}</div><div class="sub">${pack.pct}% 챙김 완료</div></div><div class="summary-box"><div class="k">체크리스트</div><div class="v">${checklistDone}/${checklistTotal}</div><div class="sub">${checklistTotal?Math.round(checklistDone/checklistTotal*100):0}% 완료</div></div></div>
       ${tp20RenderChecklist(false)}
     </div>
-    <div class="section-card"><div class="home-section-title"><h3>${isDuring?'오늘 일정':'첫째 날 일정'}</h3><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div><div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div></div>
+    <div class="section-card"><div class="home-section-title"><h3>${isDuring?'오늘 일정':'1일차 일정'}</h3><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div><div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div></div>
     <div class="section-card"><div class="home-section-title"><h3>소비 요약</h3></div>${tp22HomeExpenseSummary(t)}</div>
   </div>`;
 }
@@ -4987,7 +5025,7 @@ function renderHome(){
       <div class="home-summary-inline"><div class="summary-box"><div class="k">준비물</div><div class="v">${pack.done}/${pack.total}</div><div class="sub">${pack.pct}% 챙김 완료</div></div><div class="summary-box"><div class="k">체크리스트</div><div class="v">${checklistDone}/${checklistTotal}</div><div class="sub">${checklistTotal?Math.round(checklistDone/checklistTotal*100):0}% 완료</div></div></div>
       ${tp20RenderChecklist(false)}
     </div>
-    <div class="section-card"><div class="home-section-title"><h3>${isDuring?'오늘 일정':'첫째 날 일정'}</h3><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div><div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div></div>
+    <div class="section-card"><div class="home-section-title"><h3>${isDuring?'오늘 일정':'1일차 일정'}</h3><button class="mini-btn" onclick="setTab('plan')">전체 보기</button></div><div class="home-mini-list">${tp20RenderPlanSnippet(t,d,isDuring)}</div></div>
     <div class="section-card"><div class="home-section-title"><h3>소비 요약</h3></div>${tp22HomeExpenseSummary(t)}</div>
   </div>`;
 }
@@ -5025,9 +5063,10 @@ normalizeTrip=function(t){
 
 function tp38SaveUIState(){
   try{
+    if(currentTripId&&tp38PlanDate){window.tp52PlanDates=window.tp52PlanDates||{};window.tp52PlanDates[currentTripId]=tp38PlanDate}
     const payload=JSON.stringify({
       currentTripId:currentTripId||tp38PendingTripId||null,currentTab,archiveMode,
-      poolView,poolCategory,groupViewMode,planDate:tp38PlanDate
+      poolView,poolCategory,groupViewMode,planDate:tp38PlanDate,planDates:window.tp52PlanDates||{}
     });
     sessionStorage.setItem(TP38_UI_KEY,payload);
     localStorage.setItem(TP38_UI_KEY,payload);
@@ -5037,6 +5076,7 @@ function tp38RestoreUIState(){
   try{
     const raw=sessionStorage.getItem(TP38_UI_KEY)||localStorage.getItem(TP38_UI_KEY)||'null';
     const x=JSON.parse(raw);if(!x)return;
+    if(x.planDates&&typeof x.planDates==='object')window.tp52PlanDates=x.planDates;
     if(x.currentTripId){
       if((state.trips||[]).some(t=>t.id===x.currentTripId))currentTripId=x.currentTripId;
       else tp38PendingTripId=x.currentTripId;
@@ -5081,7 +5121,10 @@ function tp38DefaultPlanDate(t){
 function tp38EnsurePlanDate(t){
   if(!t)return '';
   const range=dateRange(t.start,t.end);
-  if(tp38PlanDate!=='all'&&!range.includes(tp38PlanDate))tp38PlanDate=tp38DefaultPlanDate(t);
+  if(tp38PlanDate!=='all'&&!range.includes(tp38PlanDate)){
+    const remembered=window.tp52PlanDates?.[t.id];
+    tp38PlanDate=(remembered==='all'||range.includes(remembered))?remembered:tp38DefaultPlanDate(t);
+  }
   return tp38PlanDate;
 }
 function tp38SetPlanDate(v){tp38PlanDate=v;tp38SaveUIState();renderTab()}
@@ -5129,13 +5172,11 @@ function movePlanBefore(srcId,targetId){
 
 function tp38ReservationFields(base,prefix){
   base=tp38EnsureReservation({...base});
-  const req=!!base?.reservationRequired,done=!!base?.reservationDone;
+  const req=!!base.reservationRequired,done=!!base.reservationDone;
   return `<div class="field"><label>예약 필요 여부</label><select name="reservationRequired" id="${prefix}ReservationRequired" onchange="tp38ToggleReservationFields('${prefix}')"><option value="false" ${!req?'selected':''}>예약 필요 없음</option><option value="true" ${req?'selected':''}>예약 필요함</option></select></div>
-  <div class="reservation-fields-v38" id="${prefix}ReservationFields" style="${req?'':'display:none'}">
+  <div class="reservation-fields-v38 reservation-fields-v52" id="${prefix}ReservationFields" style="${req?'':'display:none'}">
     <label class="v38-checkline"><input type="checkbox" name="reservationDone" ${done?'checked':''}> 예약 완료</label>
-    <div class="field"><label>언제 예약?</label><input name="reservationWhen" value="${esc(base?.reservationWhen||'')}" placeholder="예: 방문 30일 전 / 11월 13일 오전 10시"></div>
-    <div class="field"><label>어디서 예약?</label><input name="reservationWhere" value="${esc(base?.reservationWhere||'')}" placeholder="예: 공식 홈페이지 / TableCheck / 전화"></div>
-    <div class="field"><label>어떻게 예약?</label><textarea name="reservationHow" placeholder="예: 공식 사이트에서 2명, 19:00로 예약">${esc(base?.reservationHow||'')}</textarea></div>
+    <div class="field"><label for="${prefix}ReservationMemo">예약 메모</label><textarea id="${prefix}ReservationMemo" name="reservationHow" rows="3" placeholder="예약 방법, 예약 사이트, 참고할 내용 등을 자유롭게 적어주세요.">${esc(tp52ReservationMemo(base))}</textarea></div>
   </div>`;
 }
 function tp38ToggleReservationFields(prefix){
@@ -5147,34 +5188,33 @@ function tp38ToggleReservationFields(prefix){
 function tp38ReadReservation(fd){
   const required=String(fd.get('reservationRequired'))==='true';
   const done=required&&fd.get('reservationDone')==='on';
-  return {
-    reservationRequired:required,reservationDone:done,reserved:done,
-    reservationWhen:required?String(fd.get('reservationWhen')||'').trim():'',
-    reservationWhere:required?String(fd.get('reservationWhere')||'').trim():'',
-    reservationHow:required?String(fd.get('reservationHow')||'').trim():''
-  };
+  return {reservationRequired:required,reservationDone:done,reserved:done,
+    reservationWhen:'',reservationWhere:'',reservationHow:String(fd.get('reservationHow')||'').trim()};
 }
 function tp38ReservationBadge(p){
-  p=tp38EnsureReservation(p);
-  if(!p?.reservationRequired)return '';
-  return p.reservationDone?`<span class="res-badge-v38 done">예약 완료</span>`:`<span class="res-badge-v38 need">예약 필요</span>`;
+  p=tp38EnsureReservation(p);if(!p?.reservationRequired)return '';
+  const isPlan=(trip()?.plans||[]).some(x=>x.id===p.id);
+  if(!isPlan)return `<span class="res-badge-v38 ${p.reservationDone?'done':'need'}">${p.reservationDone?'예약 완료':'예약 필요'}</span>`;
+  return `<button type="button" class="res-badge-v38 reservation-toggle-v52 ${p.reservationDone?'done':'need'}" data-reservation-plan="${esc(p.id)}" aria-pressed="${p.reservationDone}" aria-label="${esc(p.placeName||'일정')} ${p.reservationDone?'예약 완료 표시 취소':'예약 완료로 표시'}" onclick="event.stopPropagation();tp38ToggleReservationDone(${esc(JSON.stringify(p.id))})"><span>${p.reservationDone?'✓ 예약 완료':'예약 필요'}</span><span class="reservation-action-v52">${p.reservationDone?'취소':'완료'}</span></button>`;
 }
 function tp38ReservationPanel(p){
   p=tp38EnsureReservation(p);if(!p?.reservationRequired)return '';
-  const rows=[
-    p.reservationWhen?`<div class="res-line-v38"><b>언제</b><span>${esc(p.reservationWhen)}</span></div>`:'',
-    p.reservationWhere?`<div class="res-line-v38"><b>어디서</b><span>${esc(p.reservationWhere)}</span></div>`:'',
-    p.reservationHow?`<div class="res-line-v38"><b>방법</b><span>${esc(p.reservationHow)}</span></div>`:''
-  ].join('');
-  return `<div class="res-detail-v38">${rows||`<div class="res-line-v38"><b>예약</b><span>예약 방법을 아직 적지 않았어요.</span></div>`}
-    <button class="res-quick-v38" onclick="event.stopPropagation();tp38ToggleReservationDone('${p.id}')">${p.reservationDone?'예약 완료 취소':'예약 완료 처리'}</button>
-  </div>`;
+  const memo=tp52ReservationMemo(p);if(!memo)return '';
+  return `<div class="reservation-note-v52"><span>예약 메모</span><div>${esc(memo)}</div></div>`;
 }
 function tp38ToggleReservationDone(id){
   const p=trip()?.plans.find(x=>x.id===id);if(!p)return;
   tp38EnsureReservation(p);if(!p.reservationRequired)return;
-  p.reservationDone=!p.reservationDone;p.reserved=p.reservationDone;
-  save();renderTab();toast(p.reservationDone?'예약 완료로 표시했어요':'예약 완료 표시를 취소했어요');
+  p.reservationDone=!p.reservationDone;p.reserved=p.reservationDone;save();
+  // Update only the status controls; retain the map, selected day and scroll position.
+  document.querySelectorAll('[data-reservation-plan]').forEach(button=>{
+    if(button.dataset.reservationPlan!==id)return;
+    button.classList.toggle('done',p.reservationDone);button.classList.toggle('need',!p.reservationDone);
+    button.setAttribute('aria-pressed',String(p.reservationDone));
+    button.setAttribute('aria-label',`${p.placeName||'일정'} ${p.reservationDone?'예약 완료 표시 취소':'예약 완료로 표시'}`);
+    button.innerHTML=`<span>${p.reservationDone?'✓ 예약 완료':'예약 필요'}</span><span class="reservation-action-v52">${p.reservationDone?'취소':'완료'}</span>`;
+  });
+  toast(p.reservationDone?'예약 완료로 표시했어요':'예약 완료 표시를 취소했어요');
 }
 
 function openPoolForm(id,draft=null,selectedPlace=null){
@@ -5214,7 +5254,7 @@ function openPlanForm(id,draft=null){
   const t=trip(),p=id?t.plans.find(x=>x.id===id):null,base=draft||p;editingPlanId=id||null;
   if(base)tp38EnsureReservation(base);
   const selectedDate=base?.date||(tp38EnsurePlanDate(t)!=='all'?tp38PlanDate:tp38DefaultPlanDate(t));
-  const dates=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${selectedDate===d?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  const dates=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${selectedDate===d?'selected':''}>${i+1}일차 · ${fmt(d)}</option>`).join('');
   const time=base?.time||'',h=time?+time.split(':')[0]:10,m=time?+time.split(':')[1]:0,ap=h>=12?'PM':'AM',h12=(h%12)||12;
   openSheet(`<h2>${p?'일정 수정':'일정 바로 추가'}</h2><form id="planForm">
     <div class="field"><label>방문일</label><select name="date">${dates}</select></div>
@@ -5284,7 +5324,7 @@ function tp38PoolPlanMatches(p,t=trip()){
 function tp38IsPoolScheduled(p,t=trip()){return tp38PoolPlanMatches(p,t).length>0}
 function tp38DayLabel(date,t=trip()){
   const i=dateRange(t.start,t.end).indexOf(date);
-  return i>=0?`DAY ${i+1}`:fmt(date);
+  return i>=0?`${i+1}일차`:fmt(date);
 }
 function tp38OpenPlanAt(date){
   currentTab='plan';tp38PlanDate=date||tp38DefaultPlanDate(trip());tp38SaveUIState();renderTrip();
@@ -5425,7 +5465,7 @@ function tp38OpenAssignPool(ids,label='선택 장소'){
   const t=trip(),places=ids.map(id=>t.pool.find(p=>p.id===id)).filter(Boolean).filter(p=>!tp38IsPoolScheduled(p,t));
   if(!places.length)return toast('추가할 새 장소가 없어요');
   const defaultDate=tp38EnsurePlanDate(t)!=='all'?tp38PlanDate:tp38DefaultPlanDate(t);
-  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${d===defaultDate?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${d===defaultDate?'selected':''}>${i+1}일차 · ${fmt(d)}</option>`).join('');
   openSheet(`<h2>일정에 추가</h2><div class="info-note"><b>${esc(label)}</b> · ${places.length}곳을 선택한 날짜에 추가합니다.<br>장소는 ‘가고 싶은 곳’에서 삭제하지 않고 아래 ‘일정에 넣은 곳’으로 정리됩니다.</div>
     <div class="field"><label>방문일</label><select id="tp38AssignDate">${options}</select></div>
     <div class="form-actions"><button class="ghost" onclick="closeSheet()">취소</button><button class="primary" id="tp38AssignBtn">이 날짜에 추가</button></div>`);
@@ -5475,7 +5515,7 @@ function planCard(p){
 }
 function renderPlans(){
   const t=trip();normalizeTrip(t);const selected=tp38EnsurePlanDate(t),range=dateRange(t.start,t.end);
-  const options=[`<option value="all" ${selected==='all'?'selected':''}>전체 일정</option>`,...range.map((d,i)=>`<option value="${d}" ${selected===d?'selected':''}>DAY ${i+1} · ${fmt(d)} · ${t.plans.filter(p=>p.date===d).length}개</option>`)].join('');
+  const options=[`<option value="all" ${selected==='all'?'selected':''}>전체 일정</option>`,...range.map((d,i)=>`<option value="${d}" ${selected===d?'selected':''}>${i+1}일차 · ${fmt(d)} · ${t.plans.filter(p=>p.date===d).length}개</option>`)].join('');
   const shownDates=selected==='all'?range:[selected];
   const hasSelectedCoords=selected!=='all'&&plansForDate(selected).some(p=>p.lat!=null&&p.lng!=null);
   const manual=selected!=='all'&&!!t.planManualOrderDates?.[selected];
@@ -5484,7 +5524,7 @@ function renderPlans(){
     ${manual?`<div class="plan-sort-note-v38"><span>이 날짜는 수동 순서가 적용되어 있습니다.</span><button onclick="tp38ResetPlanOrder('${selected}')">시간순 정렬</button></div>`:`<div class="plan-sort-note-v38"><span>시간을 입력한 일정은 자동으로 시간순 정렬됩니다. ↑↓를 누르면 수동 순서로 전환됩니다.</span></div>`}
     ${shownDates.map(d=>{
       const day=range.indexOf(d)+1,arr=plansForDate(d);
-      return `<div class="dayblock" data-date="${d}"><div class="dayhead-v38"><div class="dayhead-left-v38"><div class="daytitle">${fmt(d)}</div><div class="daytag">DAY ${day}</div></div><button class="day-map-mini-v38" ${arr.some(p=>p.lat!=null&&p.lng!=null)?'':'disabled'} onclick="openPlanDayMap('${d}')">지도 보기</button></div>
+      return `<div class="dayblock" data-date="${d}"><div class="dayhead-v38"><div class="dayhead-left-v38"><div class="daytitle">${fmt(d)}</div><div class="daytag">${day}일차</div></div><button class="day-map-mini-v38" ${arr.some(p=>p.lat!=null&&p.lng!=null)?'':'disabled'} onclick="openPlanDayMap('${d}')">지도 보기</button></div>
         ${arr.length?`<div class="timeline">${arr.map(planCard).join('')}</div>`:`<div class="card empty">이 날짜에는 아직 일정이 없습니다.</div>`}
       </div>`;
     }).join('')}`;
@@ -5494,7 +5534,7 @@ async function openPlanDayMap(date){
   if(!places.length)return toast('이 날짜에 지도 좌표가 있는 일정이 없어요');
   $('#mapBack').classList.add('show');document.body.style.overflow='hidden';$('#mapLoading').style.display='block';$('#mapLoading').textContent='지도를 불러오는 중...';
   const day=dateRange(t.start,t.end).indexOf(date)+1;
-  $('#mapTitle').textContent=`DAY ${day} 일정 지도`;
+  $('#mapTitle').textContent=`${day}일차 일정 지도`;
   $('#mapSub').textContent=`${fmt(date)} · ${places.length}곳`;
   $('#mapLegend').innerHTML=places.map((p,i)=>`<span class="legend-chip"><i class="legend-dot" style="background:${mapColor(i)}"></i>${i+1}. ${esc(p.placeName)}</span>`).join('');
   try{
@@ -5518,7 +5558,7 @@ async function openPlanDayMap(date){
 
 function tp20RenderPlanSnippet(t,d,isDuring){
   const plans=plansForDate(d);
-  return plans.length?plans.slice(0,4).map(p=>{tp38EnsureReservation(p);return `<div class="home-mini-item"><div class="home-mini-main"><b>${esc(p.placeName||'일정')}</b><div class="sub">${p.time?esc(displayTime(p.time))+' · ':''}${esc(p.category||'')}${p.reservationRequired?` · ${p.reservationDone?'예약 완료':'예약 필요'}`:''}${p.memo?`<br>${esc(p.memo)}`:''}</div></div></div>`}).join(''):`<div class="empty-note2">${isDuring?'오늘 일정이 없습니다.':'여행 전이라 첫째 날 일정을 보여줄 예정이에요.'}</div>`;
+  return plans.length?plans.slice(0,4).map(p=>{tp38EnsureReservation(p);return `<div class="home-mini-item"><div class="home-mini-main"><b>${esc(p.placeName||'일정')}</b><div class="sub">${p.time?esc(displayTime(p.time))+' · ':''}${esc(p.category||'')}${p.reservationRequired?` · ${p.reservationDone?'예약 완료':'예약 필요'}`:''}${p.memo?`<br>${esc(p.memo)}`:''}</div></div></div>`}).join(''):`<div class="empty-note2">${isDuring?'오늘 일정이 없습니다.':'여행 전이라 1일차 일정을 보여줄 예정이에요.'}</div>`;
 }
 
 function renderTab(){
@@ -5670,7 +5710,7 @@ function tp38OpenAssignPool(ids,label='선택 장소'){
   const t=trip(),places=ids.map(id=>t.pool.find(p=>p.id===id)).filter(Boolean).filter(p=>!tp38IsPoolScheduled(p,t));
   if(!places.length)return toast('추가할 새 장소가 없어요');
   const defaultDate=tp38EnsurePlanDate(t)!=='all'?tp38PlanDate:tp38DefaultPlanDate(t);
-  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${d===defaultDate?'selected':''}>DAY ${i+1} · ${fmt(d)}</option>`).join('');
+  const options=dateRange(t.start,t.end).map((d,i)=>`<option value="${d}" ${d===defaultDate?'selected':''}>${i+1}일차 · ${fmt(d)}</option>`).join('');
   openSheet(`<h2>일정에 추가</h2><div class="info-note"><b>${esc(label)}</b> · ${places.length}곳을 선택한 날짜에 추가합니다.<br>추가 후에도 원래 위치그룹/카테고리에 남고 ‘일정 추가 완료’로 표시됩니다.</div>
     <div class="field"><label>방문일</label><select id="tp38AssignDate">${options}</select></div>
     <div class="form-actions"><button class="ghost" onclick="closeSheet()">취소</button><button class="primary" id="tp38AssignBtn">이 날짜에 추가</button></div>`);
@@ -5756,7 +5796,7 @@ function planCard(p){
 }
 function renderPlans(){
   const t=trip();normalizeTrip(t);const selected=tp38EnsurePlanDate(t),range=dateRange(t.start,t.end);
-  const options=[`<option value="all" ${selected==='all'?'selected':''}>전체 일정</option>`,...range.map((d,i)=>`<option value="${d}" ${selected===d?'selected':''}>DAY ${i+1} · ${fmt(d)} · ${t.plans.filter(p=>p.date===d).length}개</option>`)].join('');
+  const options=[`<option value="all" ${selected==='all'?'selected':''}>전체 일정</option>`,...range.map((d,i)=>`<option value="${d}" ${selected===d?'selected':''}>${i+1}일차 · ${fmt(d)} · ${t.plans.filter(p=>p.date===d).length}개</option>`)].join('');
   const shownDates=selected==='all'?range:[selected];
   const hasSelectedCoords=selected!=='all'&&plansForDate(selected).some(p=>p.lat!=null&&p.lng!=null);
   const manual=selected!=='all'&&!!t.planManualOrderDates?.[selected];
@@ -5765,7 +5805,7 @@ function renderPlans(){
     ${manual?`<div class="plan-sort-note-v38"><span>수동 순서가 적용되어 있습니다.</span><button onclick="tp38ResetPlanOrder('${selected}')">시간순 정렬</button></div>`:`<div class="plan-sort-note-v38"><span class="plan-drag-help-v40">시간이 있으면 자동 시간순 · 오른쪽 ⋮⋮ 손잡이를 끌면 수동 순서</span></div>`}
     ${shownDates.map(d=>{
       const day=range.indexOf(d)+1,arr=plansForDate(d);
-      return `<div class="dayblock" data-date="${d}"><div class="dayhead-v38"><div class="dayhead-left-v38"><div class="daytitle">${fmt(d)}</div><div class="daytag">DAY ${day}</div></div><button class="day-map-mini-v38" ${arr.some(p=>p.lat!=null&&p.lng!=null)?'':'disabled'} onclick="openPlanDayMap('${d}')">지도 보기</button></div>
+      return `<div class="dayblock" data-date="${d}"><div class="dayhead-v38"><div class="dayhead-left-v38"><div class="daytitle">${fmt(d)}</div><div class="daytag">${day}일차</div></div><button class="day-map-mini-v38" ${arr.some(p=>p.lat!=null&&p.lng!=null)?'':'disabled'} onclick="openPlanDayMap('${d}')">지도 보기</button></div>
         ${arr.length?`<div class="timeline">${arr.map(planCard).join('')}</div>`:`<div class="card empty">이 날짜에는 아직 일정이 없습니다.</div>`}
       </div>`;
     }).join('')}`;
@@ -6675,6 +6715,7 @@ function renderTab(){
   tp38SaveUIState();
   const c=$('#tabContent');if(!c)return;
 
+  try{
   if(currentTab==='home'){c.innerHTML=renderHome();return}
   if(currentTab==='plan'){c.innerHTML=renderPlans();bindPlanDrag();tp48MountCourseMaps();return}
   if(currentTab==='pool'){
@@ -6688,6 +6729,7 @@ function renderTab(){
   if(currentTab==='packing'){c.innerHTML=tp20RenderPackingHub();return}
   if(currentTab==='expense'){c.innerHTML=tp20RenderExpenseTab();return}
   c.innerHTML=renderHome();
+  }finally{tp52RestoreTabPosition()}
 }
 
 /* Explicit user action only. */
@@ -7332,7 +7374,7 @@ function tp23SettlementView(t){
 }
 
 /* Daily course map and editable title */
-function tp48DayName(i){return ['첫째 날','둘째 날','셋째 날','넷째 날','다섯째 날','여섯째 날','일곱째 날'][i]||`${i+1}일차`}
+function tp48DayName(i){return `${i+1}일차`}
 function tp48HasCoords(p){return p.lat!=null&&p.lng!=null&&String(p.lat).trim()!==''&&String(p.lng).trim()!==''&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lng))&&Math.abs(Number(p.lat))<=90&&Math.abs(Number(p.lng))<=180}
 function tp48EditCourse(date){
   const t=trip(),i=dateRange(t.start,t.end).indexOf(date);if(i<0)return;
@@ -7375,6 +7417,26 @@ function tp48MountCourseMaps(){
   if(!('IntersectionObserver' in window)){elements.forEach(tp48MountMap);return}
   window.tp48MapObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){window.tp48MapObserver.unobserve(entry.target);tp48MountMap(entry.target)}}),{rootMargin:'120px'});
   elements.forEach(el=>window.tp48MapObserver.observe(el));
+}
+
+/* v52: day labels, selected-tab visibility, compact reservation notes. */
+function tp52ReservationMemo(p){
+  return [p?.reservationWhen?`기존 예약 시점: ${p.reservationWhen}`:'',p?.reservationWhere?`예약처: ${p.reservationWhere}`:'',p?.reservationHow||''].filter(Boolean).join('\n');
+}
+function tp52RevealActive(container){
+  if(!container||!container.isConnected)return;
+  const active=container.querySelector('.active');if(!active)return;
+  const parentRect=container.getBoundingClientRect(),activeRect=active.getBoundingClientRect();
+  const center=container.scrollLeft+activeRect.left-parentRect.left-(container.clientWidth-activeRect.width)/2;
+  container.scrollLeft=Math.max(0,Math.min(center,container.scrollWidth-container.clientWidth));
+}
+function tp52RestoreTabPosition(){
+  if(window.tp52NavFrame)cancelAnimationFrame(window.tp52NavFrame);
+  window.tp52NavFrame=requestAnimationFrame(()=>{
+    tp52RevealActive(document.querySelector('.tab-grid'));
+    tp52RevealActive(document.querySelector('.course-days'));
+    window.tp52NavFrame=null;
+  });
 }
 </script>
 
